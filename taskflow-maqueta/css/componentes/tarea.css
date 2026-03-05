@@ -1,0 +1,164 @@
+/* Wrapper de cada tarea (para altura consistente) */
+
+.tarea {
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-3);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: var(--sombra-suave);
+    padding: var(--padding-tarjeta-s);
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.tarea-flex {
+    display: flex;
+    height: stretch;
+}
+
+.tarea-nueva {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.tarea-item {
+    height: 100%;
+    position: relative;
+}
+
+
+.tarea--content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+    gap: var(--gap-tarea);
+}
+
+.tarea-item__toggle:focus-visible+.tarea--content {
+    outline: 2px solid rgba(124, 92, 255, .65);
+    outline-offset: 2px;
+}
+
+
+.tarea--content:hover .tarea {
+    transform: translateY(-1px);
+    background: rgba(18, 22, 36, .66);
+}
+
+.tarea__up {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tarea__down {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tarea__titulo {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: break-word;
+    font-size: 18px;
+}
+
+.tarea__categoria {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--color-borde);
+    color: var(--color-texto-badge);
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.tarea__borrar {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--color-borde);
+    font-size: 12px;
+    background: rgba(177, 2, 2, 0.18);
+}
+
+.tarea__nota {
+    margin: var(--espacio-3) 0 0 0;
+    color: var(--color-texto-suave);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.tarea__check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    min-width: 0;
+}
+
+.tarea__cuadro {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1px solid var(--color-borde);
+    background: rgba(255, 255, 255, .03);
+    flex: 0 0 auto;
+    position: relative;
+}
+
+/* Estado marcado */
+.tarea-item__toggle:checked+.tarea--content .tarea {
+    background: rgba(0, 0, 0, .22);
+    border-color: rgba(255, 255, 255, .14);
+}
+
+.tarea-item__toggle:checked+.tarea--content .tarea__titulo,
+.tarea-item__toggle:checked+.tarea--content .tarea__nota {
+    text-decoration: line-through;
+    opacity: .65;
+}
+
+.tarea-item__toggle:checked+.tarea--content .tarea__categoria,
+.tarea-item__toggle:checked+.tarea--content .badge-prioridad {
+    opacity: .75;
+}
+
+.tarea-item__toggle:checked+.tarea--content .tarea__cuadro {
+    background: rgba(124, 92, 255, .35);
+    border-color: rgba(124, 92, 255, .55);
+}
+
+.tarea-item__toggle:checked+.tarea--content .tarea__cuadro::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 3px;
+    width: 6px;
+    height: 10px;
+    border-right: 2px solid rgba(255, 255, 255, .9);
+    border-bottom: 2px solid rgba(255, 255, 255, .9);
+    transform: rotate(45deg);
+}
+
+/* Checkbox real oculto (toggle fuera) */
+.tarea-item__toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

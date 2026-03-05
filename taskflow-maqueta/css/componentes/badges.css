@@ -1,0 +1,25 @@
+/* Badges de prioridad */
+.badge-prioridad {
+    flex: var(--badge-prioridad-flex);
+    padding: var(--badge-prioridad-padding);
+    border-radius: var(--badge-prioridad-radius);
+    font-size: var(--badge-prioridad-font-size);
+    border: var(--badge-prioridad-border);
+    height: var(--badge-prioridad-height);
+    margin-left: var(--badge-prioridad-margin-left);
+}
+
+.badge-prioridad--alta {
+    border-color: rgba(255, 92, 122, .65);
+    background: rgba(255, 92, 122, 0.20);
+}
+
+.badge-prioridad--media {
+    border-color: rgba(255, 204, 102, 0.6);
+    background: rgba(255, 204, 102, .20);
+}
+
+.badge-prioridad--baja {
+    border-color: rgba(46, 229, 157, .6);
+    background: rgba(46, 229, 157, .30);
+}

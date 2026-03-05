@@ -1,0 +1,78 @@
+/* Panel lateral (filtros) */
+
+.panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel__titulo {
+    margin: 0 0 var(--espacio-3) 0;
+    font-size: 14px;
+    color: var(--color-texto-gris);
+}
+
+.filtros__grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-2);
+    margin-top: var(--espacio-2);
+    margin-bottom: var(--espacio-4);
+}
+
+.filtros__titulo {
+    font-size: 13px;
+    color: var(--color-texto-suave);
+}
+
+.opcion {
+    position: relative;
+    display: inline-flex;
+}
+
+.opcion input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Badge base */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border: 1px solid var(--color-borde);
+    background: rgba(255, 255, 255, .04);
+    font-size: 14px;
+    line-height: 1;
+    user-select: none;
+    cursor: pointer;
+    transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
+
+    border-radius: var(--radio-2);
+}
+
+
+
+.opcion:hover .badge {
+    background: rgba(226, 202, 202, 0.07);
+}
+
+
+.opcion input:checked+.badge {
+    color: var(--color-texto);
+    border-color: var(--color-acento);
+    background: rgba(255, 255, 255, .09);
+}
+
+.opcion input:focus-visible+.badge {
+    outline: 2px solid var(--color-acento);
+    outline-offset: 2px;
+}
+
+
+.opcion:active .badge {
+    transform: translateY(1px);
+}

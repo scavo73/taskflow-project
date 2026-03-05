@@ -1,0 +1,39 @@
+/* Navegación + acciones */
+.navegacion {
+    display: flex;
+    gap: var(--espacio-2);
+    flex-wrap: wrap;
+}
+
+.navegacion__enlace {
+    padding: 8px 10px;
+    border-radius: var(--radio-2);
+    color: var(--color-texto-suave);
+    border: 1px solid transparent;
+}
+
+.navegacion__enlace.is-activo {
+    color: var(--color-texto);
+    border-color: var(--color-acento);
+    background: var(--color-acento);
+}
+
+.zona-usuario {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    flex-wrap: wrap;
+}
+
+
+
+.avatar-iniciales {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--color-borde);
+    background: rgba(124, 92, 255, .18);
+    font-weight: 700;
+}

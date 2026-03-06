@@ -24,6 +24,20 @@
     position: relative;
 }
 
+.tarea-item__toggle:checked+.tarea--content::before {
+    content: "¡Hecho!";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: rgb(2, 106, 42);
+    font-size: 32px;
+    font-weight: 900;
+    background: rgba(2, 121, 48, 0.269);
+    background-image: blur(4px);
+    border-radius: var(--radio-3);
+}
+
 .tarea--content {
     display: flex;
     flex-direction: column;

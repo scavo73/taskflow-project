@@ -42,7 +42,6 @@ function renderTask(task) {
       <label class="tarea tarea--content" for="tarea-${task.id}">
         <div class="tarea__up">
           <div class="tarea__check">
-            <span class="tarea__cuadro" aria-hidden="true"><i data-lucide="check"></i></span>
             <span class="tarea__titulo"></span>
           </div>
           <span class="badge-prioridad badge-prioridad--${prioClass}"></span>

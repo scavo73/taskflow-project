@@ -1,7 +1,7 @@
 const tituloTarea = document.getElementById('tituloTarea');
 const listContainer = document.getElementById('listContainer');
-const categoriaTarea = document.getElementById('categoriaTarea') || document.getElementById('categoria-tarea');
-const prioridadTarea = document.getElementById('prioridadTarea') || document.getElementById('prioridad-tarea');
+const categoriaTarea = document.getElementById('categoria-tarea');
+const prioridadTarea = document.getElementById('prioridad-tarea');
 
 const LS_KEY = 'taskflow_tasks';
 
@@ -63,7 +63,7 @@ function renderTask(task) {
   li.querySelector('.tarea__categoria').textContent = task.category || 'Personal';
   li.querySelector('.badge-prioridad').textContent = task.priority || 'Media';
 
-  listContainer.appendChild(li);
+  listContainer.prepend(li);
 }
 
 function renderAll() {

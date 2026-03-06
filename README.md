@@ -13,13 +13,31 @@ Manipulación de elementos y persistencia local
 Uso de JavaScript para transformar la página estática en una aplicación dinámica que responde a las acciones del usuario.
 
 
-1) La función addTask() valida el título (no vacío), crea un <li> con la estructura completa de una tarea (checkbox, título, categoría, prioridad y botón de borrar) y asigna un id incremental con nextId.
-Luego inserta el <li> en la lista, limpia el input y aumenta nextId para la siguiente tarea.
+## Lógica principal de la app
 
-2) Se usa DOMContentLoaded para ejecutar borrarTareas() cuando el HTML ya está cargado y listContainer existe.
-La función añade un único click listener a la lista (delegación de eventos) que detecta cualquier botón .tarea__borrar, incluso en tareas creadas dinámicamente.
-Al pulsar, elimina el <li> correspondiente y evita que el click active el checkbox porque el botón está dentro del <label>.
+### 1. Creación de tareas
+La función `addTask()` valida que el título no esté vacío y crea una nueva tarea con la información introducida por el usuario. Después, genera el elemento HTML correspondiente, lo añade a la lista de tareas, limpia el campo de entrada y actualiza el identificador para la siguiente tarea.
 
-3) La persistencia se hace guardando el array tasks en LocalStorage con JSON.stringify() dentro de saveTasks() cada vez que hay cambios (añadir, borrar o marcar una tarea).
-Al cargar la página (DOMContentLoaded), se leen las tareas guardadas con JSON.parse() y se renderizan con renderAll() para reconstruir la lista.
-Los eventos de borrar (click en .tarea__borrar) y completar (change en .tarea-item__toggle) actualizan tasks y vuelven a guardar automáticamente.
+### 2. Eliminación de tareas
+Se utiliza `DOMContentLoaded` para asegurarse de que el DOM esté completamente cargado antes de trabajar con los elementos de la interfaz. La eliminación de tareas se gestiona mediante delegación de eventos sobre el contenedor de la lista, lo que permite que también funcionen correctamente las tareas añadidas de forma dinámica. Cuando el usuario pulsa el botón de borrar, se localiza la tarea correspondiente y se elimina de la interfaz.
+
+### 3. Persistencia de datos
+La persistencia se gestiona con `localStorage`. Cada vez que se añade, elimina o actualiza una tarea, el array de tareas se guarda usando `JSON.stringify()`. Al recargar la página, los datos almacenados se recuperan con `JSON.parse()` y la lista se reconstruye automáticamente en pantalla para mantener el estado anterior.
+
+## Recursos utilizados
+
+1. **JSON y forEach en JavaScript: Guardar y Recorrer Datos Como un Pro**  
+   StudyCode Pro  
+   https://studycodepro.com/blog/json-foreach-javascript-guardar-recorrer-datos-localstorage/
+
+2. **How To Create To-Do List App Using HTML CSS And JavaScript | Task App In JavaScript**  
+   YouTube  
+   https://www.youtube.com/watch?v=G0jO8kUrg-I
+
+3. **JavaScript: The Complete Crash Course**  
+   YouTube  
+   https://www.youtube.com/watch?v=OOOfBC1grl0
+
+4. **How To Create A Search Bar In JavaScript**  
+   YouTube  
+   https://www.youtube.com/watch?v=TlP5WIxVirU

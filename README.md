@@ -15,3 +15,7 @@ Uso de JavaScript para transformar la página estática en una aplicación diná
 
 1) La función addTask() valida el título (no vacío), crea un <li> con la estructura completa de una tarea (checkbox, título, categoría, prioridad y botón de borrar) y asigna un id incremental con nextId.
 Luego inserta el <li> en la lista, limpia el input y aumenta nextId para la siguiente tarea.
+
+2) Se usa DOMContentLoaded para ejecutar borrarTareas() cuando el HTML ya está cargado y listContainer existe.
+La función añade un único click listener a la lista (delegación de eventos) que detecta cualquier botón .tarea__borrar, incluso en tareas creadas dinámicamente.
+Al pulsar, elimina el <li> correspondiente y evita que el click active el checkbox porque el botón está dentro del <label>.

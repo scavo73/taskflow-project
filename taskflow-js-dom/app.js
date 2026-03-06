@@ -46,4 +46,15 @@ function addTask() {
     nextId++;
 
     if (window.lucide) lucide.createIcons();
+
 }
+
+function borrarTareas() {
+    listContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.tarea__borrar');
+        if (!btn) return;
+        e.preventDefault(); e.stopPropagation();
+        btn.closest('.lista-tareas__item')?.remove();
+    });
+}
+

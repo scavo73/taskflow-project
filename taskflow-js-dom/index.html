@@ -86,7 +86,7 @@
         <section class="seccion-tareas contenedor-vidrio" aria-label="Tareas">
             <div class="cabecera-seccion">
                 <h1 class="cabecera-seccion__titulo">Tareas</h1>
-                <span class="badge">0</span>
+                <span class="badge" id="contador-tareas">0</span>
             </div>
             <div class="progreso" aria-label="Progreso de tareas">
                 <div class="progreso__fila">
@@ -136,7 +136,6 @@
                 </form>
 
                 <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer">
-
                     <!-- <li class="lista-tareas__item">
                         <div class="tarea-item">
                             <input class="tarea-item__toggle" type="checkbox" id="tarea-1" />
@@ -161,132 +160,6 @@
                             </label>
                         </div>
                     </li>
-
-                    <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="tarea-2" />
-                            <label class="tarea tarea--content" for="tarea-2">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Enviar propuesta a cliente</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--media">Media</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Proyecto</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li>
-
-                    <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="tarea-3" />
-                            <label class="tarea tarea--content" for="tarea-3">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Revisar facturas pendientes</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Finanzas</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li>
-
-                    <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="tarea-4" />
-                            <label class="tarea tarea--content" for="tarea-4">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Planificar calendario de contenido</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Marketing</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li>
-
-                    <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="tarea-5" />
-                            <label class="tarea tarea--content" for="tarea-5">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Estudiar grid y responsive</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--media">Media</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Estudio</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li>
-
-                    <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="tarea-6" />
-                            <label class="tarea tarea--content" for="tarea-6">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Comprar ingredientes para la cena</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Personal</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li> -->
-
                 </ul>
             </div>
         </section>

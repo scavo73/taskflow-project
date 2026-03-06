@@ -3,6 +3,9 @@ const listContainer = document.getElementById('listContainer');
 const categoriaTarea = document.getElementById('categoria-tarea');
 const prioridadTarea = document.getElementById('prioridad-tarea');
 
+const contadorTareas = document.getElementById('contador-tareas');
+
+
 const LS_KEY = 'taskflow_tasks';
 
 const demoTasks = [
@@ -28,6 +31,10 @@ let nextId = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
 
 function saveTasks() {
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
+}
+
+function updateTaskCounter() {
+  contadorTareas.textContent = tasks.length;
 }
 
 function renderTask(task) {
@@ -89,6 +96,7 @@ function addTask() {
   tasks.push(task);
   saveTasks();
   renderTask(task);
+  updateTaskCounter();
 
   tituloTarea.value = '';
   if (window.lucide) lucide.createIcons();
@@ -124,6 +132,7 @@ function activarPersistenciaYBorrado() {
 
     t.done = input.checked;
     saveTasks();
+    updateTaskCounter();
   });
 }
 
@@ -131,4 +140,5 @@ function activarPersistenciaYBorrado() {
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();                 // pinta lo guardado en LocalStorage
   activarPersistenciaYBorrado();
+  updateTaskCounter();
 });

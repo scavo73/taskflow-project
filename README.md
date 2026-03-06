@@ -45,6 +45,7 @@ Para limpiar todas las tareas guardadas durante las pruebas, se puede ejecutar e
 
 ```js
 localStorage.clear();
+```
 
 ## Recursos utilizados
 

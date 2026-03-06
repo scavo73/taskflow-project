@@ -55,14 +55,9 @@
     --padding-principal-horizontal-m: clamp(1.25rem, 2.5vw, 2.25rem);
 
 
-    /* Boton */
-
-
     /* Progreso */
     --padding-bottm-s: 2rem;
     --padding-bottm-m: 3rem;
-
-
 
     /* Formulario */
     --tamano-fuente-etiqueta: 0.8rem;
@@ -92,6 +87,8 @@
     --badge-prioridad-height: 26px;
     --badge-prioridad-margin-left: 18px;
 
+    --alto-tabbar: 64px;
+
 }
 
 * {
@@ -106,7 +103,15 @@ body {
 body {
     margin: 0;
     font-family: var(--fuente-principal);
-    background: radial-gradient(900px 500px at 10% 0%, rgba(122, 162, 255, .18), transparent 55%), radial-gradient(900px 500px at 90% 10%, rgba(255, 77, 109, .12), transparent 50%), var(--color-fondo);
+    background:
+        radial-gradient(900px 500px at 10% 0%, rgba(122, 162, 255, .18), transparent 55%),
+        radial-gradient(900px 500px at 90% 10%, rgba(255, 77, 109, .12), transparent 50%),
+        var(--color-fondo);
+
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%, auto;
+    background-position: 0 0, 0 0, 0 0;
+    /* opcional, por claridad */
     color: var(--color-texto);
 }
 

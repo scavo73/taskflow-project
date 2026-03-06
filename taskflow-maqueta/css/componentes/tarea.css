@@ -25,7 +25,6 @@
     position: relative;
 }
 
-
 .tarea--content {
     display: flex;
     flex-direction: column;
@@ -91,6 +90,21 @@
     background: rgba(177, 2, 2, 0.18);
 }
 
+.tarea__borrar svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.25;
+    opacity: .9;
+}
+
+.tarea__borrar {
+    color: #ff5a5a;
+}
+
+.tarea__borrar:hover {
+    color: #ff8080;
+}
+
 .tarea__nota {
     margin: var(--espacio-3) 0 0 0;
     color: var(--color-texto-suave);
@@ -105,14 +119,43 @@
     min-width: 0;
 }
 
+
+
+
 .tarea__cuadro {
+    width: 21px;
+    height: 21px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    background: transparent;
+
+    transition: background .15s ease, border-color .15s ease;
+}
+
+/* el svg lo genera Lucide */
+.tarea__cuadro svg {
     width: 18px;
     height: 18px;
-    border-radius: 6px;
-    border: 1px solid var(--color-borde);
-    background: rgba(255, 255, 255, .03);
-    flex: 0 0 auto;
-    position: relative;
+    stroke-width: 3;
+
+    opacity: 0;
+    transform: scale(.8);
+    transition: opacity .12s ease, transform .12s ease;
+}
+
+/* cuando el checkbox está marcado */
+.tarea-item__toggle:checked+.tarea--content .tarea__cuadro {
+    border-color: rgba(124, 92, 255, .55);
+    background: rgba(124, 92, 255, .15);
+}
+
+.tarea-item__toggle:checked+.tarea--content .tarea__cuadro svg {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* Estado marcado */
@@ -135,18 +178,6 @@
 .tarea-item__toggle:checked+.tarea--content .tarea__cuadro {
     background: rgba(124, 92, 255, .35);
     border-color: rgba(124, 92, 255, .55);
-}
-
-.tarea-item__toggle:checked+.tarea--content .tarea__cuadro::after {
-    content: "";
-    position: absolute;
-    left: 5px;
-    top: 3px;
-    width: 6px;
-    height: 10px;
-    border-right: 2px solid rgba(255, 255, 255, .9);
-    border-bottom: 2px solid rgba(255, 255, 255, .9);
-    transform: rotate(45deg);
 }
 
 /* Checkbox real oculto (toggle fuera) */

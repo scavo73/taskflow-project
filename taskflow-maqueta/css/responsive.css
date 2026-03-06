@@ -71,3 +71,15 @@
 
     }
 }
+
+@media (max-width: 768px) {
+    .form-fila-formulario {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .seccion-tareas {
+        margin-bottom: calc(var(--alto-tabbar) + var(--espacio-4) + env(safe-area-inset-bottom));
+    }
+}

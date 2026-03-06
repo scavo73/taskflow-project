@@ -2,7 +2,7 @@
 .grid-tareas {
     display: grid;
     gap: var(--espacio-3);
-    grid-template-columns: repeat(auto-fit, minmax(var(--ancho-tarjeta-min), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ancho-tarjeta-min)), 1fr));
     align-items: stretch;
 }
 

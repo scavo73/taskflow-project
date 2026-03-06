@@ -83,7 +83,7 @@
             </div>
         </aside>
 
-        <section class="seccion-tareas glass " aria-label="Tareas">
+        <section class="seccion-tareas contenedor-vidrio" aria-label="Tareas">
             <div class="cabecera-seccion">
                 <h1 class="cabecera-seccion__titulo">Tareas</h1>
                 <span class="badge">4</span>
@@ -120,6 +120,7 @@
                                     <option>Personal</option>
                                     <option>Salud</option>
                                 </select>
+
                             </div>
                             <div class="form-campo">
                                 <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
@@ -142,8 +143,10 @@
                             <label class="tarea tarea--content" for="tarea-1">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
-                                        <span class="tarea__titulo">Enviar propuesta a cliente</span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Preparar presentación del sprint</span>
                                     </div>
                                     <span class="badge-prioridad badge-prioridad--alta">Alta</span>
                                 </div>
@@ -151,7 +154,9 @@
                                     <div class="tarea__categorias">
                                         <span class="tarea__categoria">Trabajo</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
@@ -163,16 +168,20 @@
                             <label class="tarea tarea--content" for="tarea-2">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
-                                        <span class="tarea__titulo">Revisar facturas del mes</span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Enviar propuesta a cliente</span>
                                     </div>
                                     <span class="badge-prioridad badge-prioridad--media">Media</span>
                                 </div>
                                 <div class="tarea__down">
                                     <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Finanzas</span>
+                                        <span class="tarea__categoria">Proyecto</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
@@ -184,16 +193,20 @@
                             <label class="tarea tarea--content" for="tarea-3">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
-                                        <span class="tarea__titulo">Preparar presentación del sprint</span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Revisar facturas pendientes</span>
                                     </div>
-                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
+                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
                                 </div>
                                 <div class="tarea__down">
                                     <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Proyecto</span>
+                                        <span class="tarea__categoria">Finanzas</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
@@ -205,16 +218,20 @@
                             <label class="tarea tarea--content" for="tarea-4">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
-                                        <span class="tarea__titulo">Pedir cita para el dentista</span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Planificar calendario de contenido</span>
                                     </div>
-                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
+                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
                                 </div>
                                 <div class="tarea__down">
                                     <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Salud</span>
+                                        <span class="tarea__categoria">Marketing</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
@@ -226,8 +243,10 @@
                             <label class="tarea tarea--content" for="tarea-5">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
-                                        <span class="tarea__titulo">Estudiar CSS Grid y clamp()</span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Estudiar grid y responsive</span>
                                     </div>
                                     <span class="badge-prioridad badge-prioridad--media">Media</span>
                                 </div>
@@ -235,7 +254,9 @@
                                     <div class="tarea__categorias">
                                         <span class="tarea__categoria">Estudio</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
@@ -247,7 +268,9 @@
                             <label class="tarea tarea--content" for="tarea-6">
                                 <div class="tarea__up">
                                     <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true"></span>
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
                                         <span class="tarea__titulo">Comprar ingredientes para la cena</span>
                                     </div>
                                     <span class="badge-prioridad badge-prioridad--baja">Baja</span>
@@ -256,13 +279,13 @@
                                     <div class="tarea__categorias">
                                         <span class="tarea__categoria">Personal</span>
                                     </div>
-                                    <button class="badge tarea__borrar">Borrar</button>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
                                 </div>
                             </label>
                         </div>
                     </li>
-
-
 
                 </ul>
             </div>
@@ -278,5 +301,10 @@
 </body>
 
 <script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+    });
+</script>
 
 </html>

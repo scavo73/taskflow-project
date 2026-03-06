@@ -37,29 +37,9 @@
     cursor: pointer;
 }
 
-/* Badge base */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 10px;
-    border: 1px solid var(--color-borde);
-    background: rgba(255, 255, 255, .04);
-    font-size: 14px;
-    line-height: 1;
-    user-select: none;
-    cursor: pointer;
-    transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
-
-    border-radius: var(--radio-2);
-}
-
-
-
 .opcion:hover .badge {
     background: rgba(226, 202, 202, 0.07);
 }
-
 
 .opcion input:checked+.badge {
     color: var(--color-texto);
@@ -71,7 +51,6 @@
     outline: 2px solid var(--color-acento);
     outline-offset: 2px;
 }
-
 
 .opcion:active .badge {
     transform: translateY(1px);

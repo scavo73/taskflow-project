@@ -1,6 +1,17 @@
 /* style.css */
+@import url("./css/componentes/header.css");
+@import url("./css/componentes/navegacion.css");
+@import url("./css/componentes/panel-filtros.css");
+@import url("./css/componentes/grid-tareas.css");
+@import url("./css/componentes/tarea.css");
+@import url("./css/componentes/badges.css");
+@import url("./css/componentes/btn.css");
+@import url("./css/componentes/form.css");
+@import url("./css/componentes/progres.css");
+@import url("./css/componentes/tabbar.css");
+
 @import url("./css/base.css");
-@import url("./css/header.css");
 @import url("./css/componentes.css");
 @import url("./css/responsive.css");
 @import url("./css/typography.css");
+@import url("./css/utilities.css");

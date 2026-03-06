@@ -1,5 +1,16 @@
 # taskflow-project
 
+## Descripción de la app
+Esta aplicación es una task app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visualizar, completar y eliminar tareas. El proecto se dividira en partes, cada parte es la continuacion de las tareas marcadas por tutor de practicas.
+
+## Capturas de pantalla
+
+### Vista desktop
+![Vista desktop](images/task-app-desktop.png)
+
+### Vista mobile
+![Vista mobile](images/task-app-mobile.png)
+
 ## taskflow-maqueta
 Maqueta de TaskFlow en `index.html` usando `<header>`, `<main>`, `<aside>` y `<section>`, con variables CSS en `:root` para colores/espaciados y lista de tareas maquetada con Flex + transiciones.
 Incluye Media Queries para que la barra lateral se reubique en móvil y el layout sea responsive.
@@ -41,3 +52,8 @@ La persistencia se gestiona con `localStorage`. Cada vez que se añade, elimina 
 4. **How To Create A Search Bar In JavaScript**  
    YouTube  
    https://www.youtube.com/watch?v=TlP5WIxVirU
+
+#### Pendiente
+- Implementar un filtro de búsqueda que oculte las tareas que no coincidan con el texto introducido.
+- Implementar un sistema de filtrado por categorías y prioridad.
+- Implementar la lógica de la barra de progreso de las tareas.

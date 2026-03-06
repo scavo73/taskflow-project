@@ -4,20 +4,39 @@ const categoriaTarea = document.getElementById('categoriaTarea') || document.get
 const prioridadTarea = document.getElementById('prioridadTarea') || document.getElementById('prioridad-tarea');
 
 const LS_KEY = 'taskflow_tasks';
-let tasks = JSON.parse(localStorage.getItem(LS_KEY)) || [];
+
+const demoTasks = [
+  { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
+  { id: 2, title: 'Estudiar JavaScript', category: 'Estudio', priority: 'Alta', done: true },
+  { id: 3, title: 'Ir al gimnasio', category: 'Salud', priority: 'Baja', done: false }
+];
+
+let tasks = [];
+
+try {
+  tasks = JSON.parse(localStorage.getItem(LS_KEY)) || [];
+} catch {
+  tasks = [];
+}
+
+if (tasks.length === 0) {
+  tasks = [...demoTasks];
+  localStorage.setItem(LS_KEY, JSON.stringify(tasks));
+}
+
 let nextId = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
 
 function saveTasks() {
-    localStorage.setItem(LS_KEY, JSON.stringify(tasks));
+  localStorage.setItem(LS_KEY, JSON.stringify(tasks));
 }
 
 function renderTask(task) {
-    const li = document.createElement('li');
-    li.className = 'lista-tareas__item';
+  const li = document.createElement('li');
+  li.className = 'lista-tareas__item';
 
-    const prioClass = (task.priority || 'Media').toLowerCase(); // alta|media|baja
+  const prioClass = (task.priority || 'Media').toLowerCase(); // alta|media|baja
 
-    li.innerHTML = `
+  li.innerHTML = `
     <div class="tarea-item">
       <input class="tarea-item__toggle" type="checkbox" id="tarea-${task.id}" ${task.done ? 'checked' : ''}/>
       <label class="tarea tarea--content" for="tarea-${task.id}">
@@ -40,77 +59,77 @@ function renderTask(task) {
     </div>
   `;
 
-    li.querySelector('.tarea__titulo').textContent = task.title;
-    li.querySelector('.tarea__categoria').textContent = task.category || 'Personal';
-    li.querySelector('.badge-prioridad').textContent = task.priority || 'Media';
+  li.querySelector('.tarea__titulo').textContent = task.title;
+  li.querySelector('.tarea__categoria').textContent = task.category || 'Personal';
+  li.querySelector('.badge-prioridad').textContent = task.priority || 'Media';
 
-    listContainer.appendChild(li);
+  listContainer.appendChild(li);
 }
 
 function renderAll() {
-    listContainer.innerHTML = '';            // evita duplicados
-    tasks.forEach(renderTask);
-    if (window.lucide) lucide.createIcons();
+  listContainer.innerHTML = '';            // evita duplicados
+  tasks.forEach(renderTask);
+  if (window.lucide) lucide.createIcons();
 }
 
 function addTask() {
-    const taskTitle = tituloTarea.value.trim();
-    if (taskTitle === '') {
-        alert('Por favor, ingresa un título para la tarea.');
-        return;
-    }
+  const taskTitle = tituloTarea.value.trim();
+  if (taskTitle === '') {
+    alert('Por favor, ingresa un título para la tarea.');
+    return;
+  }
 
-    const task = {
-        id: nextId++,
-        title: taskTitle,
-        category: categoriaTarea ? categoriaTarea.value : 'Personal',
-        priority: prioridadTarea ? prioridadTarea.value : 'Media',
-        done: false
-    };
+  const task = {
+    id: nextId++,
+    title: taskTitle,
+    category: categoriaTarea ? categoriaTarea.value : 'Personal',
+    priority: prioridadTarea ? prioridadTarea.value : 'Media',
+    done: false
+  };
 
-    tasks.push(task);
-    saveTasks();
-    renderTask(task);
+  tasks.push(task);
+  saveTasks();
+  renderTask(task);
 
-    tituloTarea.value = '';
-    if (window.lucide) lucide.createIcons();
+  tituloTarea.value = '';
+  if (window.lucide) lucide.createIcons();
 }
 
 /* BORRAR + MARCAR (cualquier tarea, incluso las nuevas) */
 function activarPersistenciaYBorrado() {
-    // borrar
-    listContainer.addEventListener('click', (e) => {
-        const btn = e.target.closest('.tarea__borrar');
-        if (!btn) return;
+  // borrar
+  listContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tarea__borrar');
+    if (!btn) return;
 
-        e.preventDefault();
-        e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-        const li = btn.closest('.lista-tareas__item');
-        const input = li?.querySelector('.tarea-item__toggle');
-        const id = Number(input?.id?.replace('tarea-', ''));
+    const li = btn.closest('.lista-tareas__item');
+    const input = li?.querySelector('.tarea-item__toggle');
+    const id = Number(input?.id?.replace('tarea-', ''));
 
-        tasks = tasks.filter(t => t.id !== id);
-        saveTasks();
-        li?.remove();
-    });
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    li?.remove();
+  });
 
-    // marcar/desmarcar
-    listContainer.addEventListener('change', (e) => {
-        const input = e.target.closest('.tarea-item__toggle');
-        if (!input) return;
+  // marcar/desmarcar
+  listContainer.addEventListener('change', (e) => {
+    const input = e.target.closest('.tarea-item__toggle');
+    if (!input) return;
 
-        const id = Number(input.id.replace('tarea-', ''));
-        const t = tasks.find(x => x.id === id);
-        if (!t) return;
+    const id = Number(input.id.replace('tarea-', ''));
+    const t = tasks.find(x => x.id === id);
+    if (!t) return;
 
-        t.done = input.checked;
-        saveTasks();
-    });
+    t.done = input.checked;
+    saveTasks();
+  });
 }
 
 /* CARGA INICIAL */
 document.addEventListener('DOMContentLoaded', () => {
-    renderAll();                 // pinta lo guardado en LocalStorage
-    activarPersistenciaYBorrado();
+  renderAll();                 // pinta lo guardado en LocalStorage
+  activarPersistenciaYBorrado();
 });

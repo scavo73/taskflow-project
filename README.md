@@ -1,4 +1,4 @@
-# taskflow-project
+# TaskFlow Project
 
 ## Descripción de la app
 Esta aplicación es una task app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visualizar, completar y eliminar tareas. El proecto se dividira en partes, cada parte es la continuacion de las tareas marcadas por tutor de practicas.
@@ -34,6 +34,17 @@ Se utiliza `DOMContentLoaded` para asegurarse de que el DOM esté completamente 
 
 ### 3. Persistencia de datos
 La persistencia se gestiona con `localStorage`. Cada vez que se añade, elimina o actualiza una tarea, el array de tareas se guarda usando `JSON.stringify()`. Al recargar la página, los datos almacenados se recuperan con `JSON.parse()` y la lista se reconstruye automáticamente en pantalla para mantener el estado anterior.
+
+#### Persistencia y datos de ejemplo
+
+Se ha añadido un pequeño array llamado `demoTasks` para cargar tareas de ejemplo solo cuando `localStorage` está vacío. Esto permite probar la interfaz desde el primer momento sin tener que crear tareas manualmente.
+
+Cada vez que se añade, elimina o actualiza una tarea, los datos se guardan de nuevo usando `JSON.stringify()`.
+
+Para limpiar todas las tareas guardadas durante las pruebas, se puede ejecutar en la consola del navegador:
+
+```js
+localStorage.clear();
 
 ## Recursos utilizados
 

@@ -1,7 +1,7 @@
 # TaskFlow Project
 
 ## Descripción de la app
-Esta aplicación es una task app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visualizar, completar y eliminar tareas. El proecto se dividira en partes, cada parte es la continuacion de las tareas marcadas por tutor de practicas.
+ToDo app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visualizar, completar y eliminar tareas. El proecto se dividira en partes, cada parte es la continuacion de las tareas marcadas por tutor de practicas.
 
 ## Capturas de pantalla
 

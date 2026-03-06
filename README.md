@@ -19,3 +19,7 @@ Luego inserta el <li> en la lista, limpia el input y aumenta nextId para la sigu
 2) Se usa DOMContentLoaded para ejecutar borrarTareas() cuando el HTML ya está cargado y listContainer existe.
 La función añade un único click listener a la lista (delegación de eventos) que detecta cualquier botón .tarea__borrar, incluso en tareas creadas dinámicamente.
 Al pulsar, elimina el <li> correspondiente y evita que el click active el checkbox porque el botón está dentro del <label>.
+
+3) La persistencia se hace guardando el array tasks en LocalStorage con JSON.stringify() dentro de saveTasks() cada vez que hay cambios (añadir, borrar o marcar una tarea).
+Al cargar la página (DOMContentLoaded), se leen las tareas guardadas con JSON.parse() y se renderizan con renderAll() para reconstruir la lista.
+Los eventos de borrar (click en .tarea__borrar) y completar (change en .tarea-item__toggle) actualizan tasks y vuelven a guardar automáticamente.

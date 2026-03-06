@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TaskFlow – Maqueta</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header class="contenedor" aria-label="Encabezado principal">
+        <div class="contenedor__encabezado">
+            <div class="contendor__encabezado-izquierdo">
+                <div class="marca">
+                    <span class="marca__logo">TaskFlow</span>
+                </div>
+                <nav class="navegacion" aria-label="Navegación principal">
+                    <a class="navegacion__enlace is-activo" href="#">Inbox</a>
+                    <a class="navegacion__enlace" href="#">Highlights</a>
+                </nav>
+            </div>
+            <div class="contenedor__encabezado-derecho" aria-label="Acciones">
+                <span class="avatar-iniciales" aria-label="Usuario">OJ</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="principal-layout">
+        <aside class="barra-lateral" aria-label="Filtros">
+            <div class="contenedor-vidrio panel">
+                <h2 class="panel__titulo">Filtros</h2>
+                <section class="filtros" aria-label="Filtro por prioridad">
+                    <h3 class="filtros__titulo">Prioridad</h3>
+                    <div class="filtros__grupo" role="radiogroup" aria-label="Prioridad">
+                        <label class="opcion">
+                            <input type="radio" name="prioridad" value="all" checked />
+                            <span class="badge">Todas</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="radio" name="prioridad" value="high" />
+                            <span class="badge">Alta</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="radio" name="prioridad" value="med" />
+                            <span class="badge">Media</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="radio" name="prioridad" value="low" />
+                            <span class="badge">Baja</span>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="filtros" aria-label="Filtro por categoría">
+                    <h3 class="filtros__titulo">Categoría</h3>
+
+                    <div class="filtros__grupo" aria-label="Categoría">
+                        <label class="opcion">
+                            <input type="checkbox" name="cat_trabajo" checked />
+                            <span class="badge">Trabajo</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="checkbox" name="cat_estudio" checked />
+                            <span class="badge">Estudio</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="checkbox" name="cat_personal" checked />
+                            <span class="badge">Personal</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="checkbox" name="cat_salud" checked />
+                            <span class="badge">Salud</span>
+                        </label>
+                    </div>
+                </section>
+            </div>
+        </aside>
+
+        <section class="seccion-tareas contenedor-vidrio" aria-label="Tareas">
+            <div class="cabecera-seccion">
+                <h1 class="cabecera-seccion__titulo">Tareas</h1>
+                <span class="badge">4</span>
+            </div>
+            <div class="progreso" aria-label="Progreso de tareas">
+                <div class="progreso__fila">
+                    <div class="progreso__texto">
+                        <span class="progreso__titulo">Progreso</span>
+                        <span class="progreso__meta">1 de 4 completadas</span>
+                    </div>
+                    <span class="progreso__porcentaje">25%</span>
+                </div>
+                <div class="progreso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                    aria-valuenow="25">
+                    <div class="progreso__relleno" style="width: 25%"></div>
+                </div>
+            </div>
+
+
+            <div class="grid-tareas" aria-label="Tarjetas de tareas">
+                <form class="tarea tarea-nueva" aria-label="Añadir tarea">
+                    <div class="form">
+                        <div class="form-campo">
+                            <label class="form-campo__etiqueta" for="tituloTarea">Título</label>
+                            <input class="form-campo__control" id="tituloTarea" type="text"
+                                placeholder="Ej: Enviar propuesta" />
+                        </div>
+                        <div class="form-fila-formulario">
+                            <div class="form-campo">
+                                <label class="form-campo__etiqueta" for="categoria-tarea">Categoría</label>
+                                <select class="form-campo__control" id="categoria-tarea">
+                                    <option>Trabajo</option>
+                                    <option>Estudio</option>
+                                    <option>Personal</option>
+                                    <option>Salud</option>
+                                </select>
+
+                            </div>
+                            <div class="form-campo">
+                                <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
+                                <select class="form-campo__control" id="prioridad-tarea">
+                                    <option>Alta</option>
+                                    <option selected>Media</option>
+                                    <option>Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="boton" onclick="addTask()" type="button">Añadir</button>
+                    </div>
+                </form>
+
+                <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer">
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-1" />
+                            <label class="tarea tarea--content" for="tarea-1">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Preparar presentación del sprint</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Trabajo</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-2" />
+                            <label class="tarea tarea--content" for="tarea-2">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Enviar propuesta a cliente</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--media">Media</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Proyecto</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-3" />
+                            <label class="tarea tarea--content" for="tarea-3">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Revisar facturas pendientes</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Finanzas</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-4" />
+                            <label class="tarea tarea--content" for="tarea-4">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Planificar calendario de contenido</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Marketing</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-5" />
+                            <label class="tarea tarea--content" for="tarea-5">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Estudiar grid y responsive</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--media">Media</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Estudio</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                    <li class="lista-tareas__item">
+                        <div class="tarea-item">
+                            <input class="tarea-item__toggle" type="checkbox" id="tarea-6" />
+                            <label class="tarea tarea--content" for="tarea-6">
+                                <div class="tarea__up">
+                                    <div class="tarea__check">
+                                        <span class="tarea__cuadro" aria-hidden="true">
+                                            <i data-lucide="check"></i>
+                                        </span>
+                                        <span class="tarea__titulo">Comprar ingredientes para la cena</span>
+                                    </div>
+                                    <span class="badge-prioridad badge-prioridad--baja">Baja</span>
+                                </div>
+                                <div class="tarea__down">
+                                    <div class="tarea__categorias">
+                                        <span class="tarea__categoria">Personal</span>
+                                    </div>
+                                    <button class="badge tarea__borrar" type="button">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </label>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <nav class="tabbar" aria-label="Navegación inferior">
+        <div class="tabbar__contenedor">
+            <a class="navegacion__enlace is-activo" href="#">Inbox</a>
+            <a class="navegacion__enlace" href="#">Highlights</a>
+        </div>
+    </nav>
+</body>
+
+<script src="app.js"></script>
+<script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+    });
+</script>
+
+</html>

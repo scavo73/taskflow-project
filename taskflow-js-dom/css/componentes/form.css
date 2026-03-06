@@ -1,0 +1,50 @@
+.form {
+    display: grid;
+    gap: var(--espacio-3);
+}
+
+.form-campo {
+    display: grid;
+    gap: var(--gap--grid-formulario);
+}
+
+.form-fila-formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-3);
+}
+
+.form-campo__etiqueta {
+    font-size: var(--tamano-fuente-etiqueta);
+    color: var(--color-texto-suave);
+}
+
+.form-campo__control {
+    padding: 10px 12px;
+    border-radius: var(--border-radius-formulario);
+    border: 1px solid var(--color-borde);
+    background: var(--bg-color-form-campo);
+    color: var(--color-texto);
+    outline: none;
+}
+
+select.form-campo__control option {
+    color: #111;
+    background: #fff;
+}
+
+.form-campo__control:focus {
+    border-color: var(--campo-focus-border-color);
+    box-shadow: var(--campo-focus-ring);
+}
+
+select.form-campo__control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+}

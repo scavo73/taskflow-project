@@ -7,7 +7,6 @@
     padding: var(--padding-vidrio-s);
 }
 
-
 .principal-layout {
     padding: var(--padding-principal-vertical-s) var(--padding-principal-horizontal-s);
     display: grid;

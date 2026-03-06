@@ -26,11 +26,13 @@
         grid-template-columns: 1fr;
     }
 
-
+    .form-fila-formulario {
+        grid-template-columns: 1fr !important;
+    }
 
 }
 
-@media (min-width: 768px) {
+@media (min-width: 766px) {
     .contenedor-vidrio {
         padding: var(--padding-vidrio-m);
     }
@@ -56,7 +58,6 @@
 
 @media (max-width: 360px) {
     .principal-layout {
-        grid-template-columns: 1fr;
         gap: 12px;
         padding: 12px;
 
@@ -68,13 +69,6 @@
 
     .tarea__titulo {
         font-size: 18px;
-
-    }
-}
-
-@media (max-width: 768px) {
-    .form-fila-formulario {
-        grid-template-columns: 1fr;
     }
 }
 

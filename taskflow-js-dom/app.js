@@ -3,7 +3,7 @@ const listContainer = document.getElementById('listContainer');
 const categoriaTarea = document.getElementById('categoria-tarea');
 const prioridadTarea = document.getElementById('prioridad-tarea');
 
-const contadorTareas = document.getElementById('contador-tareas');
+const contadorTareas = document.querySelectorAll('.contador-tareas');
 
 
 const LS_KEY = 'taskflow_tasks';
@@ -34,7 +34,25 @@ function saveTasks() {
 }
 
 function updateTaskCounter() {
-  contadorTareas.textContent = tasks.length;
+  const tareas = tasks.length;
+  contadorTareas.forEach(contador => {
+    contador.textContent = tareas;
+  });
+}
+
+function doneTasksCount() {
+  const tareasHechas = tasks.filter(t => t.done).length;
+  const contadorHechos = document.querySelector('.progreso__hechos');
+  if (contadorHechos) {
+    contadorHechos.textContent = tareasHechas;
+  }
+
+  const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
+  const porcentajeBarra = document.querySelector('.progreso__relleno');
+  const porcentajePorcentaje = document.querySelector('.progreso__porcentaje');
+
+  porcentajeBarra.style.width = porcentaje + '%';
+  porcentajePorcentaje.textContent = porcentaje + '%';
 }
 
 function renderTask(task) {
@@ -45,8 +63,8 @@ function renderTask(task) {
 
   li.innerHTML = `
     <div class="tarea-item">
-      <input class="tarea-item__toggle" type="checkbox" id="tarea-${task.id}" ${task.done ? 'checked' : ''}/>
-      <label class="tarea tarea--content" for="tarea-${task.id}">
+      <input class="tarea-item__toggle" type="checkbox" id="${task.id}" ${task.done ? 'checked' : ''}/>
+      <label class="tarea tarea--content" for="${task.id}">
         <div class="tarea__up">
           <div class="tarea__check">
             <span class="tarea__titulo"></span>
@@ -102,7 +120,7 @@ function addTask() {
   if (window.lucide) lucide.createIcons();
 }
 
-/* BORRAR + MARCAR (cualquier tarea, incluso las nuevas) */
+/* BORRAR + MARCAR */
 function activarPersistenciaYBorrado() {
   // borrar
   listContainer.addEventListener('click', (e) => {
@@ -114,24 +132,26 @@ function activarPersistenciaYBorrado() {
 
     const li = btn.closest('.lista-tareas__item');
     const input = li?.querySelector('.tarea-item__toggle');
-    const id = Number(input?.id?.replace('tarea-', ''));
+    const id = Number(input?.id);
 
     tasks = tasks.filter(t => t.id !== id);
     saveTasks();
+    updateTaskCounter();
     li?.remove();
   });
 
   // marcar/desmarcar
-  listContainer.addEventListener('change', (e) => {
-    const input = e.target.closest('.tarea-item__toggle');
-    if (!input) return;
+  listContainer.addEventListener('change', (event) => {
+    const checkbox = event.target.closest('.tarea-item__toggle');
+    if (!checkbox) return;
 
-    const id = Number(input.id.replace('tarea-', ''));
-    const t = tasks.find(x => x.id === id);
-    if (!t) return;
+    const taskId = Number(checkbox.id);
+    const task = tasks.find(task => task.id === taskId);
+    if (!task) return;
 
-    t.done = input.checked;
+    task.done = checkbox.checked;
     saveTasks();
+    doneTasksCount()
     updateTaskCounter();
   });
 }
@@ -141,4 +161,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAll();                 // pinta lo guardado en LocalStorage
   activarPersistenciaYBorrado();
   updateTaskCounter();
+  doneTasksCount()
 });

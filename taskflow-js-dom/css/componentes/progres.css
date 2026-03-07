@@ -23,14 +23,15 @@
     letter-spacing: .2px;
 }
 
-.progreso__meta {
-    opacity: .78;
-    font-size: 13px;
+.progreso__total {}
+
+.progreso__hechos {
+    font-variant-numeric: tabular-nums;
+    color: var(--color-texto-secundario);
 }
 
 .progreso__porcentaje {
-    opacity: .9;
-    font-size: 13px;
+
     font-variant-numeric: tabular-nums;
 }
 

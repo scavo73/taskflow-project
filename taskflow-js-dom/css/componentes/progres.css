@@ -30,11 +30,6 @@
     color: var(--color-texto-secundario);
 }
 
-.progreso__porcentaje {
-
-    font-variant-numeric: tabular-nums;
-}
-
 .progreso__barra {
     height: 10px;
     border-radius: 999px;
@@ -47,4 +42,5 @@
     height: 100%;
     border-radius: 999px;
     background: linear-gradient(90deg, rgba(46, 229, 157, .95), rgba(124, 92, 255, .95));
+    transition: width 0.8s ease-in-out;
 }

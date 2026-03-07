@@ -43,16 +43,12 @@ function updateTaskCounter() {
 function doneTasksCount() {
   const tareasHechas = tasks.filter(task => task.done).length;
   const contadorHechos = document.querySelector('.progreso__hechos');
-  if (contadorHechos) {
-    contadorHechos.textContent = tareasHechas;
-  }
+  contadorHechos.textContent = tareasHechas;
 
   const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
   const porcentajeBarra = document.querySelector('.progreso__relleno');
-  const porcentajePorcentaje = document.querySelector('.progreso__porcentaje');
-
   porcentajeBarra.style.width = porcentaje + '%';
-  porcentajePorcentaje.textContent = porcentaje + '%';
+
 }
 
 function renderTask(task) {

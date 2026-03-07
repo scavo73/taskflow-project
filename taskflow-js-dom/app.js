@@ -41,7 +41,7 @@ function updateTaskCounter() {
 }
 
 function doneTasksCount() {
-  const tareasHechas = tasks.filter(t => t.done).length;
+  const tareasHechas = tasks.filter(task => task.done).length;
   const contadorHechos = document.querySelector('.progreso__hechos');
   if (contadorHechos) {
     contadorHechos.textContent = tareasHechas;
@@ -115,7 +115,7 @@ function addTask() {
   saveTasks();
   renderTask(task);
   updateTaskCounter();
-
+  doneTasksCount()
   tituloTarea.value = '';
   if (window.lucide) lucide.createIcons();
 }
@@ -137,6 +137,7 @@ function activarPersistenciaYBorrado() {
     tasks = tasks.filter(t => t.id !== id);
     saveTasks();
     updateTaskCounter();
+    doneTasksCount()
     li?.remove();
   });
 

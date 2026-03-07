@@ -48,7 +48,22 @@ function doneTasksCount() {
   const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
   const porcentajeBarra = document.querySelector('.progreso__relleno');
   porcentajeBarra.style.width = porcentaje + '%';
+}
 
+function clickCategoria(categories) {
+  const labels = document.querySelectorAll('input[name="cat"]');
+
+  labels.forEach(label => {
+    label.addEventListener('change', () => {
+      return categories = label.value,
+        console.log('Categoría seleccionada:', label.value);
+    });
+  });
+}
+
+function filtrarPorCategoria(tasks, category) {
+  const cat = category.toLowerCase();
+  return tasks.filter(task => (task.category || 'Personal').toLowerCase() === cat);
 }
 
 function renderTask(task) {
@@ -159,4 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
   activarPersistenciaYBorrado();
   updateTaskCounter();
   doneTasksCount()
+
+  clickCategoria();
 });

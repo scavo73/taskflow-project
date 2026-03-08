@@ -33,23 +33,6 @@ function saveTasks() {
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
 }
 
-function updateTaskCounter() {
-  const tareas = tasks.length;
-  contadorTareas.forEach(contador => {
-    contador.textContent = tareas;
-  });
-}
-
-function doneTasksCount() {
-  const tareasHechas = tasks.filter(task => task.done).length;
-  const contadorHechos = document.querySelector('.progreso__hechos');
-  contadorHechos.textContent = tareasHechas;
-
-  const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
-  const porcentajeBarra = document.querySelector('.progreso__relleno');
-  porcentajeBarra.style.width = porcentaje + '%';
-}
-
 
 function renderTask(task) {
   const li = document.createElement('li');
@@ -176,6 +159,26 @@ function filtrarPorCategorias() {
 inputsCategorias.forEach(input => {
   input.addEventListener('change', filtrarPorCategorias);
 });
+
+// Actulizar counter para las tarreas
+function updateTaskCounter() {
+  const tareas = tasks.length;
+  contadorTareas.forEach(contador => {
+    contador.textContent = tareas;
+  });
+}
+
+// Actulizar counter para las tarreas hechas
+function doneTasksCount() {
+  const tareasHechas = tasks.filter(task => task.done).length;
+  const contadorHechos = document.querySelector('.progreso__hechos');
+  contadorHechos.textContent = tareasHechas;
+
+  const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
+  const porcentajeBarra = document.querySelector('.progreso__relleno');
+  porcentajeBarra.style.width = porcentaje + '%';
+}
+
 
 /* CARGA INICIAL */
 document.addEventListener('DOMContentLoaded', () => {

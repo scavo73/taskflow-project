@@ -4,6 +4,7 @@ const categoriaTarea = document.getElementById('categoria-tarea');
 const prioridadTarea = document.getElementById('prioridad-tarea');
 
 const contadorTareas = document.querySelectorAll('.contador-tareas');
+const inputsCategorias = document.querySelectorAll('[name="cat"]');
 
 
 const LS_KEY = 'taskflow_tasks';
@@ -49,33 +50,6 @@ function doneTasksCount() {
   porcentajeBarra.style.width = porcentaje + '%';
 }
 
-function obtenerCategoriasSeleccionadas() {
-  const inputs = document.querySelectorAll('input[name="cat"]:checked');
-  return [...inputs].map(input => input.value.toLowerCase());
-}
-
-function filtrarPorCategorias() {
-  const categoriasSeleccionadas = obtenerCategoriasSeleccionadas();
-
-  const tareasFiltradas = categoriasSeleccionadas.length === 0
-    ? tasks
-    : tasks.filter(task =>
-      categoriasSeleccionadas.includes((task.category || '').toLowerCase())
-    );
-
-  listContainer.innerHTML = '';
-  tareasFiltradas.forEach(renderTask);
-
-  if (window.lucide) lucide.createIcons();
-}
-
-function clickCategoria() {
-  const categoryInputs = document.querySelectorAll('input[name="cat"]');
-
-  categoryInputs.forEach(input => {
-    input.addEventListener('change', filtrarPorCategorias);
-  });
-}
 
 function renderTask(task) {
   const li = document.createElement('li');
@@ -172,12 +146,36 @@ function activarPersistenciaYBorrado() {
     const task = tasks.find(task => task.id === taskId);
     if (!task) return;
 
-    // task.done = checkbox.checked;
+    task.done = checkbox.checked;
+
+    console.log(tasks)
     saveTasks();
     doneTasksCount()
     updateTaskCounter();
   });
 }
+
+// Filtrar por cateogrias
+function filtrarPorCategorias() {
+  const categoriasSeleccionadas = [...inputsCategorias]
+    .filter(input => input.checked)
+    .map(input => input.value.toLowerCase());
+
+  const tareasFiltradas = categoriasSeleccionadas.length
+    ? tasks.filter(task =>
+      categoriasSeleccionadas.includes((task.category || '').toLowerCase())
+    )
+    : tasks;
+
+  listContainer.innerHTML = '';
+  tareasFiltradas.forEach(renderTask);
+
+  if (window.lucide) lucide.createIcons();
+}
+
+inputsCategorias.forEach(input => {
+  input.addEventListener('change', filtrarPorCategorias);
+});
 
 /* CARGA INICIAL */
 document.addEventListener('DOMContentLoaded', () => {
@@ -185,5 +183,5 @@ document.addEventListener('DOMContentLoaded', () => {
   activarPersistenciaYBorrado();
   updateTaskCounter();
   doneTasksCount();
-  clickCategoria();
+  filtrarPorCategorias();
 });

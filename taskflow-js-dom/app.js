@@ -14,8 +14,6 @@ const demoTasks = [
   { id: 3, title: 'Ir al gimnasio', category: 'Salud', priority: 'Baja', done: false }
 ];
 
-let tasks = [];
-
 try {
   tasks = JSON.parse(localStorage.getItem(LS_KEY)) || [];
 } catch {
@@ -23,8 +21,9 @@ try {
 }
 
 if (tasks.length === 0) {
-  tasks = [...demoTasks];
+  tasks = demoTasks;
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
+  console.log("debug mode, cuando se borran todas las tareas se crean demo")
 }
 
 let nextId = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
@@ -50,27 +49,39 @@ function doneTasksCount() {
   porcentajeBarra.style.width = porcentaje + '%';
 }
 
-function clickCategoria(categories) {
-  const labels = document.querySelectorAll('input[name="cat"]');
-
-  labels.forEach(label => {
-    label.addEventListener('change', () => {
-      return categories = label.value,
-        console.log('Categoría seleccionada:', label.value);
-    });
-  });
+function obtenerCategoriasSeleccionadas() {
+  const inputs = document.querySelectorAll('input[name="cat"]:checked');
+  return [...inputs].map(input => input.value.toLowerCase());
 }
 
-function filtrarPorCategoria(tasks, category) {
-  const cat = category.toLowerCase();
-  return tasks.filter(task => (task.category || 'Personal').toLowerCase() === cat);
+function filtrarPorCategorias() {
+  const categoriasSeleccionadas = obtenerCategoriasSeleccionadas();
+
+  const tareasFiltradas = categoriasSeleccionadas.length === 0
+    ? tasks
+    : tasks.filter(task =>
+      categoriasSeleccionadas.includes((task.category || '').toLowerCase())
+    );
+
+  listContainer.innerHTML = '';
+  tareasFiltradas.forEach(renderTask);
+
+  if (window.lucide) lucide.createIcons();
+}
+
+function clickCategoria() {
+  const categoryInputs = document.querySelectorAll('input[name="cat"]');
+
+  categoryInputs.forEach(input => {
+    input.addEventListener('change', filtrarPorCategorias);
+  });
 }
 
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'lista-tareas__item';
 
-  const prioClass = (task.priority || 'Media').toLowerCase(); // alta|media|baja
+  const prioClass = (task.priority || 'media').toLowerCase(); // alta|media|baja
 
   li.innerHTML = `
     <div class="tarea-item">
@@ -95,8 +106,8 @@ function renderTask(task) {
   `;
 
   li.querySelector('.tarea__titulo').textContent = task.title;
-  li.querySelector('.tarea__categoria').textContent = task.category || 'Personal';
-  li.querySelector('.badge-prioridad').textContent = task.priority || 'Media';
+  li.querySelector('.tarea__categoria').textContent = task.category || 'personal';
+  li.querySelector('.badge-prioridad').textContent = task.priority || 'media';
 
   listContainer.prepend(li);
 }
@@ -117,8 +128,8 @@ function addTask() {
   const task = {
     id: nextId++,
     title: taskTitle,
-    category: categoriaTarea ? categoriaTarea.value : 'Personal',
-    priority: prioridadTarea ? prioridadTarea.value : 'Media',
+    category: categoriaTarea ? categoriaTarea.value : 'personal',
+    priority: prioridadTarea ? prioridadTarea.value : 'media',
     done: false
   };
 
@@ -173,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAll();                 // pinta lo guardado en LocalStorage
   activarPersistenciaYBorrado();
   updateTaskCounter();
-  doneTasksCount()
-
+  doneTasksCount();
   clickCategoria();
 });

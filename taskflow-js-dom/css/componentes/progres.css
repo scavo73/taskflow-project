@@ -23,8 +23,6 @@
     letter-spacing: .2px;
 }
 
-.progreso__total {}
-
 .progreso__hechos {
     font-variant-numeric: tabular-nums;
     color: var(--color-texto-secundario);

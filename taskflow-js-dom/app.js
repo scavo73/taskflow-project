@@ -120,7 +120,7 @@ function activarPersistenciaYBorrado() {
     li?.remove();
   });
 
-  // marcar/desmarcar
+  // marcar/desmarcar tarea
   listContainer.addEventListener('change', (event) => {
     const checkbox = event.target.closest('.tarea-item__toggle');
     if (!checkbox) return;
@@ -138,11 +138,15 @@ function activarPersistenciaYBorrado() {
   });
 }
 
-// Filtrar por cateogrias
-function filtrarPorCategorias() {
-  const categoriasSeleccionadas = [...inputsCategorias]
+// Obtener filtro por cateogrias
+function obtenerCategoriasSeleccionadas() {
+  return [...inputsCategorias]
     .filter(input => input.checked)
     .map(input => input.value.toLowerCase());
+}
+// Filtrar por cateogrias
+function filtrarPorCategorias() {
+  const categoriasSeleccionadas = obtenerCategoriasSeleccionadas();
 
   const tareasFiltradas = categoriasSeleccionadas.length
     ? tasks.filter(task =>
@@ -152,6 +156,9 @@ function filtrarPorCategorias() {
 
   listContainer.innerHTML = '';
   tareasFiltradas.forEach(renderTask);
+
+  updateTaskCounter(tareasFiltradas);
+  doneTasksCount(tareasFiltradas);
 
   if (window.lucide) lucide.createIcons();
 }
@@ -178,6 +185,9 @@ function doneTasksCount() {
   const porcentajeBarra = document.querySelector('.progreso__relleno');
   porcentajeBarra.style.width = porcentaje + '%';
 }
+
+
+
 
 
 /* CARGA INICIAL */

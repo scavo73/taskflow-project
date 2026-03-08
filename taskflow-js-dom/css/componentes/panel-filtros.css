@@ -25,11 +25,11 @@
 }
 
 .filtros__elegidos {
-    min-height: 48px;
+    min-height: 30px;
 }
 
 .filtros__elegidos:empty {
-    min-height: 48px;
+    min-height: 30px;
 }
 
 #listaFiltrosElegidos {

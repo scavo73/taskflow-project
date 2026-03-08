@@ -59,6 +59,9 @@
     --padding-bottm-s: 0.5rem;
     --padding-bottm-m: 1rem;
 
+    --progreso--gap-s: 0.6rem;
+    --progreso--gap-m: 1.125rem;
+
     /* Formulario */
     --tamano-fuente-etiqueta: 0.8rem;
     --tamano-fuente-campo: 1.25rem;

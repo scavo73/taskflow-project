@@ -11,8 +11,11 @@ const LS_KEY = 'taskflow_tasks';
 
 const demoTasks = [
   { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
-  { id: 2, title: 'Estudiar JavaScript', category: 'Estudio', priority: 'Alta', done: true },
-  { id: 3, title: 'Ir al gimnasio', category: 'Salud', priority: 'Baja', done: false }
+  { id: 2, title: 'Estudiar JavaScript', category: 'Estudio', priority: 'Alta', done: false },
+  { id: 3, title: 'Ir al gimnasio', category: 'Salud', priority: 'Baja', done: true },
+  { id: 4, title: 'Enviar propuesta al cliente', category: 'Trabajo', priority: 'Alta', done: false },
+  { id: 5, title: 'Preparar apuntes de CSS', category: 'Estudio', priority: 'Media', done: true },
+  { id: 6, title: 'Pedir cita médica', category: 'Salud', priority: 'Alta', done: false }
 ];
 
 try {
@@ -244,4 +247,5 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTaskCounter();
   doneTasksCount();
   filtrarPorCategorias();
+  inicializarDrawerFiltrosMovil();
 });

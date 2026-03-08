@@ -1,6 +1,6 @@
 .progreso {
     display: grid;
-    gap: var(--espacio-3);
+    gap: var(--progreso--gap-s);
     margin-bottom: var(--padding-bottm-s);
 }
 

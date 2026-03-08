@@ -172,7 +172,7 @@ function activarPersistenciaYBorrado() {
     const task = tasks.find(task => task.id === taskId);
     if (!task) return;
 
-    task.done = checkbox.checked;
+    // task.done = checkbox.checked;
     saveTasks();
     doneTasksCount()
     updateTaskCounter();

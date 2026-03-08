@@ -24,6 +24,31 @@
     color: var(--color-texto-suave);
 }
 
+.filtros__elegidos {
+    min-height: 48px;
+}
+
+.filtros__elegidos:empty {
+    min-height: 48px;
+}
+
+#listaFiltrosElegidos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filtro__elegido-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+
 .opcion {
     position: relative;
     display: inline-flex;

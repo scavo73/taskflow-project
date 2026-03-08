@@ -16,6 +16,21 @@
 }
 
 
+.filtro__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    cursor: pointer;
+}
+
+.filtro__badge svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+
 .btn {
     display: flex;
     justify-content: center;

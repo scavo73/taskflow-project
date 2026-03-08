@@ -56,8 +56,8 @@
 
 
     /* Progreso */
-    --padding-bottm-s: 2rem;
-    --padding-bottm-m: 3rem;
+    --padding-bottm-s: 0.5rem;
+    --padding-bottm-m: 1rem;
 
     /* Formulario */
     --tamano-fuente-etiqueta: 0.8rem;

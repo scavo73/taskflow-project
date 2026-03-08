@@ -4,7 +4,7 @@ const categoriaTarea = document.getElementById('categoria-tarea');
 const prioridadTarea = document.getElementById('prioridad-tarea');
 
 const contadorTareas = document.querySelectorAll('.contador-tareas');
-const inputsCategorias = document.querySelectorAll('[name="cat"]');
+const nombresCategorias = document.querySelectorAll('[name="cat"]');
 
 
 const LS_KEY = 'taskflow_tasks';
@@ -131,19 +131,26 @@ function activarPersistenciaYBorrado() {
 
     task.done = checkbox.checked;
 
-    console.log(tasks)
+    // console.log(tasks)
     saveTasks();
     doneTasksCount()
     updateTaskCounter();
   });
 }
 
-// Obtener filtro por cateogrias
+// Obtener multiples filtros 
 function obtenerCategoriasSeleccionadas() {
-  return [...inputsCategorias]
+  return [...nombresCategorias]
     .filter(input => input.checked)
     .map(input => input.value.toLowerCase());
 }
+
+// Obtener filtro por categoria
+function obtenerCategoriaSeleccionada() {
+  const categoriaSeleccionada = [...nombresCategorias].find(categoria => categoria.checked);
+  return categoriaSeleccionada ? categoriaSeleccionada.value : null;
+}
+
 // Filtrar por cateogrias
 function filtrarPorCategorias() {
   const categoriasSeleccionadas = obtenerCategoriasSeleccionadas();
@@ -156,15 +163,58 @@ function filtrarPorCategorias() {
 
   listContainer.innerHTML = '';
   tareasFiltradas.forEach(renderTask);
-
-  updateTaskCounter(tareasFiltradas);
-  doneTasksCount(tareasFiltradas);
-
+  anadirFiltros()
+  obtenerCategoriaSeleccionada()
   if (window.lucide) lucide.createIcons();
 }
 
-inputsCategorias.forEach(input => {
+// Anadir fitros al home
+
+function anadirFiltros() {
+  listaFiltrosElegidos.innerHTML = '';
+
+  const categoriasSeleccionadas = obtenerCategoriasSeleccionadas();
+  if (!categoriasSeleccionadas.length) return;
+
+  categoriasSeleccionadas.forEach(categoria => {
+    const li = document.createElement('li');
+    li.className = 'filtro__elegido-item';
+    li.innerHTML = `
+  <button
+    type="button"
+    class="badge filtro__badge cerrar__filtro"
+    data-categoria="${categoria}"
+    aria-label="Quitar filtro ${categoria}"
+  >
+    <span>${categoria}</span>
+    <i data-lucide="x" aria-hidden="true"></i>
+  </button>
+`;
+
+    listaFiltrosElegidos.append(li);
+  });
+}
+
+nombresCategorias.forEach(input => {
   input.addEventListener('change', filtrarPorCategorias);
+});
+
+
+listaFiltrosElegidos.addEventListener('click', (event) => {
+  const btnCerrar = event.target.closest('.cerrar__filtro');
+  if (!btnCerrar) return;
+
+  const categoria = btnCerrar.dataset.categoria;
+
+  const inputCategoria = [...nombresCategorias].find(input =>
+    input.value.toLowerCase() === categoria.toLowerCase()
+  );
+
+  if (inputCategoria) {
+    inputCategoria.checked = false;
+  }
+
+  filtrarPorCategorias();
 });
 
 // Actulizar counter para las tarreas
@@ -185,9 +235,6 @@ function doneTasksCount() {
   const porcentajeBarra = document.querySelector('.progreso__relleno');
   porcentajeBarra.style.width = porcentaje + '%';
 }
-
-
-
 
 
 /* CARGA INICIAL */

@@ -1,93 +1,93 @@
 // mobile-form.js
 (() => {
-    document.addEventListener('DOMContentLoaded', () => {
-        const mq = window.matchMedia('(max-width: 768px)');
-        const headerRight = document.querySelector('.contenedor__encabezado-derecho');
-        const desktopForm = document.querySelector('.tarea.tarea-nueva');
+  document.addEventListener('DOMContentLoaded', () => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const headerRight = document.querySelector('.contenedor__encabezado-derecho');
+    const desktopForm = document.querySelector('.tarea.tarea-nueva');
 
-        if (!headerRight || !desktopForm) return;
+    if (!headerRight || !desktopForm) return;
 
-        let openBtn = null;
-        let dialog = null;
+    let openBtn = null;
+    let dialog = null;
 
-        function closeDialog() {
-            if (dialog && dialog.open) {
-                dialog.close();
-            }
-        }
+    function closeDialog() {
+      if (dialog && dialog.open) {
+        dialog.close();
+      }
+    }
 
-        function syncModalFieldsFromDefaults() {
-            const api = window.TaskFlowApp;
-            if (!api) return;
+    function syncModalFieldsFromDefaults() {
+      const api = window.TaskFlowApp;
+      if (!api) return;
 
-            const defaults = api.getDesktopDefaults();
+      const defaults = api.getDesktopDefaults();
 
-            const mobileTitle = document.getElementById('mobileTituloTarea');
-            const mobileCategory = document.getElementById('mobileCategoriaTarea');
-            const mobilePriority = document.getElementById('mobilePrioridadTarea');
+      const mobileTitle = document.getElementById('mobileTituloTarea');
+      const mobileCategory = document.getElementById('mobileCategoriaTarea');
+      const mobilePriority = document.getElementById('mobilePrioridadTarea');
 
-            if (!mobileTitle || !mobileCategory || !mobilePriority) return;
+      if (!mobileTitle || !mobileCategory || !mobilePriority) return;
 
-            mobileTitle.value = '';
-            mobileCategory.value = defaults.category || 'Trabajo';
-            mobilePriority.value = defaults.priority || 'Media';
-        }
+      mobileTitle.value = '';
+      mobileCategory.value = defaults.category || 'Trabajo';
+      mobilePriority.value = defaults.priority || 'Media';
+    }
 
-        function submitMobileTask() {
-            const api = window.TaskFlowApp;
-            if (!api) {
-                console.error('TaskFlowApp no está disponible');
-                return;
-            }
+    function submitMobileTask() {
+      const api = window.TaskFlowApp;
+      if (!api) {
+        console.error('TaskFlowApp no está disponible');
+        return;
+      }
 
-            const mobileTitle = document.getElementById('mobileTituloTarea');
-            const mobileCategory = document.getElementById('mobileCategoriaTarea');
-            const mobilePriority = document.getElementById('mobilePrioridadTarea');
+      const mobileTitle = document.getElementById('mobileTituloTarea');
+      const mobileCategory = document.getElementById('mobileCategoriaTarea');
+      const mobilePriority = document.getElementById('mobilePrioridadTarea');
 
-            if (!mobileTitle || !mobileCategory || !mobilePriority) return;
+      if (!mobileTitle || !mobileCategory || !mobilePriority) return;
 
-            const result = api.addTaskFromData({
-                title: mobileTitle.value,
-                category: mobileCategory.value,
-                priority: mobilePriority.value
-            });
+      const result = api.addTaskFromData({
+        title: mobileTitle.value,
+        category: mobileCategory.value,
+        priority: mobilePriority.value
+      });
 
-            if (!result.ok) {
-                mobileTitle.focus();
-                return;
-            }
+      if (!result.ok) {
+        mobileTitle.focus();
+        return;
+      }
 
-            mobileTitle.value = '';
-            closeDialog();
-        }
+      mobileTitle.value = '';
+      closeDialog();
+    }
 
-        function createMobileButton() {
-            if (openBtn) return openBtn;
+    function createMobileButton() {
+      if (openBtn) return openBtn;
 
-            openBtn = document.createElement('button');
-            openBtn.type = 'button';
-            openBtn.className = 'btn btn-nueva-tarea-mobile';
-            openBtn.setAttribute('aria-haspopup', 'dialog');
-            openBtn.setAttribute('aria-controls', 'modalNuevaTareaMobile');
-            openBtn.innerHTML = `<strong>Añadir tarea</strong>`;
+      openBtn = document.createElement('button');
+      openBtn.type = 'button';
+      openBtn.className = 'btn-primario';
+      openBtn.setAttribute('aria-haspopup', 'dialog');
+      openBtn.setAttribute('aria-controls', 'modalNuevaTareaMobile');
+      openBtn.innerHTML = `Añadir tarea`;
 
-            openBtn.addEventListener('click', () => {
-                if (!dialog) return;
-                syncModalFieldsFromDefaults();
-                dialog.showModal();
-            });
+      openBtn.addEventListener('click', () => {
+        if (!dialog) return;
+        syncModalFieldsFromDefaults();
+        dialog.showModal();
+      });
 
-            return openBtn;
-        }
+      return openBtn;
+    }
 
-        function createMobileDialog() {
-            if (dialog) return dialog;
+    function createMobileDialog() {
+      if (dialog) return dialog;
 
-            dialog = document.createElement('dialog');
-            dialog.id = 'modalNuevaTareaMobile';
-            dialog.className = 'modal-tarea-mobile';
+      dialog = document.createElement('dialog');
+      dialog.id = 'modalNuevaTareaMobile';
+      dialog.className = 'modal-tarea-mobile';
 
-            dialog.innerHTML = `
+      dialog.innerHTML = `
         <div class="modal-tarea-mobile__box">
           <div class="modal-tarea-mobile__header">
             <h2 class="modal-tarea-mobile__title">Nueva tarea</h2>
@@ -156,68 +156,68 @@
         </div>
       `;
 
-            document.body.appendChild(dialog);
+      document.body.appendChild(dialog);
 
-            const closeBtn = dialog.querySelector('.modal-tarea-mobile__close');
-            const cancelBtn = dialog.querySelector('.modal-cancelar');
-            const mobileForm = dialog.querySelector('#mobileTaskForm');
-            const modalBox = dialog.querySelector('.modal-tarea-mobile__box');
+      const closeBtn = dialog.querySelector('.modal-tarea-mobile__close');
+      const cancelBtn = dialog.querySelector('.modal-cancelar');
+      const mobileForm = dialog.querySelector('#mobileTaskForm');
+      const modalBox = dialog.querySelector('.modal-tarea-mobile__box');
 
-            closeBtn.addEventListener('click', closeDialog);
-            cancelBtn.addEventListener('click', closeDialog);
+      closeBtn.addEventListener('click', closeDialog);
+      cancelBtn.addEventListener('click', closeDialog);
 
-            dialog.addEventListener('click', (event) => {
-                if (!modalBox.contains(event.target)) {
-                    closeDialog();
-                }
-            });
-
-            mobileForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                submitMobileTask();
-            });
-
-            return dialog;
+      dialog.addEventListener('click', (event) => {
+        if (!modalBox.contains(event.target)) {
+          closeDialog();
         }
+      });
 
-        function enableMobileMode() {
-            createMobileDialog();
+      mobileForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        submitMobileTask();
+      });
 
-            if (!openBtn) {
-                const btn = createMobileButton();
-                headerRight.insertBefore(btn, headerRight.firstChild);
-            }
+      return dialog;
+    }
 
-            desktopForm.style.display = 'none';
-        }
+    function enableMobileMode() {
+      createMobileDialog();
 
-        function enableDesktopMode() {
-            if (openBtn) {
-                openBtn.remove();
-                openBtn = null;
-            }
+      if (!openBtn) {
+        const btn = createMobileButton();
+        headerRight.insertBefore(btn, headerRight.firstChild);
+      }
 
-            if (dialog && dialog.open) {
-                dialog.close();
-            }
+      desktopForm.style.display = 'none';
+    }
 
-            desktopForm.style.display = '';
-        }
+    function enableDesktopMode() {
+      if (openBtn) {
+        openBtn.remove();
+        openBtn = null;
+      }
 
-        function applyMode() {
-            if (mq.matches) {
-                enableMobileMode();
-            } else {
-                enableDesktopMode();
-            }
-        }
+      if (dialog && dialog.open) {
+        dialog.close();
+      }
 
-        applyMode();
+      desktopForm.style.display = '';
+    }
 
-        if (typeof mq.addEventListener === 'function') {
-            mq.addEventListener('change', applyMode);
-        } else {
-            mq.addListener(applyMode);
-        }
-    });
+    function applyMode() {
+      if (mq.matches) {
+        enableMobileMode();
+      } else {
+        enableDesktopMode();
+      }
+    }
+
+    applyMode();
+
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', applyMode);
+    } else {
+      mq.addListener(applyMode);
+    }
+  });
 })();

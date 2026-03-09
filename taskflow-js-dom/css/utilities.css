@@ -2,6 +2,7 @@
     border: 1px solid var(--color-borde);
     border-radius: var(--radio-3);
     padding: var(--padding-vidrio-s);
+    background-color: white;
 }
 
 .principal-layout {

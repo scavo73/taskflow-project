@@ -3,7 +3,7 @@
     padding: 4px 10px;
     border: 1px solid var(--color-borde);
     background: rgba(255, 255, 255, .04);
-    font-size: 16px;
+    font-size: 14px;
     user-select: none;
     cursor: pointer;
     transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
@@ -12,28 +12,49 @@
 
 
 .badge-prioridad {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     flex: var(--badge-prioridad-flex);
-    padding: var(--badge-prioridad-padding);
-    border-radius: var(--badge-prioridad-radius);
     font-size: var(--badge-prioridad-font-size);
-    border: var(--badge-prioridad-border);
-    height: var(--badge-prioridad-height);
     margin-left: var(--badge-prioridad-margin-left);
+    border: 0;
+    background: transparent;
 }
 
-.badge-prioridad--alta {
-    border-color: rgba(255, 92, 122, .65);
-    background: rgba(255, 92, 122, 0.20);
+.badge-prioridad::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex-shrink: 0;
 }
 
-.badge-prioridad--media {
-    border-color: rgba(255, 204, 102, 0.6);
-    background: rgba(255, 204, 102, .20);
+.badge-prioridad--high {
+    color: #ff5c7a;
 }
 
-.badge-prioridad--baja {
-    border-color: rgba(46, 229, 157, .6);
-    background: rgba(46, 229, 157, .30);
+.badge-prioridad--high::before {
+    background: #ff2f5e;
+
+}
+
+.badge-prioridad--med {
+    color: #ffcc66;
+}
+
+.badge-prioridad--med::before {
+    background: #ffb703;
+
+}
+
+.badge-prioridad--low {
+    color: #2ee59d;
+}
+
+.badge-prioridad--low::before {
+    background: #00d68f;
+
 }
 
 .badge-navegacion {

@@ -139,16 +139,8 @@
 
               <div class="modal-tarea-mobile__actions">
                 <button type="button" class="badge modal-cancelar">Cancelar</button>
-
-                <button class="btn" type="submit">
-                  <strong>Añadir tarea</strong>
-                  <div id="container-stars">
-                    <div id="stars"></div>
-                  </div>
-                  <div id="glow">
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                  </div>
+                <button class=" btn btn-primario" type="submit">
+                  Añadir tarea
                 </button>
               </div>
             </div>

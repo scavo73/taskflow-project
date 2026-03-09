@@ -29,6 +29,10 @@
     flex-shrink: 0;
 }
 
+.btn {
+    width: 100%;
+}
+
 
 .btn-primario {
     padding: 10px;

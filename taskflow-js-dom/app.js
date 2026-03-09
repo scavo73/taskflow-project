@@ -5,6 +5,7 @@
   const categoriaTarea = document.getElementById('categoria-tarea');
   const prioridadTarea = document.getElementById('prioridad-tarea');
   const listaFiltrosElegidos = document.getElementById('listaFiltrosElegidos');
+  const buscarTareas = document.getElementById('buscarTareas');
 
   const contadorTareas = document.querySelectorAll('.contador-tareas');
   const nombresCategorias = document.querySelectorAll('input[name="cat"]');
@@ -13,6 +14,7 @@
   const LS_KEY = 'taskflow_tasks';
   const LS_FILTERS_KEY = 'taskflow_selected_categories';
   const LS_PRIORITY_KEY = 'taskflow_selected_priority';
+  const LS_SEARCH_KEY = 'taskflow_search_text';
 
   const demoTasks = [
     { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
@@ -28,6 +30,14 @@
 
   function syncGlobalTasks() {
     window.tasks = tasks;
+  }
+
+  function normalizeText(value) {
+    return String(value || '')
+      .toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 
   function normalizePriority(value) {
@@ -80,6 +90,10 @@
     return document.querySelector('input[name="prioridad"]:checked')?.value || 'all';
   }
 
+  function getSearchTerm() {
+    return buscarTareas ? buscarTareas.value.trim() : '';
+  }
+
   function saveSelectedFilters() {
     localStorage.setItem(LS_FILTERS_KEY, JSON.stringify(getSelectedCategories()));
   }
@@ -110,13 +124,26 @@
     });
   }
 
+  function saveSearchTerm() {
+    if (!buscarTareas) return;
+    localStorage.setItem(LS_SEARCH_KEY, buscarTareas.value.trim());
+  }
+
+  function loadSearchTerm() {
+    if (!buscarTareas) return;
+    buscarTareas.value = localStorage.getItem(LS_SEARCH_KEY) || '';
+  }
+
   function getFilteredTasks() {
     const categoriasSeleccionadas = getSelectedCategories();
     const prioridadSeleccionada = getSelectedPriority();
+    const textoBusqueda = normalizeText(getSearchTerm());
 
     return tasks.filter(task => {
       const taskCategory = String(task.category || '').toLowerCase().trim();
       const taskPriority = normalizePriority(task.priority);
+
+      const searchableText = normalizeText(`${task.title} ${task.category}`);
 
       const matchesCategory =
         categoriasSeleccionadas.length === 0 ||
@@ -126,7 +153,11 @@
         prioridadSeleccionada === 'all' ||
         taskPriority === prioridadSeleccionada;
 
-      return matchesCategory && matchesPriority;
+      const matchesSearch =
+        textoBusqueda === '' ||
+        searchableText.includes(textoBusqueda);
+
+      return matchesCategory && matchesPriority && matchesSearch;
     });
   }
 
@@ -186,6 +217,7 @@
 
     const categoriasSeleccionadas = getSelectedCategories();
     const prioridadSeleccionada = getSelectedPriority();
+    const textoBusqueda = getSearchTerm();
 
     if (prioridadSeleccionada !== 'all') {
       const li = document.createElement('li');
@@ -198,7 +230,7 @@
           data-prioridad="${prioridadSeleccionada}"
           aria-label="Quitar filtro de prioridad ${prioridadSeleccionada}"
         >
-          <span>Prioridad: ${getPriorityLabel(prioridadSeleccionada)}</span>
+          <span>${getPriorityLabel(prioridadSeleccionada)}</span>
           <i data-lucide="x" aria-hidden="true"></i>
         </button>
       `;
@@ -224,6 +256,25 @@
 
       listaFiltrosElegidos.appendChild(li);
     });
+
+    if (textoBusqueda) {
+      const li = document.createElement('li');
+      li.className = 'filtro__elegido-item';
+
+      li.innerHTML = `
+        <button
+          type="button"
+          class="badge filtro__badge cerrar__filtro"
+          data-busqueda="true"
+          aria-label="Quitar búsqueda ${textoBusqueda}"
+        >
+          <span>Búsqueda: ${textoBusqueda}</span>
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      `;
+
+      listaFiltrosElegidos.appendChild(li);
+    }
   }
 
   function renderTasksList() {
@@ -374,6 +425,20 @@
     });
   }
 
+  function bindSearchEvents() {
+    if (!buscarTareas) return;
+
+    buscarTareas.addEventListener('input', () => {
+      saveSearchTerm();
+      refreshUI();
+    });
+
+    buscarTareas.addEventListener('search', () => {
+      saveSearchTerm();
+      refreshUI();
+    });
+  }
+
   function bindFilterEvents() {
     nombresCategorias.forEach(input => {
       input.addEventListener('change', () => {
@@ -397,6 +462,7 @@
 
       const categoria = btnCerrar.dataset.categoria;
       const prioridad = btnCerrar.dataset.prioridad;
+      const busqueda = btnCerrar.dataset.busqueda;
 
       if (categoria) {
         const inputCategoria = [...nombresCategorias].find(input =>
@@ -419,6 +485,11 @@
         saveSelectedPriority();
       }
 
+      if (busqueda && buscarTareas) {
+        buscarTareas.value = '';
+        saveSearchTerm();
+      }
+
       refreshUI();
     });
   }
@@ -427,8 +498,10 @@
     loadTasks();
     loadSelectedFilters();
     loadSelectedPriority();
+    loadSearchTerm();
     bindDesktopForm();
     bindListEvents();
+    bindSearchEvents();
     bindFilterEvents();
     refreshUI();
 
@@ -445,10 +518,13 @@
         priority: prioridadTarea ? prioridadTarea.value : 'Media'
       };
     },
-    getFilteredCountByState({ prioridad = 'all', categorias = [] } = {}) {
+    getFilteredCountByState({ prioridad = 'all', categorias = [], busqueda = '' } = {}) {
+      const textoBusqueda = normalizeText(busqueda);
+
       return tasks.filter(task => {
         const taskPriority = normalizePriority(task.priority);
         const taskCategory = String(task.category || '').toLowerCase().trim();
+        const searchableText = normalizeText(`${task.title} ${task.category}`);
 
         const matchesPriority =
           prioridad === 'all' || taskPriority === prioridad;
@@ -456,7 +532,10 @@
         const matchesCategory =
           categorias.length === 0 || categorias.includes(taskCategory);
 
-        return matchesPriority && matchesCategory;
+        const matchesSearch =
+          textoBusqueda === '' || searchableText.includes(textoBusqueda);
+
+        return matchesPriority && matchesCategory && matchesSearch;
       }).length;
     },
     refreshUI

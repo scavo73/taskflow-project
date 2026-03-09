@@ -2,10 +2,9 @@
 function inicializarDrawerFiltrosMovil() {
     const mediaQuery = window.matchMedia('(max-width: 768px)');
     const aside = document.querySelector('.barra-lateral');
-    const cabeceraSeccion = document.querySelector('.cabecera-seccion');
-    const contadorCabecera = cabeceraSeccion?.querySelector('.contador-tareas');
+    const accionesProgreso = document.querySelector('.progreso__acciones');
 
-    if (!aside || !cabeceraSeccion) return;
+    if (!aside || !accionesProgreso) return;
 
     const panel = aside.querySelector('.panel');
     const titulo = aside.querySelector('.panel__titulo');
@@ -20,19 +19,15 @@ function inicializarDrawerFiltrosMovil() {
 
     const btnFiltros = document.createElement('button');
     btnFiltros.type = 'button';
-    btnFiltros.className = 'badge filtros-mobile-btn';
+    btnFiltros.className = 'filtros-mobile-btn';
     btnFiltros.setAttribute('aria-controls', aside.id);
     btnFiltros.setAttribute('aria-expanded', 'false');
     btnFiltros.setAttribute('aria-label', 'Abrir filtros');
     btnFiltros.innerHTML = `
-    <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
-  `;
+        <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+    `;
 
-    if (contadorCabecera) {
-        contadorCabecera.insertAdjacentElement('afterend', btnFiltros);
-    } else {
-        cabeceraSeccion.appendChild(btnFiltros);
-    }
+    accionesProgreso.appendChild(btnFiltros);
 
     const backdrop = document.createElement('div');
     backdrop.className = 'filtros-mobile-backdrop';
@@ -66,7 +61,7 @@ function inicializarDrawerFiltrosMovil() {
 
     const btnAplicar = document.createElement('button');
     btnAplicar.type = 'button';
-    btnAplicar.className = 'filtros-mobile-apply';
+    btnAplicar.className = ' btn-primario  filtros-mobile-apply';
     btnAplicar.textContent = 'Ver resultados';
 
     footer.append(btnCancelar, btnAplicar);

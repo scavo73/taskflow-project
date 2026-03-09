@@ -2,6 +2,11 @@
     display: grid;
     gap: var(--progreso--gap-s);
     margin-bottom: var(--padding-bottm-s);
+
+    position: sticky;
+    top: 3.75rem;
+    z-index: 30;
+    background: white;
 }
 
 .progreso__fila {

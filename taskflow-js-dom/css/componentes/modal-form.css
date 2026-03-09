@@ -8,6 +8,7 @@
     background: transparent;
     width: 100%;
     max-width: 100%;
+    max-height: 100%;
 }
 
 .modal-tarea-mobile::backdrop {
@@ -31,6 +32,7 @@
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 16px;
+    flex: 0 0 auto;
 }
 
 .modal-tarea-mobile__title {
@@ -46,6 +48,11 @@
     width: 40px;
     height: 40px;
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+.modal-tarea-mobile__form {
+    display: block;
 }
 
 .modal-tarea-mobile__actions {
@@ -66,12 +73,64 @@
         display: none !important;
     }
 
+    .modal-tarea-mobile {
+        width: 100vw;
+        height: 100svh;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        background: transparent;
+    }
+
     .modal-tarea-mobile__box {
-        width: calc(100vw - 24px);
-        margin-top: 5vh;
+        width: 100%;
+        height: 90svh;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .modal-tarea-mobile__form {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-tarea-mobile__form .form {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        overflow-y: auto;
+        padding-right: 2px;
     }
 
     .modal-tarea-mobile__box .form-fila-formulario {
         grid-template-columns: 1fr;
+    }
+
+    .modal-tarea-mobile__actions {
+        flex: 0 0 auto;
+        justify-content: stretch;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--color-borde);
+        background: var(--color-superficie, #ffffff);
+        position: sticky;
+        bottom: 0;
+    }
+
+    .modal-tarea-mobile__actions>* {
+        flex: 1 1 0;
+    }
+
+    .modal-tarea-mobile__close {
+        width: 42px;
+        height: 42px;
     }
 }

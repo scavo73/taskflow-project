@@ -41,14 +41,13 @@
     }
 
     .progreso {
+        padding-top: 1rem;
         margin-bottom: var(--padding-bottm-m);
         gap: var(progreso--gap-m);
     }
 
 
-    .gm {
-        background-color: rgba(255, 255, 255, 0);
-    }
+
 }
 
 @media (max-width: 768px) {
@@ -71,6 +70,7 @@
     .tarea__titulo {
         font-size: 18px;
     }
+
 }
 
 @media (max-width: 768px) {
@@ -99,5 +99,25 @@
     .tarea-nueva--en-header .form-fila-formulario {
         grid-template-columns: 1fr;
     }
+
+    .busqueda-tareas {
+        padding: 0.4rem 0.3rem;
+    }
+
+    .btn-primario {
+        padding: 7px;
+    }
+
+    .progreso {
+        background: white;
+        padding-top: 2rem;
+        padding-bottom: 1rem;
+        top: 3.9rem;
+    }
+
+    body {
+        background: var(--color-fondo);
+    }
+
 
 }

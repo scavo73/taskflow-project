@@ -1,4 +1,3 @@
-// mobile-form.js
 (() => {
   document.addEventListener('DOMContentLoaded', () => {
     const mq = window.matchMedia('(max-width: 768px)');
@@ -66,10 +65,10 @@
 
       openBtn = document.createElement('button');
       openBtn.type = 'button';
-      openBtn.className = 'btn-primario';
+      openBtn.className = 'btn-primario btn-nueva-tarea-mobile';
       openBtn.setAttribute('aria-haspopup', 'dialog');
       openBtn.setAttribute('aria-controls', 'modalNuevaTareaMobile');
-      openBtn.innerHTML = `Añadir tarea`;
+      openBtn.textContent = 'Añadir tarea';
 
       openBtn.addEventListener('click', () => {
         if (!dialog) return;
@@ -106,6 +105,7 @@
             aria-label="Añadir tarea en móvil"
           >
             <div class="form">
+            <div>
               <div class="form-campo">
                 <label class="form-campo__etiqueta" for="mobileTituloTarea">Título</label>
                 <input
@@ -136,10 +136,11 @@
                   </select>
                 </div>
               </div>
+              </div>
 
               <div class="modal-tarea-mobile__actions">
                 <button type="button" class="badge modal-cancelar">Cancelar</button>
-                <button class=" btn btn-primario" type="submit">
+                <button class="btn-primario" type="submit">
                   Añadir tarea
                 </button>
               </div>

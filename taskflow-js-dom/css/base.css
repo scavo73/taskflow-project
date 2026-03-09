@@ -40,11 +40,11 @@
     --padding-vidrio-m: 1.2rem;
 
     /* Principal layout */
-    --padding-principal-vertical-s: clamp(0.75rem, 1vw, 1rem);
-    --padding-principal-vertical-m: clamp(1.25rem, 2.5vw, 2.25rem);
+    --padding-principal-vertical-s: 1rem;
+    --padding-principal-vertical-m: 2rem;
 
-    --padding-principal-horizontal-s: clamp(0.75rem, 1.5vw, 1rem);
-    --padding-principal-horizontal-m: clamp(1.25rem, 2.5vw, 2.25rem);
+    --padding-principal-horizontal-s: 1rem;
+    --padding-principal-horizontal-m: 2rem;
     --grid-gap-layout: 2rem;
 
     /* Progreso */
@@ -101,7 +101,6 @@ body {
     margin: 0;
     font-family: var(--fuente-principal);
     background:
-        radial-gradient(900px 500px at 10% 0%, rgba(122, 162, 255, 0.753), transparent 55%),
         var(--color-fondo);
 
     background-repeat: no-repeat;

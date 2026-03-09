@@ -217,7 +217,7 @@
 
     const categoriasSeleccionadas = getSelectedCategories();
     const prioridadSeleccionada = getSelectedPriority();
-    const textoBusqueda = getSearchTerm();
+    //const textoBusqueda = getSearchTerm();
 
     if (prioridadSeleccionada !== 'all') {
       const li = document.createElement('li');
@@ -257,24 +257,24 @@
       listaFiltrosElegidos.appendChild(li);
     });
 
-    if (textoBusqueda) {
-      const li = document.createElement('li');
-      li.className = 'filtro__elegido-item';
+    // if (textoBusqueda) {
+    //   const li = document.createElement('li');
+    //   li.className = 'filtro__elegido-item';
 
-      li.innerHTML = `
-        <button
-          type="button"
-          class="badge filtro__badge cerrar__filtro"
-          data-busqueda="true"
-          aria-label="Quitar búsqueda ${textoBusqueda}"
-        >
-          <span>Búsqueda: ${textoBusqueda}</span>
-          <i data-lucide="x" aria-hidden="true"></i>
-        </button>
-      `;
+    //   li.innerHTML = `
+    //     <button
+    //       type="button"
+    //       class="badge filtro__badge cerrar__filtro"
+    //       data-busqueda="true"
+    //       aria-label="Quitar búsqueda ${textoBusqueda}"
+    //     >
+    //       <span>Búsqueda: ${textoBusqueda}</span>
+    //       <i data-lucide="x" aria-hidden="true"></i>
+    //     </button>
+    //   `;
 
-      listaFiltrosElegidos.appendChild(li);
-    }
+    //   listaFiltrosElegidos.appendChild(li);
+    // }
   }
 
   function renderTasksList() {

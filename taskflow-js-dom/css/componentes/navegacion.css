@@ -27,9 +27,7 @@
 }
 
 .navegacion__enlace.is-activo {
-    color: var(--color-texto);
-    border-color: var(--color-acento);
-    background: var(--color-acento);
+    color: rgb(0, 64, 240);
 }
 
 .zona-usuario {

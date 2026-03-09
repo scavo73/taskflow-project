@@ -156,8 +156,16 @@
 
     <nav class="tabbar" aria-label="Navegación inferior">
         <div class="tabbar__contenedor">
-            <a class="navegacion__enlace is-activo" href="#">Inbox</a>
-            <a class="navegacion__enlace" href="#">Highlights</a>
+            <a class="tabbar__enlace is-activo" href="#" aria-current="page">
+                <div class="navegacion-seccion">
+                    <span class="navegacion-seccion__titulo">Tareas</span>
+                    <span class="badge-navegacion contador-tareas"></span>
+                </div>
+            </a>
+
+            <a class="tabbar__enlace" href="#">
+                <span class="navegacion-seccion__titulo">Ajustes</span>
+            </a>
         </div>
     </nav>
 

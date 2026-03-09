@@ -1,6 +1,6 @@
 /* Badges de prioridad */
 .badge {
-    padding: 7px 10px;
+    padding: 4px 10px;
     border: 1px solid var(--color-borde);
     background: rgba(255, 255, 255, .04);
     font-size: 16px;

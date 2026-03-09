@@ -1,26 +1,102 @@
 .tabbar {
     display: none;
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 20;
-    min-height: var(--alto-tabbar);
-    border-top: 1px solid var(--color-acento);
-    background: rgba(11, 13, 18, .78);
-    backdrop-filter: blur(10px);
 }
 
-.tabbar__contenedor {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    gap: var(--espacio-2);
-    padding: 10px var(--espacio-4);
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-}
+@media (max-width: 768px) {
+    .tabbar {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+        padding: 0.45rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid var(--color-borde);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+    }
 
-.tabbar .navegacion__enlace {
-    display: block;
-    text-align: center;
+    .tabbar__contenedor {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-items: center;
+
+        a {
+            color: gray;
+        }
+    }
+
+    .tabbar__enlace {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.28rem;
+        min-height: 56px;
+        padding: 0.35rem 0.25rem;
+        border-radius: 12px;
+        color: var(--color-texto-suave);
+        text-decoration: none;
+        transition:
+            color 0.2s ease,
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+    .tabbar__enlace:hover {
+        background: rgba(0, 0, 0, 0.04);
+    }
+
+    .tabbar__enlace:active {
+        transform: translateY(1px);
+    }
+
+    .tabbar__enlace.is-activo {
+        color: #0040f0;
+    }
+
+    .tabbar__enlace .lucide {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.2;
+        flex-shrink: 0;
+    }
+
+    .tabbar__texto {
+        font-size: 0.72rem;
+        line-height: 1;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .tabbar__icono-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tabbar__icono-wrap .badge-navegacion {
+        position: absolute;
+        top: -7px;
+        right: -12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        min-height: 18px;
+        padding: 0 0.3rem;
+        border-radius: 999px;
+        background: var(--color-acento);
+        color: #fff;
+        font-size: 0.64rem;
+        line-height: 1;
+    }
+
+    .principal-layout {
+        padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    }
 }

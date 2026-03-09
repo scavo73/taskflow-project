@@ -1,0 +1,77 @@
+.btn-nueva-tarea-mobile {
+    display: none;
+}
+
+.modal-tarea-mobile {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    width: 100%;
+    max-width: 100%;
+}
+
+.modal-tarea-mobile::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+}
+
+.modal-tarea-mobile__box {
+    width: min(92vw, 560px);
+    margin: 8vh auto 0;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-2);
+    background: var(--color-superficie, #111827);
+    box-shadow: var(--sombra-suave);
+    padding: var(--espacio-4);
+}
+
+.modal-tarea-mobile__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.modal-tarea-mobile__title {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.modal-tarea-mobile__close {
+    border: 1px solid var(--color-borde);
+    background: transparent;
+    color: inherit;
+    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.modal-tarea-mobile__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    .btn-nueva-tarea-mobile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .grid-tareas>.tarea.tarea-nueva {
+        display: none !important;
+    }
+
+    .modal-tarea-mobile__box {
+        width: calc(100vw - 24px);
+        margin-top: 5vh;
+    }
+
+    .modal-tarea-mobile__box .form-fila-formulario {
+        grid-template-columns: 1fr;
+    }
+}

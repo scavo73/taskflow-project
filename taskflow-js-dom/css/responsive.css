@@ -73,3 +73,25 @@
         margin-bottom: calc(var(--alto-tabbar) + 62px + env(safe-area-inset-bottom));
     }
 }
+
+@media (max-width: 768px) {
+    .contenedor__encabezado-derecho {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .tarea-nueva--en-header {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .tarea-nueva--en-header .form {
+        width: 100%;
+    }
+
+    .tarea-nueva--en-header .form-fila-formulario {
+        grid-template-columns: 1fr;
+    }
+}

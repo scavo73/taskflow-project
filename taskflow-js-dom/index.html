@@ -16,11 +16,17 @@
                     <span class="marca__logo">TaskFlow</span>
                 </div>
                 <nav class="navegacion" aria-label="Navegación principal">
-                    <a class="navegacion__enlace is-activo" href="#">Inbox</a>
-                    <a class="navegacion__enlace" href="#">Highlights</a>
+                    <a class="navegacion__enlace is-activo" href="#">
+                        <div class="navegacion-seccion">
+                            <span class="navegacion-seccion__titulo">Tareas</span>
+                            <span class="badge-navegacion contador-tareas"></span>
+                        </div>
+                    </a>
+                    <a class="navegacion__enlace" href="#"><span class="navegacion-seccion__titulo">Ajustes</span></a>
                 </nav>
             </div>
-            <div class="contenedor__encabezado-derecho" aria-label="Acciones">
+
+            <div class=" contenedor__encabezado-derecho" aria-label="Acciones">
                 <span class="avatar-iniciales" aria-label="Usuario">OJ</span>
             </div>
         </div>
@@ -28,29 +34,31 @@
 
     <main class="principal-layout">
         <aside class="barra-lateral" aria-label="Filtros">
-            <div class="contenedor-vidrio panel">
+            <div class="gm panel">
                 <h2 class="panel__titulo">Filtros</h2>
+
                 <section class="filtros" aria-label="Filtro por prioridad">
                     <h3 class="filtros__titulo">Prioridad</h3>
+
                     <div class="filtros__grupo" role="radiogroup" aria-label="Prioridad">
                         <label class="opcion">
                             <input type="radio" name="prioridad" value="all" checked />
-                            <span class="badge">Todas</span>
+                            <span class="btn-filtro">Todas</span>
                         </label>
 
                         <label class="opcion">
                             <input type="radio" name="prioridad" value="high" />
-                            <span class="badge">Alta</span>
+                            <span class="btn-filtro">Alta</span>
                         </label>
 
                         <label class="opcion">
                             <input type="radio" name="prioridad" value="med" />
-                            <span class="badge">Media</span>
+                            <span class="btn-filtro">Media</span>
                         </label>
 
                         <label class="opcion">
                             <input type="radio" name="prioridad" value="low" />
-                            <span class="badge">Baja</span>
+                            <span class="btn-filtro">Baja</span>
                         </label>
                     </div>
                 </section>
@@ -61,33 +69,29 @@
                     <div class="filtros__grupo" aria-label="Categoría">
                         <label class="opcion">
                             <input type="checkbox" name="cat" value="trabajo" />
-                            <span class="badge">Trabajo</span>
+                            <span class="btn-filtro">Trabajo</span>
                         </label>
 
                         <label class="opcion">
                             <input type="checkbox" name="cat" value="estudio" />
-                            <span class="badge">Estudio</span>
+                            <span class="btn-filtro">Estudio</span>
                         </label>
 
                         <label class="opcion">
                             <input type="checkbox" name="cat" value="personal" />
-                            <span class="badge">Personal</span>
+                            <span class="btn-filtro">Personal</span>
                         </label>
 
                         <label class="opcion">
                             <input type="checkbox" name="cat" value="salud" />
-                            <span class="badge">Salud</span>
+                            <span class="btn-filtro">Salud</span>
                         </label>
                     </div>
                 </section>
             </div>
         </aside>
 
-        <section class="seccion-tareas contenedor-vidrio" aria-label="Tareas">
-            <div class="cabecera-seccion">
-                <h1 class="cabecera-seccion__titulo">Tareas</h1>
-                <span class="badge contador-tareas"></span>
-            </div>
+        <section class="seccion-tareas" aria-label="Tareas">
             <div class="progreso" aria-label="Progreso de tareas">
                 <div class="progreso__fila">
                     <div class="progreso__texto">
@@ -98,20 +102,16 @@
                         completadas
                     </div>
                 </div>
+
                 <div class="progreso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100"
                     aria-valuenow="25">
                     <div class="progreso__relleno" style="width: 0%"></div>
                 </div>
 
                 <div class="filtros__elegidos">
-                    <ul id="listaFiltrosElegidos">
-                        <li class="filtro__elegido-item">
-                        </li>
-                    </ul>
+                    <ul id="listaFiltrosElegidos"></ul>
                 </div>
             </div>
-
-
 
             <div class="grid-tareas" aria-label="Tarjetas de tareas">
                 <form class="tarea tarea-nueva" aria-label="Añadir tarea">
@@ -121,6 +121,7 @@
                             <input class="form-campo__control" id="tituloTarea" type="text"
                                 placeholder="Ej: Enviar propuesta" />
                         </div>
+
                         <div class="form-fila-formulario">
                             <div class="form-campo">
                                 <label class="form-campo__etiqueta" for="categoria-tarea">Categoría</label>
@@ -130,8 +131,8 @@
                                     <option>Personal</option>
                                     <option>Salud</option>
                                 </select>
-
                             </div>
+
                             <div class="form-campo">
                                 <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
                                 <select class="form-campo__control" id="prioridad-tarea">
@@ -141,38 +142,14 @@
                                 </select>
                             </div>
                         </div>
-                        <button class="btn" onclick="addTask()" type="button">
-                            Anadir tarea
+
+                        <button class="btn-primario" type="submit">
+                            Añadir tarea
                         </button>
                     </div>
                 </form>
 
-                <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer">
-                    <!-- <li class="lista-tareas__item">
-                        <div class="tarea-item">
-                            <input class="tarea-item__toggle" type="checkbox" id="1" />
-                            <label class="tarea tarea--content" for="1">
-                                <div class="tarea__up">
-                                    <div class="tarea__check">
-                                        <span class="tarea__cuadro" aria-hidden="true">
-                                            <i data-lucide="check"></i>
-                                        </span>
-                                        <span class="tarea__titulo">Preparar presentación del sprint</span>
-                                    </div>
-                                    <span class="badge-prioridad badge-prioridad--alta">Alta</span>
-                                </div>
-                                <div class="tarea__down">
-                                    <div class="tarea__categorias">
-                                        <span class="tarea__categoria">Trabajo</span>
-                                    </div>
-                                    <button class="badge tarea__borrar" type="button">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </label>
-                        </div>
-                    </li> -->
-                </ul>
+                <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer"></ul>
             </div>
         </section>
     </main>
@@ -183,17 +160,19 @@
             <a class="navegacion__enlace" href="#">Highlights</a>
         </div>
     </nav>
+
+    <script src="filtrosDrawer.js"></script>
+    <script src="app.js"></script>
+    <script src="mobile-task-modal.js"></script>
+
+    <script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
 </body>
-
-<script src="filtrosDrawer.js"></script>
-<script src="app.js"></script>
-<script src="mobile-task-modal.js"></script>
-
-<script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
-<script defer>
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
-    });
-</script>
 
 </html>

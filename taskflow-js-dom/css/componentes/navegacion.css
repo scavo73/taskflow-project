@@ -1,15 +1,29 @@
 /* Navegación + acciones */
 .navegacion {
     display: flex;
-    gap: var(--espacio-2);
+    gap: 1rem;
     flex-wrap: wrap;
 }
 
 .navegacion__enlace {
+    display: inline-flex;
+    align-items: center;
     padding: 8px 10px;
     border-radius: var(--radio-2);
     color: var(--color-texto-suave);
-    border: 1px solid transparent;
+    text-decoration: none;
+    border: 1px solid var(--color-borde);
+}
+
+.navegacion-seccion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.navegacion-seccion__titulo {
+    line-height: 1;
 }
 
 .navegacion__enlace.is-activo {
@@ -25,7 +39,9 @@
     flex-wrap: wrap;
 }
 
-
+a span {
+    font-size: 16px;
+}
 
 .avatar-iniciales {
     width: 34px;

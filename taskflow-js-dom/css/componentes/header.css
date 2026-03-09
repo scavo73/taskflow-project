@@ -4,7 +4,7 @@
     top: 0;
     z-index: 10;
     border-bottom: 1px solid var(--color-borde);
-    background: rgba(11, 13, 18, .72);
+    background: var(--color-header);
     backdrop-filter: blur(10px);
 }
 
@@ -31,8 +31,9 @@
 
 .cabecera-seccion {
     display: flex;
-    gap: var(--espacio-3);
-    margin-bottom: var(--espacio-3);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
 }
 
 .cabecera-seccion__titulo {

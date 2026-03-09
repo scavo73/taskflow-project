@@ -1,6 +1,6 @@
 .form {
     display: grid;
-    gap: var(--espacio-3);
+    gap: var(--gap--grid-formulario);
 }
 
 .form-campo {
@@ -11,11 +11,11 @@
 .form-fila-formulario {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--espacio-3);
+    gap: 1rem;
 }
 
 .form-campo__etiqueta {
-    font-size: var(--tamano-fuente-etiqueta);
+    font-size: 14px;
     color: var(--color-texto-suave);
 }
 

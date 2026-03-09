@@ -31,11 +31,11 @@
 }
 
 
-.btn {
-    padding: 15px 20px;
+.btn-primario {
+    padding: 10px 0px;
     border: none;
     outline: none;
-    background-color: #0c274122;
+    background-color: #0082ff;
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #eee;
     border-radius: 7px;
@@ -44,6 +44,39 @@
     transition: all 0.25s ease-out;
 }
 
-.btn:hover {
-    background-color: #002d3f;
+.btn-primario:hover {
+    background-color: #15bdff;
+}
+
+
+.btn-filtro {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.opcion:hover .btn-filtro {
+    background: rgba(179, 179, 179, 0.425);
+}
+
+.opcion input:checked+.btn-filtro {
+    color: var(--color-texto);
+    background: rgba(150, 150, 150, 0.26);
+}
+
+.opcion input:focus-visible+.btn-filtro {
+    outline-offset: 2px;
+}
+
+.opcion:active .btn-filtro {
+    transform: translateY(1px);
 }

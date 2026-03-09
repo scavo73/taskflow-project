@@ -1,7 +1,7 @@
 /* Grid de tarjetas (crear + lista) */
 .grid-tareas {
     display: grid;
-    gap: var(--espacio-3);
+    gap: var(--grid-gap-tareas);
     grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ancho-tarjeta-min)), 1fr));
     align-items: stretch;
 }

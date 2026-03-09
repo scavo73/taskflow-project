@@ -1,17 +1,12 @@
 /* Badges de prioridad */
 .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
     padding: 7px 10px;
     border: 1px solid var(--color-borde);
     background: rgba(255, 255, 255, .04);
-    font-size: 14px;
-    line-height: 1;
+    font-size: 16px;
     user-select: none;
     cursor: pointer;
     transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
-
     border-radius: var(--radio-2);
 }
 
@@ -39,4 +34,19 @@
 .badge-prioridad--baja {
     border-color: rgba(46, 229, 157, .6);
     background: rgba(46, 229, 157, .30);
+}
+
+.badge-navegacion {
+    display: inline-flex;
+    position: absolute;
+    top: -17px;
+    right: -21px;
+    align-items: center;
+    justify-content: center;
+    color: azure;
+    padding: 0.25rem 0.45rem;
+    border-radius: 5px;
+    background: rgb(0, 61, 140);
+    font-size: 0.75rem;
+    line-height: 1;
 }

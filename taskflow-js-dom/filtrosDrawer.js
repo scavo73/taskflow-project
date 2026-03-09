@@ -1,8 +1,11 @@
+// filtrosDrawer.js
 function inicializarDrawerFiltrosMovil() {
     const mediaQuery = window.matchMedia('(max-width: 768px)');
     const aside = document.querySelector('.barra-lateral');
+    const cabeceraSeccion = document.querySelector('.cabecera-seccion');
+    const contadorCabecera = cabeceraSeccion?.querySelector('.contador-tareas');
 
-    if (!aside) return;
+    if (!aside || !cabeceraSeccion) return;
 
     const panel = aside.querySelector('.panel');
     const titulo = aside.querySelector('.panel__titulo');
@@ -17,20 +20,24 @@ function inicializarDrawerFiltrosMovil() {
 
     const btnFiltros = document.createElement('button');
     btnFiltros.type = 'button';
-    btnFiltros.className = 'filtros-mobile-btn';
+    btnFiltros.className = 'badge filtros-mobile-btn';
     btnFiltros.setAttribute('aria-controls', aside.id);
     btnFiltros.setAttribute('aria-expanded', 'false');
     btnFiltros.setAttribute('aria-label', 'Abrir filtros');
     btnFiltros.innerHTML = `
     <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
-    <span>Filtros</span>
   `;
+
+    if (contadorCabecera) {
+        contadorCabecera.insertAdjacentElement('afterend', btnFiltros);
+    } else {
+        cabeceraSeccion.appendChild(btnFiltros);
+    }
 
     const backdrop = document.createElement('div');
     backdrop.className = 'filtros-mobile-backdrop';
     backdrop.hidden = true;
-
-    document.body.append(btnFiltros, backdrop);
+    document.body.appendChild(backdrop);
 
     const handle = document.createElement('div');
     handle.className = 'filtros-mobile-handle';
@@ -74,7 +81,7 @@ function inicializarDrawerFiltrosMovil() {
 
     function refrescarIconos() {
         if (window.lucide) {
-            lucide.createIcons();
+            window.lucide.createIcons();
         }
     }
 
@@ -133,76 +140,38 @@ function inicializarDrawerFiltrosMovil() {
 
         if (prioridadMarcada) {
             prioridadMarcada.dispatchEvent(new Event('change', { bubbles: true }));
-            prioridadMarcada.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
         categorias.forEach((input) => {
             input.dispatchEvent(new Event('change', { bubbles: true }));
-            input.dispatchEvent(new Event('input', { bubbles: true }));
         });
 
-        if (typeof window.filtrarPorCategorias === 'function') {
-            window.filtrarPorCategorias();
-        }
-
-        if (typeof window.filtrarPorPrioridad === 'function') {
-            window.filtrarPorPrioridad();
-        }
-
-        if (typeof window.anadirFitros === 'function') {
-            window.anadirFitros();
-        }
-
-        if (typeof window.anadirFiltros === 'function') {
-            window.anadirFiltros();
-        }
-
-        if (typeof window.actualizarResumenTareas === 'function') {
-            window.actualizarResumenTareas();
+        if (typeof window.TaskFlowApp?.refreshUI === 'function') {
+            window.TaskFlowApp.refreshUI();
         }
 
         if (window.lucide) {
-            lucide.createIcons();
+            window.lucide.createIcons();
         }
-    }
-
-    function contarResultadosDesdeTasks(estado) {
-        if (!Array.isArray(window.tasks)) return null;
-
-        return window.tasks.filter((task) => {
-            const prioridadTask = String(task.priority || task.prioridad || '')
-                .toLowerCase()
-                .trim();
-
-            const categoriaTask = String(task.category || task.categoria || '')
-                .toLowerCase()
-                .trim();
-
-            const coincidePrioridad =
-                estado.prioridad === 'all' || prioridadTask === estado.prioridad;
-
-            const coincideCategoria =
-                estado.categorias.length === 0 || estado.categorias.includes(categoriaTask);
-
-            return coincidePrioridad && coincideCategoria;
-        }).length;
-    }
-
-    function contarResultadosDesdeDOM() {
-        const items = document.querySelectorAll('#listContainer .lista-tareas__item');
-        return items.length;
     }
 
     function actualizarBotonResultados() {
         const estado = leerEstadoActual();
-        let total = contarResultadosDesdeTasks(estado);
 
-        if (total === null) {
-            total = contarResultadosDesdeDOM();
+        let total = null;
+
+        if (typeof window.TaskFlowApp?.getFilteredCountByState === 'function') {
+            total = window.TaskFlowApp.getFilteredCountByState(estado);
         }
 
-        const texto = total === 1 ? 'Ver 1 resultado' : `Ver ${total} resultados`;
-        btnAplicar.textContent = texto;
+        if (total === null) {
+            const items = document.querySelectorAll('#listContainer .lista-tareas__item');
+            total = items.length;
+        }
+
+        btnAplicar.textContent = total === 1
+            ? 'Ver 1 resultado'
+            : `Ver ${total} resultados`;
     }
 
     function abrirDrawer() {

@@ -32,7 +32,7 @@
     min-height: 30px;
 }
 
-#listaFiltrosElegidos {
+#lista-filtros-selecionados {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -46,8 +46,6 @@
     align-items: center;
     gap: 6px;
 }
-
-
 
 .opcion {
     position: relative;

@@ -83,3 +83,12 @@
 .opcion:active .btn-filtro {
     transform: translateY(1px);
 }
+
+
+.btn-limpiar-filtros {
+    margin-top: auto;
+}
+
+.btn-limpiar-filtros[hidden] {
+    display: none;
+}

@@ -89,6 +89,10 @@ function inicializarDrawerFiltrosMovil() {
         btnFiltros.classList.remove('is-hidden');
     }
 
+    function obtenerInputsEstado() {
+        return [...aside.querySelectorAll('input[name="estado"]')];
+    }
+
     function obtenerInputsPrioridad() {
         return [...aside.querySelectorAll('input[name="prioridad"]')];
     }
@@ -98,14 +102,18 @@ function inicializarDrawerFiltrosMovil() {
     }
 
     function leerEstadoActual() {
-        const prioridad =
-            aside.querySelector('input[name="prioridad"]:checked')?.value || 'all';
+        const estado =
+            aside.querySelector('input[name="estado"]:checked')?.value || 'all';
+
+        const prioridades = obtenerInputsPrioridad()
+            .filter((input) => input.checked)
+            .map((input) => input.value);
 
         const categorias = obtenerInputsCategorias()
             .filter((input) => input.checked)
             .map((input) => input.value.toLowerCase());
 
-        return { prioridad, categorias };
+        return { estado, prioridades, categorias };
     }
 
     function guardarSnapshot() {
@@ -115,14 +123,19 @@ function inicializarDrawerFiltrosMovil() {
     function restaurarSnapshot() {
         if (!snapshotInicial) return;
 
-        const radios = obtenerInputsPrioridad();
-        const checks = obtenerInputsCategorias();
+        const radiosEstado = obtenerInputsEstado();
+        const checksPrioridad = obtenerInputsPrioridad();
+        const checksCategorias = obtenerInputsCategorias();
 
-        radios.forEach((input) => {
-            input.checked = input.value === snapshotInicial.prioridad;
+        radiosEstado.forEach((input) => {
+            input.checked = input.value === snapshotInicial.estado;
         });
 
-        checks.forEach((input) => {
+        checksPrioridad.forEach((input) => {
+            input.checked = snapshotInicial.prioridades.includes(input.value);
+        });
+
+        checksCategorias.forEach((input) => {
             input.checked = snapshotInicial.categorias.includes(input.value.toLowerCase());
         });
 
@@ -130,12 +143,17 @@ function inicializarDrawerFiltrosMovil() {
     }
 
     function sincronizarAplicacionConInputs() {
-        const prioridadMarcada = aside.querySelector('input[name="prioridad"]:checked');
+        const estadoMarcado = aside.querySelector('input[name="estado"]:checked');
+        const prioridades = obtenerInputsPrioridad();
         const categorias = obtenerInputsCategorias();
 
-        if (prioridadMarcada) {
-            prioridadMarcada.dispatchEvent(new Event('change', { bubbles: true }));
+        if (estadoMarcado) {
+            estadoMarcado.dispatchEvent(new Event('change', { bubbles: true }));
         }
+
+        prioridades.forEach((input) => {
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
 
         categorias.forEach((input) => {
             input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -151,12 +169,12 @@ function inicializarDrawerFiltrosMovil() {
     }
 
     function actualizarBotonResultados() {
-        const estado = leerEstadoActual();
+        const estadoActual = leerEstadoActual();
 
         let total = null;
 
         if (typeof window.TaskFlowApp?.getFilteredCountByState === 'function') {
-            total = window.TaskFlowApp.getFilteredCountByState(estado);
+            total = window.TaskFlowApp.getFilteredCountByState(estadoActual);
         }
 
         if (total === null) {

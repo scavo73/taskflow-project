@@ -37,27 +37,43 @@
             <div class="gm panel">
                 <h2 class="panel__titulo">Filtros</h2>
 
-                <section class="filtros" aria-label="Filtro por prioridad">
-                    <h3 class="filtros__titulo">Prioridad</h3>
+                <section class="filtros" aria-label="Filtro por estado">
+                    <h3 class="filtros__titulo">Estado</h3>
 
-                    <div class="filtros__grupo" role="radiogroup" aria-label="Prioridad">
+                    <div class="filtros__grupo" role="radiogroup" aria-label="Estado">
                         <label class="opcion">
-                            <input type="radio" name="prioridad" value="all" checked />
-                            <span class="btn-filtro">Todas</span>
+                            <input type="radio" name="estado" value="all" checked />
+                            <span class="btn-filtro">Todos</span>
                         </label>
 
                         <label class="opcion">
-                            <input type="radio" name="prioridad" value="high" />
+                            <input type="radio" name="estado" value="pending" />
+                            <span class="btn-filtro">Pendientes</span>
+                        </label>
+
+                        <label class="opcion">
+                            <input type="radio" name="estado" value="done" />
+                            <span class="btn-filtro">Completadas</span>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="filtros" aria-label="Filtro por prioridad">
+                    <h3 class="filtros__titulo">Prioridad</h3>
+
+                    <div class="filtros__grupo" aria-label="Prioridad">
+                        <label class="opcion">
+                            <input type="checkbox" name="prioridad" value="high" />
                             <span class="btn-filtro">Alta</span>
                         </label>
 
                         <label class="opcion">
-                            <input type="radio" name="prioridad" value="med" />
+                            <input type="checkbox" name="prioridad" value="med" />
                             <span class="btn-filtro">Media</span>
                         </label>
 
                         <label class="opcion">
-                            <input type="radio" name="prioridad" value="low" />
+                            <input type="checkbox" name="prioridad" value="low" />
                             <span class="btn-filtro">Baja</span>
                         </label>
                     </div>
@@ -88,6 +104,10 @@
                         </label>
                     </div>
                 </section>
+
+                <button type="button" id="btnLimpiarFiltros" class="btn-primario btn-limpiar-filtros" hidden>
+                    Limpiar filtros
+                </button>
             </div>
         </aside>
 

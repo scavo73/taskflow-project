@@ -9,10 +9,12 @@ const categoriaTarea = document.getElementById('categoria-tarea');
 const prioridadTarea = document.getElementById('prioridad-tarea');
 const listaFiltrosSelecionados = document.getElementById('lista-filtros-selecionados');
 const buscarTareas = document.getElementById('buscarTareas');
+const btnLimpiarFiltros = document.getElementById('btnLimpiarFiltros');
 
 const contadorTareas = document.querySelectorAll('.contador-tareas');
 const nombresCategorias = document.querySelectorAll('input[name="cat"]');
 const inputsPrioridad = document.querySelectorAll('input[name="prioridad"]');
+const inputsEstado = document.querySelectorAll('input[name="estado"]');
 
 // =====================================================
 // CAPA 2: CONFIGURACIÓN Y CONSTANTES
@@ -22,6 +24,7 @@ const inputsPrioridad = document.querySelectorAll('input[name="prioridad"]');
 const LS_KEY = 'taskflow_tasks';
 const LS_FILTERS_KEY = 'taskflow_selected_categories';
 const LS_PRIORITY_KEY = 'taskflow_selected_priority';
+const LS_STATUS_KEY = 'taskflow_selected_status';
 const LS_SEARCH_KEY = 'taskflow_search_text';
 
 // Demo
@@ -70,13 +73,47 @@ function normalizePriority(value) {
   return 'med';
 }
 
-// devolver etiqueta con priridad 
+// devolver etiqueta con priridad
 function setPriorityLabel(value) {
   const normalized = normalizePriority(value);
 
   if (normalized === 'high') return 'Alta';
   if (normalized === 'low') return 'Baja';
   return 'Media';
+}
+
+// devolver etiqueta de estado
+function setStatusLabel(value) {
+  if (value === 'pending') return 'Pendientes';
+  if (value === 'done') return 'Completadas';
+  return 'Todos';
+}
+
+function hasActiveFilters() {
+  return (
+    getSelectedStatus() !== 'all' ||
+    getSelectedPriorities().length > 0 ||
+    getSelectedCategories().length > 0
+  );
+}
+
+function clearAllFilters() {
+  inputsEstado.forEach(input => {
+    input.checked = input.value === 'all';
+  });
+
+  inputsPrioridad.forEach(input => {
+    input.checked = false;
+  });
+
+  nombresCategorias.forEach(input => {
+    input.checked = false;
+  });
+
+  saveSelectedStatus();
+  saveSelectedPriority();
+  saveSelectedFilters();
+  refreshUI();
 }
 
 // =====================================================
@@ -105,7 +142,7 @@ function loadTasks() {
   syncGlobalTasks();
 }
 
-// encadena la tarea y lo guarda 
+// encadena la tarea y lo guarda
 function saveTasks() {
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
   syncGlobalTasks();
@@ -131,17 +168,37 @@ function saveSelectedFilters() {
   localStorage.setItem(LS_FILTERS_KEY, JSON.stringify(getSelectedCategories()));
 }
 
-// guarda prioridad selcionada
+// guarda prioridades selcionadas
 function saveSelectedPriority() {
-  localStorage.setItem(LS_PRIORITY_KEY, getSelectedPriority());
+  localStorage.setItem(LS_PRIORITY_KEY, JSON.stringify(getSelectedPriorities()));
 }
 
 // carga prioridades selecionadas
 function loadSelectedPriority() {
-  const savedPriority = localStorage.getItem(LS_PRIORITY_KEY) || 'all';
+  let savedPriorities = [];
+
+  try {
+    savedPriorities = JSON.parse(localStorage.getItem(LS_PRIORITY_KEY)) || [];
+  } catch {
+    savedPriorities = [];
+  }
 
   inputsPrioridad.forEach(input => {
-    input.checked = input.value === savedPriority;
+    input.checked = savedPriorities.includes(input.value);
+  });
+}
+
+// guarda estado selecionado
+function saveSelectedStatus() {
+  localStorage.setItem(LS_STATUS_KEY, getSelectedStatus());
+}
+
+// carga estado selecionado
+function loadSelectedStatus() {
+  const savedStatus = localStorage.getItem(LS_STATUS_KEY) || 'all';
+
+  inputsEstado.forEach(input => {
+    input.checked = input.value === savedStatus;
   });
 }
 
@@ -168,9 +225,16 @@ function getSelectedCategories() {
     .map(input => input.value.toLowerCase());
 }
 
-// extrea prioridad selciocionada
-function getSelectedPriority() {
-  return document.querySelector('input[name="prioridad"]:checked')?.value || 'all';
+// extrea prioridades selciocionadas
+function getSelectedPriorities() {
+  return [...inputsPrioridad]
+    .filter(input => input.checked)
+    .map(input => input.value);
+}
+
+// extra estado selecionado
+function getSelectedStatus() {
+  return document.querySelector('input[name="estado"]:checked')?.value || 'all';
 }
 
 // extra texto del searchbar
@@ -182,10 +246,11 @@ function getSearchTerm() {
 // CAPA 7: LÓGICA DE NEGOCIO
 // =====================================================
 
-// Filtracion de tareas por prioridad categoria y busqueda
+// Filtracion de tareas por estado prioridad categoria y busqueda
 function getFilteredTasks() {
   const categoriasSeleccionadas = getSelectedCategories();
-  const prioridadSeleccionada = getSelectedPriority();
+  const prioridadesSeleccionadas = getSelectedPriorities();
+  const estadoSeleccionado = getSelectedStatus();
   const textoBusqueda = normalizeText(getSearchTerm());
 
   return tasks.filter(task => {
@@ -198,14 +263,19 @@ function getFilteredTasks() {
       categoriasSeleccionadas.includes(taskCategory);
 
     const matchesPriority =
-      prioridadSeleccionada === 'all' ||
-      taskPriority === prioridadSeleccionada;
+      prioridadesSeleccionadas.length === 0 ||
+      prioridadesSeleccionadas.includes(taskPriority);
+
+    const matchesStatus =
+      estadoSeleccionado === 'all' ||
+      (estadoSeleccionado === 'pending' && !task.done) ||
+      (estadoSeleccionado === 'done' && task.done);
 
     const matchesSearch =
       textoBusqueda === '' ||
       searchableText.includes(textoBusqueda);
 
-    return matchesCategory && matchesPriority && matchesSearch;
+    return matchesCategory && matchesPriority && matchesStatus && matchesSearch;
   });
 }
 
@@ -260,7 +330,7 @@ function addTaskFromDesktopForm() {
   tituloTarea.value = '';
 }
 
-// Borra tarea, crea nueva lista sin el ID selecionado. 
+// Borra tarea, crea nueva lista sin el ID selecionado.
 function removeTask(taskId) {
   tasks = tasks.filter(task => task.id !== taskId);
   saveTasks();
@@ -281,7 +351,7 @@ function toggleTask(taskId, isDone) {
 // CAPA 8: RENDER / UI
 // =====================================================
 
-// Crear una trea en UI o pintar tarea 
+// Crear una trea en UI o pintar tarea
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'lista-tareas__item';
@@ -329,17 +399,17 @@ function renderTask(task) {
   return li;
 }
 
-// Crear filtros UI abajo de barra de searchbar 
+// Crear filtros UI abajo de barra de searchbar
 function renderSelectedFilters() {
   if (!listaFiltrosSelecionados) return;
 
   listaFiltrosSelecionados.innerHTML = '';
 
   const categoriasSeleccionadas = getSelectedCategories();
-  const prioridadSeleccionada = getSelectedPriority();
-  //const textoBusqueda = getSearchTerm();
+  const prioridadesSeleccionadas = getSelectedPriorities();
+  const estadoSeleccionado = getSelectedStatus();
 
-  if (prioridadSeleccionada !== 'all') {
+  if (estadoSeleccionado !== 'all') {
     const li = document.createElement('li');
     li.className = 'filtro__elegido-item';
 
@@ -347,16 +417,35 @@ function renderSelectedFilters() {
         <button
           type="button"
           class="badge filtro__badge cerrar__filtro"
-          data-prioridad="${prioridadSeleccionada}"
-          aria-label="Quitar filtro de prioridad ${prioridadSeleccionada}"
+          data-estado="${estadoSeleccionado}"
+          aria-label="Quitar filtro de estado ${setStatusLabel(estadoSeleccionado)}"
         >
-          <span>${setPriorityLabel(prioridadSeleccionada)}</span>
+          <span>${setStatusLabel(estadoSeleccionado)}</span>
           <i data-lucide="x" aria-hidden="true"></i>
         </button>
       `;
 
     listaFiltrosSelecionados.appendChild(li);
   }
+
+  prioridadesSeleccionadas.forEach(prioridad => {
+    const li = document.createElement('li');
+    li.className = 'filtro__elegido-item';
+
+    li.innerHTML = `
+        <button
+          type="button"
+          class="badge filtro__badge cerrar__filtro"
+          data-prioridad="${prioridad}"
+          aria-label="Quitar filtro de prioridad ${setPriorityLabel(prioridad)}"
+        >
+          <span>${setPriorityLabel(prioridad)}</span>
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      `;
+
+    listaFiltrosSelecionados.appendChild(li);
+  });
 
   categoriasSeleccionadas.forEach(categoria => {
     const li = document.createElement('li');
@@ -376,25 +465,12 @@ function renderSelectedFilters() {
 
     listaFiltrosSelecionados.appendChild(li);
   });
+}
 
-  // if (textoBusqueda) {
-  //   const li = document.createElement('li');
-  //   li.className = 'filtro__elegido-item';
-
-  //   li.innerHTML = `
-  //     <button
-  //       type="button"
-  //       class="badge filtro__badge cerrar__filtro"
-  //       data-busqueda="true"
-  //       aria-label="Quitar búsqueda ${textoBusqueda}"
-  //     >
-  //       <span>Búsqueda: ${textoBusqueda}</span>
-  //       <i data-lucide="x" aria-hidden="true"></i>
-  //     </button>
-  //   `;
-
-  //   listaFiltrosSelecionados.appendChild(li);
-  // }
+// pinta visibilidad del boton limpiar filtros
+function renderClearFiltersButton() {
+  if (!btnLimpiarFiltros) return;
+  btnLimpiarFiltros.hidden = !hasActiveFilters();
 }
 
 // crea lista de treas filtradas
@@ -409,6 +485,7 @@ function renderTasksList() {
   });
 
   renderSelectedFilters();
+  renderClearFiltersButton();
 
   if (window.lucide) {
     window.lucide.createIcons();
@@ -506,7 +583,7 @@ function bindSearchEvents() {
   });
 }
 
-// Cuando se cambian los filtros repinta 
+// Cuando se cambian los filtros repinta
 function bindFilterEvents() {
   nombresCategorias.forEach(input => {
     input.addEventListener('change', () => {
@@ -522,6 +599,19 @@ function bindFilterEvents() {
     });
   });
 
+  inputsEstado.forEach(input => {
+    input.addEventListener('change', () => {
+      saveSelectedStatus();
+      refreshUI();
+    });
+  });
+
+  if (btnLimpiarFiltros) {
+    btnLimpiarFiltros.addEventListener('click', () => {
+      clearAllFilters();
+    });
+  }
+
   if (!listaFiltrosSelecionados) return;
 
   listaFiltrosSelecionados.addEventListener('click', (event) => {
@@ -530,6 +620,7 @@ function bindFilterEvents() {
 
     const categoria = btnCerrar.dataset.categoria;
     const prioridad = btnCerrar.dataset.prioridad;
+    const estado = btnCerrar.dataset.estado;
     const busqueda = btnCerrar.dataset.busqueda;
 
     if (categoria) {
@@ -540,16 +631,28 @@ function bindFilterEvents() {
       if (inputCategoria) {
         inputCategoria.checked = false;
       }
+
       saveSelectedFilters();
     }
 
     if (prioridad) {
-      const radioTodas = document.querySelector('input[name="prioridad"][value="all"]');
-      if (radioTodas) {
-        radioTodas.checked = true;
+      const inputPrioridad = [...inputsPrioridad].find(input => input.value === prioridad);
+
+      if (inputPrioridad) {
+        inputPrioridad.checked = false;
       }
 
       saveSelectedPriority();
+    }
+
+    if (estado) {
+      const radioTodos = document.querySelector('input[name="estado"][value="all"]');
+
+      if (radioTodos) {
+        radioTodos.checked = true;
+      }
+
+      saveSelectedStatus();
     }
 
     if (busqueda && buscarTareas) {
@@ -570,6 +673,7 @@ function init() {
   loadTasks();
   loadSelectedFilters();
   loadSelectedPriority();
+  loadSelectedStatus();
   loadSearchTerm();
   bindDesktopForm();
   bindListEvents();
@@ -586,7 +690,7 @@ function init() {
 // CAPA 11: API PÚBLICA
 // =====================================================
 
-// API publica 
+// API publica
 window.TaskFlowApp = {
   addTaskFromData,
   getDesktopDefaults() {
@@ -596,7 +700,7 @@ window.TaskFlowApp = {
     };
   },
 
-  getFilteredCountByState({ prioridad = 'all', categorias = [], busqueda = '' } = {}) {
+  getFilteredCountByState({ estado = 'all', prioridades = [], categorias = [], busqueda = '' } = {}) {
     const textoBusqueda = normalizeText(busqueda);
 
     return tasks.filter(task => {
@@ -604,8 +708,13 @@ window.TaskFlowApp = {
       const taskCategory = String(task.category || '').toLowerCase().trim();
       const searchableText = normalizeText(`${task.title} ${task.category}`);
 
+      const matchesStatus =
+        estado === 'all' ||
+        (estado === 'pending' && !task.done) ||
+        (estado === 'done' && task.done);
+
       const matchesPriority =
-        prioridad === 'all' || taskPriority === prioridad;
+        prioridades.length === 0 || prioridades.includes(taskPriority);
 
       const matchesCategory =
         categorias.length === 0 || categorias.includes(taskCategory);
@@ -613,7 +722,7 @@ window.TaskFlowApp = {
       const matchesSearch =
         textoBusqueda === '' || searchableText.includes(textoBusqueda);
 
-      return matchesPriority && matchesCategory && matchesSearch;
+      return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
     }).length;
   },
   refreshUI

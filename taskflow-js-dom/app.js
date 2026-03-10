@@ -465,6 +465,23 @@ function renderSelectedFilters() {
 
     listaFiltrosSelecionados.appendChild(li);
   });
+
+  if (hasActiveFilters()) {
+    const liClearAll = document.createElement('li');
+    liClearAll.className = 'filtro__elegido-item filtro__elegido-item--clear-all';
+
+    liClearAll.innerHTML = `
+    <button
+      type="button"
+      class="badge filtro__badge filtro__badge--clear-all limpiar-todos-filtros"
+      aria-label="Limpiar todos los filtros"
+    >
+      <span>Limpiar filtros</span>
+    </button>
+  `;
+
+    listaFiltrosSelecionados.appendChild(liClearAll);
+  }
 }
 
 // pinta visibilidad del boton limpiar filtros
@@ -615,6 +632,13 @@ function bindFilterEvents() {
   if (!listaFiltrosSelecionados) return;
 
   listaFiltrosSelecionados.addEventListener('click', (event) => {
+    const btnLimpiarTodoLista = event.target.closest('.limpiar-todos-filtros');
+
+    if (btnLimpiarTodoLista) {
+      clearAllFilters();
+      return;
+    }
+
     const btnCerrar = event.target.closest('.cerrar__filtro');
     if (!btnCerrar) return;
 

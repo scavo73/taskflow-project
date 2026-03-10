@@ -89,6 +89,15 @@ function setStatusLabel(value) {
   return 'Todos';
 }
 
+// devolver etiqueta con priridad
+function setCategoryLabel(value) {
+  if (value === 'trabajo') return 'Trabajo';
+  if (value === 'estudio') return 'Estudio';
+  if (value === 'personal') return 'Personal';
+  return 'Salud';
+}
+
+
 function hasActiveFilters() {
   return (
     getSelectedStatus() !== 'all' ||
@@ -458,7 +467,7 @@ function renderSelectedFilters() {
           data-categoria="${categoria}"
           aria-label="Quitar filtro ${categoria}"
         >
-          <span>${categoria}</span>
+          <span>${setCategoryLabel(categoria)}</span>
           <i data-lucide="x" aria-hidden="true"></i>
         </button>
       `;

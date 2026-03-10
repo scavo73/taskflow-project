@@ -1,13 +1,24 @@
 /* Badges de prioridad */
 .badge {
-    padding: 4px 10px;
-    border: 1px solid var(--color-borde);
+    border: unset;
     background: rgba(255, 255, 255, .04);
     font-size: 14px;
     user-select: none;
     cursor: pointer;
     transition: transform .08s ease, background .12s ease, border-color .12s ease, color .12s ease;
-    border-radius: var(--radio-2);
+    border-radius: 0.7em;
+    color: #090909;
+    padding: 0.7em 1.7em;
+    background: #e8e8e8;
+    cursor: pointer;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s;
+    box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+
+badge:active {
+    color: #666;
+    box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
 }
 
 

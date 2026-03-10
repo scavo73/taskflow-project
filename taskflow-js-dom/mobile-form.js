@@ -2,7 +2,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const mq = window.matchMedia('(max-width: 768px)');
     const headerRight = document.querySelector('.contenedor__encabezado-derecho');
-    const desktopForm = document.querySelector('.tarea.tarea-nueva');
+    const desktopForm = document.querySelector('.form-tarea');
 
     if (!headerRight || !desktopForm) return;
 

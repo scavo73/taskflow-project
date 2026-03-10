@@ -3,10 +3,9 @@
     gap: var(--progreso--gap-s);
     margin-bottom: var(--padding-bottm-s);
 
-    position: sticky;
+    /* position: sticky;
     top: 3.75rem;
-    z-index: 30;
-    background: white;
+    z-index: 30; */
 }
 
 .progreso__fila {
@@ -36,9 +35,11 @@
 .progreso__barra {
     height: 10px;
     border-radius: 999px;
-    background: var(--color-barra-progreso-fondo);
-    border: 1px solid rgb(180 180 180 / 72%);
-    overflow: hidden;
+    background-color: #ccc;
+
+    background: #e8e8e8;
+    box-shadow: 3px 3px 5px #c5c5c5,
+        -3px -3px 5px #ffffff;
 }
 
 .progreso__relleno {
@@ -60,11 +61,11 @@
     min-width: 0;
     display: flex;
     align-items: center;
+    border-radius: 12px;
     gap: 0.65rem;
     padding: 0.72rem 0.9rem;
-    border: 1px solid var(--color-borde);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.04);
+    background: lightgrey;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
 }
 
 .busqueda-tareas .lucide {

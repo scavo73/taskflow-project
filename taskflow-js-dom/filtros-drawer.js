@@ -24,7 +24,7 @@ function inicializarDrawerFiltrosMovil() {
     btnFiltros.setAttribute('aria-expanded', 'false');
     btnFiltros.setAttribute('aria-label', 'Abrir filtros');
     btnFiltros.innerHTML = `
-        <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+        <i data-lucide="list-filter" aria-hidden="true"></i>
     `;
 
     accionesProgreso.appendChild(btnFiltros);

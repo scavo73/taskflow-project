@@ -1,7 +1,7 @@
 /* css/base.css */
 :root {
     /* Colores */
-    --color-fondo: #fefefe;
+    --color-fondo: #ededed;
     --color-borde: rgba(0, 0, 0, 0.459);
 
     --color-texto: rgba(0, 0, 0, 0.88);
@@ -18,7 +18,7 @@
     --padding-tarjeta-s: 0.5rem;
     --padding-tarjeta-m: 0.8rem;
     --gap-tarea: 2rem;
-    --grid-gap-tareas: 1rem;
+    --grid-gap-tareas: 2.5rem;
 
     /* Cabezera  */
     --espacio-header-s: 0.8rem;
@@ -29,7 +29,7 @@
     /* Radios y sombras */
     --radio-1: 6px;
     --radio-2: 4px;
-    --radio-3: 12px;
+    --radio-3: 21px;
 
     /* UI móvil */
     --alto-tabbar: 64px;
@@ -45,7 +45,7 @@
 
     --padding-principal-horizontal-s: 1rem;
     --padding-principal-horizontal-m: 2rem;
-    --grid-gap-layout: 2rem;
+    --grid-gap-layout: 3rem;
 
     /* Progreso */
     --padding-bottm-s: 0.5rem;

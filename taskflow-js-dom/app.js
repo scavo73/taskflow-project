@@ -350,6 +350,8 @@ function addTaskFromDesktopForm() {
     return;
   }
 
+  console.log("hola")
+
   tituloTarea.value = '';
 }
 
@@ -644,7 +646,7 @@ function refreshUI() {
 
 // Cuando se envia el formulario preveiene que la pagina se actulice
 function bindDesktopForm() {
-  const desktopForm = document.querySelector('.tarea.tarea-nueva');
+  const desktopForm = document.querySelector('.form-tarea');
   if (!desktopForm) return;
 
   desktopForm.addEventListener('submit', (event) => {

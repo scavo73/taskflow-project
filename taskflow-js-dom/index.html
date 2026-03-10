@@ -36,7 +36,7 @@
 
         <aside class="barra-lateral" aria-label="">
 
-            <form class="tarea tarea-nueva" aria-label="Añadir tarea">
+            <form class="form-tarea" aria-label="Añadir tarea">
                 <div class="form">
                     <div class="form-campo">
                         <label class="form-campo__etiqueta" for="tituloTarea">Título</label>
@@ -71,9 +71,10 @@
                 </div>
             </form>
 
-            <div class="gm panel">
-                <h2 class="panel__titulo">Filtros</h2>
-
+            <div class="panel">
+                <h2 class="panel__titulo" aria-label="Filtros">
+                    <i data-lucide="list-filter" aria-hidden="true"></i>
+                </h2>
                 <section class="filtros" aria-label="Filtro por estado">
                     <h3 class="filtros__titulo">Estado</h3>
 

@@ -22,10 +22,14 @@
 .form-campo__control {
     padding: 10px 12px;
     border-radius: var(--border-radius-formulario);
-    border: 1px solid var(--color-borde);
-    background: var(--bg-color-form-campo);
-    color: var(--color-texto);
+    border-radius: 12px;
+    gap: 0.65rem;
+    padding: 0.72rem 0.9rem;
+    background: lightgrey;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
     outline: none;
+    border: none;
+
 }
 
 select.form-campo__control option {

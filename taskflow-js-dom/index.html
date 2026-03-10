@@ -33,7 +33,44 @@
     </header>
 
     <main class="principal-layout">
-        <aside class="barra-lateral" aria-label="Filtros">
+
+        <aside class="barra-lateral" aria-label="">
+
+            <form class="tarea tarea-nueva" aria-label="Añadir tarea">
+                <div class="form">
+                    <div class="form-campo">
+                        <label class="form-campo__etiqueta" for="tituloTarea">Título</label>
+                        <input class="form-campo__control" id="tituloTarea" type="text"
+                            placeholder="Ej: Enviar propuesta" />
+                    </div>
+
+                    <div class="form-fila-formulario">
+                        <div class="form-campo">
+                            <label class="form-campo__etiqueta" for="categoria-tarea">Categoría</label>
+                            <select class="form-campo__control" id="categoria-tarea">
+                                <option>Trabajo</option>
+                                <option>Estudio</option>
+                                <option>Personal</option>
+                                <option>Salud</option>
+                            </select>
+                        </div>
+
+                        <div class="form-campo">
+                            <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
+                            <select class="form-campo__control" id="prioridad-tarea">
+                                <option>Alta</option>
+                                <option selected>Media</option>
+                                <option>Baja</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-primario" type="submit">
+                        Añadir tarea
+                    </button>
+                </div>
+            </form>
+
             <div class="gm panel">
                 <h2 class="panel__titulo">Filtros</h2>
 
@@ -141,41 +178,25 @@
                 </div>
             </div>
 
+            <div class="acciones-tareas" aria-label="Acciones de tareas">
+                <button type="button" class="badge accion-tareas-btn" id="btnToggleLayout" aria-pressed="false">
+                    <i data-lucide="rows-3" aria-hidden="true"></i>
+                    <span>Vista lista</span>
+                </button>
+
+                <button type="button" class="badge accion-tareas-btn" id="btnCompleteAllTasks">
+                    <i data-lucide="check-check" aria-hidden="true"></i>
+                    <span>Completar todas</span>
+                </button>
+
+                <button type="button" class="badge accion-tareas-btn accion-tareas-btn--danger" id="btnDeleteAllTasks">
+                    <i data-lucide="trash-2" aria-hidden="true"></i>
+                    <span>Borrar todas</span>
+                </button>
+            </div>
+
+
             <div class="grid-tareas" aria-label="Tarjetas de tareas">
-                <form class="tarea tarea-nueva" aria-label="Añadir tarea">
-                    <div class="form">
-                        <div class="form-campo">
-                            <label class="form-campo__etiqueta" for="tituloTarea">Título</label>
-                            <input class="form-campo__control" id="tituloTarea" type="text"
-                                placeholder="Ej: Enviar propuesta" />
-                        </div>
-
-                        <div class="form-fila-formulario">
-                            <div class="form-campo">
-                                <label class="form-campo__etiqueta" for="categoria-tarea">Categoría</label>
-                                <select class="form-campo__control" id="categoria-tarea">
-                                    <option>Trabajo</option>
-                                    <option>Estudio</option>
-                                    <option>Personal</option>
-                                    <option>Salud</option>
-                                </select>
-                            </div>
-
-                            <div class="form-campo">
-                                <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
-                                <select class="form-campo__control" id="prioridad-tarea">
-                                    <option>Alta</option>
-                                    <option selected>Media</option>
-                                    <option>Baja</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button class="btn-primario" type="submit">
-                            Añadir tarea
-                        </button>
-                    </div>
-                </form>
 
                 <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer"></ul>
             </div>

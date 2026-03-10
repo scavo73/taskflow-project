@@ -11,6 +11,11 @@ const listaFiltrosSelecionados = document.getElementById('lista-filtros-selecion
 const buscarTareas = document.getElementById('buscarTareas');
 const btnLimpiarFiltros = document.getElementById('btnLimpiarFiltros');
 
+const btnToggleLayout = document.getElementById('btnToggleLayout');
+const btnCompleteAllTasks = document.getElementById('btnCompleteAllTasks');
+const btnDeleteAllTasks = document.getElementById('btnDeleteAllTasks');
+const gridTareas = document.querySelector('.grid-tareas');
+
 const contadorTareas = document.querySelectorAll('.contador-tareas');
 const nombresCategorias = document.querySelectorAll('input[name="cat"]');
 const inputsPrioridad = document.querySelectorAll('input[name="prioridad"]');
@@ -26,6 +31,7 @@ const LS_FILTERS_KEY = 'taskflow_selected_categories';
 const LS_PRIORITY_KEY = 'taskflow_selected_priority';
 const LS_STATUS_KEY = 'taskflow_selected_status';
 const LS_SEARCH_KEY = 'taskflow_search_text';
+const LS_LAYOUT_KEY = 'taskflow_layout_mode';
 
 // Demo
 const demoTasks = [
@@ -44,6 +50,7 @@ const demoTasks = [
 // Inicilizar variables, serviran para crear areglo de tareas y el ID
 let tasks = [];
 let nextId = 1;
+let isListLayout = false;
 
 function syncGlobalTasks() {
   window.tasks = tasks;
@@ -96,7 +103,6 @@ function setCategoryLabel(value) {
   if (value === 'personal') return 'Personal';
   return 'Salud';
 }
-
 
 function hasActiveFilters() {
   return (
@@ -221,6 +227,14 @@ function saveSearchTerm() {
 function loadSearchTerm() {
   if (!buscarTareas) return;
   buscarTareas.value = localStorage.getItem(LS_SEARCH_KEY) || '';
+}
+
+function saveLayoutMode() {
+  localStorage.setItem(LS_LAYOUT_KEY, isListLayout ? 'list' : 'grid');
+}
+
+function loadLayoutMode() {
+  isListLayout = localStorage.getItem(LS_LAYOUT_KEY) === 'list';
 }
 
 // =====================================================
@@ -352,6 +366,38 @@ function toggleTask(taskId, isDone) {
   if (!task) return;
 
   task.done = isDone;
+  saveTasks();
+  refreshUI();
+}
+
+function toggleLayoutMode() {
+  isListLayout = !isListLayout;
+  saveLayoutMode();
+  refreshUI();
+}
+
+function completeAllTasks() {
+  if (tasks.length === 0) return;
+
+  const areAllCompleted = tasks.every(task => task.done);
+
+  tasks = tasks.map(task => ({
+    ...task,
+    done: !areAllCompleted
+  }));
+
+  saveTasks();
+  refreshUI();
+}
+
+function removeAllTasks() {
+  if (tasks.length === 0) return;
+
+  const userConfirmed = confirm('¿Seguro que quieres borrar todas las tareas? Esta acción no se puede deshacer.');
+
+  if (!userConfirmed) return;
+
+  tasks = [];
   saveTasks();
   refreshUI();
 }
@@ -499,6 +545,41 @@ function renderClearFiltersButton() {
   btnLimpiarFiltros.hidden = !hasActiveFilters();
 }
 
+function renderActionButtons() {
+  if (btnToggleLayout) {
+    btnToggleLayout.setAttribute('aria-pressed', String(isListLayout));
+
+    const icon = btnToggleLayout.querySelector('i');
+    const text = btnToggleLayout.querySelector('span');
+
+    if (icon) {
+      icon.setAttribute('data-lucide', isListLayout ? 'layout-grid' : 'rows-3');
+    }
+
+    if (text) {
+      text.textContent = isListLayout ? 'Vista grid' : 'Vista lista';
+    }
+  }
+
+  if (btnCompleteAllTasks) {
+    const icon = btnCompleteAllTasks.querySelector('i');
+    const text = btnCompleteAllTasks.querySelector('span');
+    const areAllCompleted = tasks.length > 0 && tasks.every(task => task.done);
+
+    if (icon) {
+      icon.setAttribute('data-lucide', areAllCompleted ? 'rotate-ccw' : 'check-check');
+    }
+
+    if (text) {
+      text.textContent = areAllCompleted ? 'Desmarcar todas' : 'Completar todas';
+    }
+  }
+
+  if (gridTareas) {
+    gridTareas.classList.toggle('grid-tareas--lista', isListLayout);
+  }
+}
+
 // crea lista de treas filtradas
 function renderTasksList() {
   if (!listContainer) return;
@@ -532,6 +613,7 @@ function doneTasksCount() {
   const tareasHechas = tasks.filter(task => task.done).length;
   const contadorHechos = document.querySelector('.progreso__hechos');
   const porcentajeBarra = document.querySelector('.progreso__relleno');
+  const progressbar = document.querySelector('.progreso__barra');
 
   if (contadorHechos) {
     contadorHechos.textContent = tareasHechas;
@@ -541,11 +623,17 @@ function doneTasksCount() {
     const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
     porcentajeBarra.style.width = `${porcentaje}%`;
   }
+
+  if (progressbar) {
+    const porcentaje = tasks.length === 0 ? 0 : Math.round((tareasHechas / tasks.length) * 100);
+    progressbar.setAttribute('aria-valuenow', String(porcentaje));
+  }
 }
 
 // Refresa la ui cuando se hacen cambio sea aniadir un tarea borrar o cabiar busqueda
 function refreshUI() {
   renderTasksList();
+  renderActionButtons();
   updateTaskCounter();
   doneTasksCount();
 }
@@ -697,6 +785,26 @@ function bindFilterEvents() {
   });
 }
 
+function bindTaskActionEvents() {
+  if (btnToggleLayout) {
+    btnToggleLayout.addEventListener('click', () => {
+      toggleLayoutMode();
+    });
+  }
+
+  if (btnCompleteAllTasks) {
+    btnCompleteAllTasks.addEventListener('click', () => {
+      completeAllTasks();
+    });
+  }
+
+  if (btnDeleteAllTasks) {
+    btnDeleteAllTasks.addEventListener('click', () => {
+      removeAllTasks();
+    });
+  }
+}
+
 // =====================================================
 // CAPA 10: INICIALIZACIÓN
 // =====================================================
@@ -708,10 +816,12 @@ function init() {
   loadSelectedPriority();
   loadSelectedStatus();
   loadSearchTerm();
+  loadLayoutMode();
   bindDesktopForm();
   bindListEvents();
   bindSearchEvents();
   bindFilterEvents();
+  bindTaskActionEvents();
   refreshUI();
 
   if (typeof window.inicializarDrawerFiltrosMovil === 'function') {

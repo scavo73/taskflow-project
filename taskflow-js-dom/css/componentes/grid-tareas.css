@@ -1,4 +1,3 @@
-/* Grid de tarjetas (crear + lista) */
 .grid-tareas {
     display: grid;
     gap: var(--grid-gap-tareas);
@@ -6,7 +5,10 @@
     align-items: stretch;
 }
 
-/* Lista semántica dentro del grid */
+.grid-tareas--lista {
+    grid-template-columns: 1fr;
+}
+
 .lista-tareas {
     list-style: none;
     margin: 0;

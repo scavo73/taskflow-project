@@ -38,14 +38,11 @@
 
             <form class="form-tarea" aria-label="Añadir tarea">
                 <div class="form">
-                    <div class="section-title-fila">
-                        <div class="progreso__texto">
-                            <span class="section-title-row">
-                                <label for="">
-                                    <i data-lucide="sticky-note" aria-hidden="true"></i>
-                                </label>
-                                <span class="section-title-titulo">Crear Tarea nueva</span>
-                        </div>
+                    <div class="section-title-row">
+                        <span class="section-title-icon" aria-hidden="true">
+                            <i data-lucide="sticky-note"></i>
+                        </span>
+                        <h2 class="section-title-titulo">Crear tarea nueva</h2>
                     </div>
                     <div class="form-campo">
                         <input class="form-campo__control" id="tituloTarea" type="text"
@@ -80,9 +77,13 @@
             </form>
 
             <div class="panel">
-                <h2 class="panel__titulo" aria-label="Filtros">
-                    <i data-lucide="list-filter" aria-hidden="true"></i>
-                </h2>
+
+                <div class="section-title-row">
+                    <span class="section-title-icon" aria-hidden="true">
+                        <i data-lucide="list-filter" aria-hidden="true"></i>
+                    </span>
+                    <h2 class="section-title-titulo">Filtros</h2>
+                </div>
 
                 <section class="filtros" aria-label="Filtro por estado">
                     <h3 class="filtros__titulo">Estado</h3>
@@ -170,16 +171,17 @@
 
         <section class="seccion-tareas" aria-label="Tareas">
             <div class="progreso" aria-label="Progreso de tareas">
-                <div class="section-title-fila">
-                    <div class="progreso__texto">
-                        <span class="section-title-row">
-                            <i data-lucide="pickaxe" aria-hidden="true"></i>
-                            <span class="section-title-titulo">Progreso</span>
-                            <span class="progreso__hechos">0</span>
-                            de
-                            <span class="contador-tareas">6</span>
-                            completadas
-                    </div>
+
+                <div class="section-title-row">
+                    <span class="section-title-icon" aria-hidden="true">
+                        <i data-lucide="pickaxe" aria-hidden="true"></i>
+                    </span>
+                    <h2 class="section-title-titulo"> <span class="section-title-titulo">Progreso: </span>
+                        <span class="progreso__hechos">0</span>
+                        de
+                        <span class="contador-tareas">6</span>
+                        completadas
+                    </h2>
                 </div>
 
                 <div class="progreso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100"

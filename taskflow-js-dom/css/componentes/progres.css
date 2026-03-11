@@ -8,18 +8,28 @@
     z-index: 30; */
 }
 
-.section-title-fila {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--espacio-3);
-}
-
 .section-title-row {
     display: flex;
+    align-items: center;
     gap: 0.2rem;
     font-weight: 700;
-    letter-spacing: .2px;
+    letter-spacing: 0.2px;
+}
+
+.section-title-row h2 {
+    font-size: 18px;
+}
+
+.section-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.section-title-icon svg,
+.section-title-icon i {
+    display: block;
 }
 
 .section-title-titulo {

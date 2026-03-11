@@ -35,6 +35,7 @@ const demoTasks = [
 let tasks = [];
 let nextId = 1;
 let isListLayout = false;
+let editingTaskId = null;
 
 function syncGlobalTasks() {
   window.tasks = tasks;
@@ -289,8 +290,52 @@ function addTaskFromDesktopForm() {
   taskTitle.value = '';
 }
 
+function getTaskById(taskId) {
+  return tasks.find((task) => task.id === taskId);
+}
+
+function startTaskEdit(taskId) {
+  const task = getTaskById(taskId);
+  if (!task) return;
+
+  editingTaskId = taskId;
+  refreshUI();
+}
+
+function cancelTaskEdit() {
+  if (editingTaskId === null) return;
+
+  editingTaskId = null;
+  refreshUI();
+}
+
+function updateTaskTitle(taskId, rawTitle) {
+  const task = getTaskById(taskId);
+  if (!task) {
+    return { ok: false, error: 'Tarea no encontrada' };
+  }
+
+  const cleanTitle = String(rawTitle || '').trim();
+
+  if (!cleanTitle) {
+    return { ok: false, error: 'Título vacío' };
+  }
+
+  task.title = cleanTitle;
+  editingTaskId = null;
+  saveTasks();
+  refreshUI();
+
+  return { ok: true, task };
+}
+
 function removeTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
+
+  if (editingTaskId === taskId) {
+    editingTaskId = null;
+  }
+
   saveTasks();
   refreshUI();
 }
@@ -331,6 +376,7 @@ function removeAllTasks() {
   if (!userConfirmed) return;
 
   tasks = [];
+  editingTaskId = null;
   saveTasks();
   refreshUI();
 }
@@ -340,6 +386,8 @@ function renderTask(task) {
   li.className = 'task-list__item';
 
   const normalizedPriority = normalizePriority(task.priority);
+  const isEditing = editingTaskId === task.id;
+  const mainTag = isEditing ? 'div' : 'label';
 
   li.innerHTML = `
     <div class="task-item">
@@ -350,31 +398,89 @@ function renderTask(task) {
         ${task.done ? 'checked' : ''}
       />
 
-      <label class="task-card" for="task-${task.id}">
-        <div class="task-card__top">
-          <h3 class="task-card__title"></h3>
-          <span class="prio prio--${normalizedPriority}"></span>
-        </div>
+      <div class="task-card">
+        <${mainTag}
+          class="task-card__main"
+          ${!isEditing ? `for="task-${task.id}"` : ''}
+        >
+          <div class="task-card__top">
+            ${isEditing
+      ? `
+                  <input
+                    class="task-card__input"
+                    type="text"
+                    data-task-id="${task.id}"
+                    aria-label="Editar título"
+                  />
+                `
+      : `
+                  <h3 class="task-card__title"></h3>
+                `
+    }
 
-        <div class="task-card__bottom">
-          <span class="task-card__cat"></span>
+            <span class="prio prio--${normalizedPriority}"></span>
+          </div>
 
-          <button
-            class="chip task-card__del"
-            type="button"
-            data-task-id="${task.id}"
-            aria-label="Borrar tarea ${task.title}"
-          >
-            <i data-lucide="trash-2" aria-hidden="true"></i>
-          </button>
+          <div class="task-card__bottom">
+            <span class="task-card__cat"></span>
+          </div>
+        </${mainTag}>
+
+        <div class="task-card__actions">
+          ${isEditing
+      ? `
+                <button
+                  class="chip task-card__save"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Guardar título"
+                >
+                  <i data-lucide="check" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  class="chip task-card__cancel"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Cancelar edición"
+                >
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              `
+      : `
+                <button
+                  class="chip task-card__edit"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Editar tarea"
+                >
+                  <i data-lucide="pencil" aria-hidden="true"></i>
+                </button>
+
+                <button
+                  class="chip task-card__del"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Borrar tarea ${task.title}"
+                >
+                  <i data-lucide="trash-2" aria-hidden="true"></i>
+                </button>
+              `
+    }
         </div>
-      </label>
+      </div>
     </div>
   `;
 
-  li.querySelector('.task-card__title').textContent = task.title;
-  li.querySelector('.task-card__cat').textContent = task.category || 'Personal';
-  li.querySelector('.prio').textContent = setPriorityLabel(task.priority);
+  const titleEl = li.querySelector('.task-card__title');
+  const inputEl = li.querySelector('.task-card__input');
+  const catEl = li.querySelector('.task-card__cat');
+  const prioEl = li.querySelector('.prio');
+
+  if (titleEl) titleEl.textContent = task.title;
+  if (inputEl) inputEl.value = task.title;
+  if (catEl) catEl.textContent = task.category || 'Personal';
+  if (prioEl) prioEl.textContent = setPriorityLabel(task.priority);
 
   return li;
 }
@@ -507,6 +613,15 @@ function renderTasksList() {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+
+  if (editingTaskId !== null) {
+    const input = taskList.querySelector(`.task-card__input[data-task-id="${editingTaskId}"]`);
+
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }
 }
 
 function updateTaskCounter() {
@@ -547,18 +662,158 @@ function bindDesktopForm() {
 
 function bindListEvents() {
   if (!taskList) return;
-
   taskList.addEventListener('click', (event) => {
+    const clickedButton = event.target.closest('button');
+    const clickedInput = event.target.closest('.task-card__input');
+    const clickedCard = event.target.closest('.task-card');
+
+    if (clickedCard && !clickedButton && !clickedInput) {
+      const checkbox = clickedCard.parentElement.querySelector('.task-item__toggle');
+
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+
+        const rawId = checkbox.id.replace('task-', '');
+        const taskId = Number(rawId);
+
+        if (taskId) {
+          toggleTask(taskId, checkbox.checked);
+        }
+      }
+
+      return;
+    }
+
+    const editBtn = event.target.closest('.task-card__edit');
+    if (editBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const taskId = Number(editBtn.dataset.taskId);
+      if (!taskId) return;
+
+      startTaskEdit(taskId);
+      return;
+    }
+
+    const saveBtn = event.target.closest('.task-card__save');
+    if (saveBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const taskId = Number(saveBtn.dataset.taskId);
+      const input = taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
+
+      if (!taskId || !input) return;
+
+      const result = updateTaskTitle(taskId, input.value);
+
+      if (!result.ok) {
+        alert('El título no puede estar vacío.');
+        input.focus();
+        input.select();
+      }
+
+      return;
+    }
+
+    const cancelBtn = event.target.closest('.task-card__cancel');
+    if (cancelBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelTaskEdit();
+      return;
+    }
+
     const deleteBtn = event.target.closest('.task-card__del');
-    if (!deleteBtn) return;
+    if (deleteBtn) {
+      event.preventDefault();
+      event.stopPropagation();
 
-    event.preventDefault();
-    event.stopPropagation();
+      const taskId = Number(deleteBtn.dataset.taskId);
+      if (!taskId) return;
 
-    const taskId = Number(deleteBtn.dataset.taskId);
+      removeTask(taskId);
+      return;
+    }
+  });
+  taskList.addEventListener('click', (event) => {
+    const editBtn = event.target.closest('.task-card__edit');
+    if (editBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const taskId = Number(editBtn.dataset.taskId);
+      if (!taskId) return;
+
+      startTaskEdit(taskId);
+      return;
+    }
+
+    const saveBtn = event.target.closest('.task-card__save');
+    if (saveBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const taskId = Number(saveBtn.dataset.taskId);
+      const input = taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
+
+      if (!taskId || !input) return;
+
+      const result = updateTaskTitle(taskId, input.value);
+
+      if (!result.ok) {
+        alert('El título no puede estar vacío.');
+        input.focus();
+        input.select();
+      }
+
+      return;
+    }
+
+    const cancelBtn = event.target.closest('.task-card__cancel');
+    if (cancelBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+      cancelTaskEdit();
+      return;
+    }
+
+    const deleteBtn = event.target.closest('.task-card__del');
+    if (deleteBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const taskId = Number(deleteBtn.dataset.taskId);
+      if (!taskId) return;
+
+      removeTask(taskId);
+    }
+  });
+
+  taskList.addEventListener('keydown', (event) => {
+    const input = event.target.closest('.task-card__input');
+    if (!input) return;
+
+    const taskId = Number(input.dataset.taskId);
     if (!taskId) return;
 
-    removeTask(taskId);
+    if (event.key === 'Enter') {
+      event.preventDefault();
+
+      const result = updateTaskTitle(taskId, input.value);
+
+      if (!result.ok) {
+        alert('El título no puede estar vacío.');
+        input.focus();
+        input.select();
+      }
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelTaskEdit();
+    }
   });
 
   taskList.addEventListener('change', (event) => {
@@ -686,6 +941,7 @@ function init() {
 
 window.TaskFlowApp = {
   addTaskFromData,
+
   getDesktopDefaults() {
     return {
       category: taskCategory ? taskCategory.value : 'Personal',
@@ -713,6 +969,7 @@ window.TaskFlowApp = {
       return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
     }).length;
   },
+
   refreshUI
 };
 

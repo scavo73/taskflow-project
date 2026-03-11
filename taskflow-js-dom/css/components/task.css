@@ -39,7 +39,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 1rem;
   min-height: 160px;
   height: 100%;
   padding: 1rem;
@@ -54,9 +54,32 @@
   transform: translateY(-1px);
 }
 
-.task-item__toggle:focus-visible + .task-card {
+.task-item__toggle:focus-visible+.task-card {
   outline: 2px solid rgba(0, 0, 0, 0.24);
   outline-offset: 3px;
+}
+
+.task-item__toggle:checked+.task-card {
+  box-shadow: var(--shadow-inset);
+}
+
+.task-item__toggle:checked+.task-card .task-card__title,
+.task-item__toggle:checked+.task-card .task-card__cat,
+.task-item__toggle:checked+.task-card .prio {
+  opacity: 0.68;
+}
+
+.task-item__toggle:checked+.task-card .task-card__title {
+  text-decoration: line-through;
+}
+
+.task-card__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .task-card__top,
@@ -82,6 +105,24 @@
   overflow-wrap: break-word;
 }
 
+.task-card__input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: 14px;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+  outline: none;
+  box-shadow: var(--shadow-inset);
+}
+
+.task-card__input:focus {
+  outline: 2px solid rgba(0, 0, 0, 0.12);
+  outline-offset: 2px;
+}
+
 .task-card__cat {
   display: inline-flex;
   align-items: center;
@@ -92,21 +133,19 @@
   box-shadow: inset 3px 3px 5px #d4d4d4, inset -3px -3px 5px #ffffff;
 }
 
+.task-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+
+.task-card__edit,
+.task-card__save,
+.task-card__cancel,
 .task-card__del {
-  color: var(--danger);
   cursor: pointer;
 }
 
-.task-item__toggle:checked + .task-card {
-  box-shadow: var(--shadow-inset);
-}
-
-.task-item__toggle:checked + .task-card .task-card__title,
-.task-item__toggle:checked + .task-card .task-card__cat,
-.task-item__toggle:checked + .task-card .prio {
-  opacity: 0.68;
-}
-
-.task-item__toggle:checked + .task-card .task-card__title {
-  text-decoration: line-through;
+.task-card__del {
+  color: var(--danger);
 }

@@ -1,32 +1,44 @@
-@media (max-width: 768px) {
-
-    /* En móvil, la navegación se mueve a la tabbar inferior */
-    .navegacion {
-        display: none;
+/* =========================
+   <= 1200px
+========================= */
+@media (max-width: 1200px) {
+    .grid-tareas {
+        --grid-gap-tareas: 1.5rem;
     }
 
-    .tabbar {
-        display: block;
+    .campo-texto {
+        padding: 0.8rem;
     }
 
-    .fila-formulario {
-        grid-template-columns: 1fr;
+    .principal-layout {
+        --grid-gap-layout: 1.5rem;
     }
-
-    .navegacion {
-        width: 100%;
-    }
-
-    .fila-formulario {
-        grid-template-columns: 1fr;
-    }
-
-    .form-fila-formulario {
-        grid-template-columns: 1fr !important;
-    }
-
 }
 
+/* =========================
+   <= 1024px
+========================= */
+@media (max-width: 1024px) {
+    .grid-tareas {
+        --grid-gap-tareas: 1.5rem;
+    }
+}
+
+/* =========================
+   <= 992px
+========================= */
+@media (max-width: 992px) {
+
+    #btnToggleLayout span,
+    #btnCompleteAllTasks span,
+    #btnDeleteAllTasks span {
+        display: none;
+    }
+}
+
+/* =========================
+   >= 766px
+========================= */
 @media (min-width: 766px) {
     .contenedor-vidrio {
         padding: var(--padding-vidrio-m);
@@ -42,43 +54,58 @@
 
     .progreso {
         margin-bottom: var(--padding-bottm-m);
-        gap: var(progreso--gap-m);
+        gap: var(--progreso--gap-m);
     }
-
-
-
 }
 
+/* =========================
+   <= 768px
+========================= */
 @media (max-width: 768px) {
+
+    /* Layout general */
     .principal-layout {
         grid-template-columns: 1fr;
     }
-}
 
-@media (max-width: 360px) {
-    .principal-layout {
-        gap: 12px;
-        padding: 12px;
-
-    }
-
-    .badge-prioridad {
-        margin-left: 8px;
-    }
-
-    .tarea__titulo {
-        font-size: 18px;
-    }
-
-}
-
-@media (max-width: 768px) {
     .seccion-tareas {
         margin-bottom: calc(var(--alto-tabbar) + 62px + env(safe-area-inset-bottom));
     }
-}
 
-@media (max-width: 768px) {
+    /* Navegación móvil */
+    .navegacion {
+        display: none;
+        width: 100%;
+    }
+
+    .tabbar {
+        display: block;
+    }
+
+    /* Formularios */
+    .fila-formulario,
+    .form-fila-formulario {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-texto {
+        padding: 0.6rem;
+    }
+
+    .campo-texto--en-header {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .campo-texto--en-header .form {
+        width: 100%;
+    }
+
+    .campo-texto--en-header .form-fila-formulario {
+        grid-template-columns: 1fr;
+    }
+
+    /* Header */
     .contenedor__encabezado-derecho {
         display: flex;
         align-items: center;
@@ -86,23 +113,7 @@
         flex-wrap: wrap;
     }
 
-    .tarea-nueva--en-header {
-        width: 100%;
-        margin-top: 12px;
-    }
-
-    .tarea-nueva--en-header .form {
-        width: 100%;
-    }
-
-    .tarea-nueva--en-header .form-fila-formulario {
-        grid-template-columns: 1fr;
-    }
-
-    .busqueda-tareas {
-        padding: 0.4rem 0.3rem;
-    }
-
+    /* Botones / progreso */
     .btn-primario {
         padding: 7px;
     }
@@ -113,9 +124,26 @@
         top: 3.9rem;
     }
 
+    /* Fondo */
     body {
         background: var(--color-fondo);
     }
+}
 
+/* =========================
+   <= 360px
+========================= */
+@media (max-width: 360px) {
+    .principal-layout {
+        gap: 12px;
+        padding: 12px;
+    }
 
+    .badge-prioridad {
+        margin-left: 8px;
+    }
+
+    .tarea__titulo {
+        font-size: 18px;
+    }
 }

@@ -16,7 +16,7 @@
 
 .form-campo__etiqueta {
     font-size: 14px;
-    color: var(--color-texto-suave);
+    font-weight: 700;
 }
 
 .form-campo__control {

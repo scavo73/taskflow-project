@@ -71,14 +71,17 @@ badge:active {
 .badge-navegacion {
     display: inline-flex;
     position: absolute;
-    top: -17px;
-    right: -21px;
+    top: -19px;
+    right: -33px;
     align-items: center;
     justify-content: center;
-    color: azure;
     padding: 0.25rem 0.45rem;
-    border-radius: 5px;
-    background: rgb(0, 61, 140);
+    border-radius: 1px;
+    background: linear-gradient(145deg, #d5d5d5, #fefefe);
+    box-shadow: 2px 2px 4px #c9c9c9,
+        -2px -2px 4px #ffffff;
     font-size: 0.75rem;
     line-height: 1;
+    font-weight: 600;
+    color: black;
 }

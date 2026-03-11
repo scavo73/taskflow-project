@@ -9,10 +9,19 @@
     display: inline-flex;
     align-items: center;
     padding: 8px 10px;
-    border-radius: var(--radio-2);
+    /* border-radius: var(--radio-2);
     color: var(--color-texto-suave);
     text-decoration: none;
-    border: 1px solid var(--color-borde);
+    border: 1px solid var(--color-borde); */
+
+    color: #090909;
+    padding: 0.7em 1.7em;
+    border-radius: 0.5em;
+    background: #e8e8e8;
+    cursor: pointer;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s;
+    box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
 }
 
 .navegacion-seccion {
@@ -46,8 +55,8 @@ a span {
     height: 34px;
     display: inline-grid;
     place-items: center;
-    border-radius: 999px;
-    border: 1px solid var(--color-borde);
-    background: rgba(124, 92, 255, .18);
+    /* border-radius: 999px;
+    border: 1px solid var(--color-borde); */
+    /* background: rgba(124, 92, 255, .18); */
     font-weight: 700;
 }

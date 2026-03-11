@@ -34,6 +34,15 @@
 
 }
 
+.form-campo__dropdown {
+    padding: 1em 1.7em;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #d5d5d5, #fefefe);
+    box-shadow: 7px 7px 14px #c9c9c9,
+        -7px -7px 14px #ffffff;
+}
+
 select.form-campo__control option {
     color: #111;
     background: #fff;
@@ -44,13 +53,32 @@ select.form-campo__control option {
     box-shadow: var(--campo-focus-ring);
 }
 
-select.form-campo__control {
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+select.form-campo__dropdown {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     padding-right: 44px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px 16px;
+
+    /* light mode arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
 }
+
+/* @media (prefers-color-scheme: dark) {
+    select.form-campo__dropdown {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        color: #fff;
+        background-color: #111;
+    }
+} */

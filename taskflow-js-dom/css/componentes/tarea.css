@@ -36,9 +36,9 @@
     color: rgb(2, 106, 42);
     font-size: 32px;
     font-weight: 900;
-    background: rgba(2, 121, 48, 0.269);
     background-image: blur(4px);
     border-radius: var(--radio-3);
+    transition: all 0.3s;
 }
 
 .tarea--content {
@@ -89,13 +89,17 @@
 }
 
 .tarea__categoria {
-    align-self: flex-start;
-    padding: 4px 10px;
-    border-radius: 999px;
+    /* align-self: flex-start;
+ 
     border: 1px solid var(--color-borde);
     color: var(--color-texto-badge);
+    
+    background: rgba(0, 0, 0, 0.18); */
     font-size: 12px;
-    background: rgba(0, 0, 0, 0.18);
+    padding: 4px 10px;
+    border-radius: 6px;
+    box-shadow: inset 3px 3px 5px #c5c5c54a,
+        inset -3px -3px 5px #ffffff;
 }
 
 .tarea__borrar {

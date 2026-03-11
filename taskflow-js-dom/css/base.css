@@ -15,8 +15,8 @@
     --fuente-principal: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
 
     /* Tarrea  */
-    --padding-tarjeta-s: 0.5rem;
-    --padding-tarjeta-m: 0.8rem;
+    --padding-tarjeta-s: 1rem;
+    --padding-tarjeta-m: 1.2rem;
     --gap-tarea: 2rem;
     --grid-gap-tareas: 2.5rem;
 
@@ -50,7 +50,7 @@
     /* Progreso */
     --padding-bottm-s: 0.5rem;
     --padding-bottm-m: 1rem;
-    --progreso--gap-s: 0.6rem;
+    --progreso--gap-s: 1rem;
     --progreso--gap-m: 1.125rem;
 
     /* Formulario */

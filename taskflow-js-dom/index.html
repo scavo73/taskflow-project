@@ -38,8 +38,16 @@
 
             <form class="form-tarea" aria-label="Añadir tarea">
                 <div class="form">
+                    <div class="section-title-fila">
+                        <div class="progreso__texto">
+                            <span class="section-title-row">
+                                <label for="">
+                                    <i data-lucide="sticky-note" aria-hidden="true"></i>
+                                </label>
+                                <span class="section-title-titulo">Crear Tarea nueva</span>
+                        </div>
+                    </div>
                     <div class="form-campo">
-                        <label class="form-campo__etiqueta" for="tituloTarea">Título</label>
                         <input class="form-campo__control" id="tituloTarea" type="text"
                             placeholder="Ej: Enviar propuesta" />
                     </div>
@@ -65,7 +73,7 @@
                         </div>
                     </div>
 
-                    <button class="btn-primario" type="submit">
+                    <button class="btn-primario mtop" type="submit">
                         Añadir tarea
                     </button>
                 </div>
@@ -75,23 +83,27 @@
                 <h2 class="panel__titulo" aria-label="Filtros">
                     <i data-lucide="list-filter" aria-hidden="true"></i>
                 </h2>
+
                 <section class="filtros" aria-label="Filtro por estado">
                     <h3 class="filtros__titulo">Estado</h3>
 
-                    <div class="filtros__grupo" role="radiogroup" aria-label="Estado">
-                        <label class="opcion">
+                    <div class="filtros__grupo filtros__grupo--stack" role="radiogroup" aria-label="Estado">
+                        <label class="filtro-option">
                             <input type="radio" name="estado" value="all" checked />
-                            <span class="btn-filtro">Todos</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Todos</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="radio" name="estado" value="pending" />
-                            <span class="btn-filtro">Pendientes</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Pendientes</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="radio" name="estado" value="done" />
-                            <span class="btn-filtro">Completadas</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Completadas</span>
                         </label>
                     </div>
                 </section>
@@ -99,20 +111,23 @@
                 <section class="filtros" aria-label="Filtro por prioridad">
                     <h3 class="filtros__titulo">Prioridad</h3>
 
-                    <div class="filtros__grupo" aria-label="Prioridad">
-                        <label class="opcion">
+                    <div class="filtros__grupo filtros__grupo--stack" aria-label="Prioridad">
+                        <label class="filtro-option">
                             <input type="checkbox" name="prioridad" value="high" />
-                            <span class="btn-filtro">Alta</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Alta</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="checkbox" name="prioridad" value="med" />
-                            <span class="btn-filtro">Media</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Media</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="checkbox" name="prioridad" value="low" />
-                            <span class="btn-filtro">Baja</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Baja</span>
                         </label>
                     </div>
                 </section>
@@ -120,25 +135,29 @@
                 <section class="filtros" aria-label="Filtro por categoría">
                     <h3 class="filtros__titulo">Categoría</h3>
 
-                    <div class="filtros__grupo" aria-label="Categoría">
-                        <label class="opcion">
+                    <div class="filtros__grupo filtros__grupo--stack" aria-label="Categoría">
+                        <label class="filtro-option">
                             <input type="checkbox" name="cat" value="trabajo" />
-                            <span class="btn-filtro">Trabajo</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Trabajo</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="checkbox" name="cat" value="estudio" />
-                            <span class="btn-filtro">Estudio</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Estudio</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="checkbox" name="cat" value="personal" />
-                            <span class="btn-filtro">Personal</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Personal</span>
                         </label>
 
-                        <label class="opcion">
+                        <label class="filtro-option">
                             <input type="checkbox" name="cat" value="salud" />
-                            <span class="btn-filtro">Salud</span>
+                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
+                            <span class="filtro-option__text">Salud</span>
                         </label>
                     </div>
                 </section>
@@ -151,13 +170,15 @@
 
         <section class="seccion-tareas" aria-label="Tareas">
             <div class="progreso" aria-label="Progreso de tareas">
-                <div class="progreso__fila">
+                <div class="section-title-fila">
                     <div class="progreso__texto">
-                        <span class="progreso__titulo">Progreso</span>
-                        <span class="progreso__hechos">0</span>
-                        de
-                        <span class="contador-tareas">6</span>
-                        completadas
+                        <span class="section-title-row">
+                            <i data-lucide="pickaxe" aria-hidden="true"></i>
+                            <span class="section-title-titulo">Progreso</span>
+                            <span class="progreso__hechos">0</span>
+                            de
+                            <span class="contador-tareas">6</span>
+                            completadas
                     </div>
                 </div>
 

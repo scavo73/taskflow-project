@@ -20,13 +20,15 @@
 }
 
 .form-campo__control {
-    padding: 10px 12px;
     border-radius: var(--border-radius-formulario);
-    border-radius: 12px;
-    gap: 0.65rem;
-    padding: 0.72rem 0.9rem;
-    background: lightgrey;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #e8e8e8;
+    box-shadow: -6px -6px 12px #c5c5c5,
+        6px 6px 12px #ffffff;
+    /* background: lightgrey;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset; */
     outline: none;
     border: none;
 

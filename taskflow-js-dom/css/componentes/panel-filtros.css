@@ -20,17 +20,16 @@
 }
 
 .filtros__titulo {
-    font-size: 13px;
-    margin-bottom: 1rem;
+    font-size: 14px;
 }
 
-.filtros__elegidos {
+/* .filtros__elegidos {
     min-height: 30px;
-}
+} */
 
-.filtros__elegidos:empty {
+/* .filtros__elegidos:empty {
     min-height: 30px;
-}
+} */
 
 #lista-filtros-selecionados {
     display: flex;

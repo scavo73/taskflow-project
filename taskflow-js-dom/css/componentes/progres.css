@@ -8,23 +8,22 @@
     z-index: 30; */
 }
 
-.progreso__fila {
+.section-title-fila {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: var(--espacio-3);
 }
 
-.progreso__texto {
+.section-title-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: baseline;
-}
-
-.progreso__titulo {
+    gap: 0.2rem;
     font-weight: 700;
     letter-spacing: .2px;
+}
+
+.section-title-titulo {
+    margin-left: 0.5rem;
 }
 
 .progreso__hechos {
@@ -63,9 +62,16 @@
     align-items: center;
     border-radius: 12px;
     gap: 0.65rem;
-    padding: 0.72rem 0.9rem;
+
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #e8e8e8;
+    box-shadow: 6px 6px 12px #ffffff,
+        -6px -6px 12px #c5c5c5;
+    /* padding: 0.72rem 0.9rem;
     background: lightgrey;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 50px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 26px -18px inset; */
 }
 
 .busqueda-tareas .lucide {
@@ -81,7 +87,7 @@
     border: 0;
     outline: 0;
     background: transparent;
-    color: var(--color-texto);
+    color: #525252;
     font: inherit;
 }
 

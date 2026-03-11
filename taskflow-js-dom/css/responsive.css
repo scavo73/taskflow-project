@@ -41,7 +41,6 @@
     }
 
     .progreso {
-        padding-top: 1rem;
         margin-bottom: var(--padding-bottm-m);
         gap: var(progreso--gap-m);
     }

@@ -1,0 +1,10 @@
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+}
+
+svg,
+i {
+  display: block;
+}

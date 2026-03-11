@@ -1,10 +1,10 @@
 (() => {
   document.addEventListener('DOMContentLoaded', () => {
     const mq = window.matchMedia('(max-width: 768px)');
-    const headerRight = document.querySelector('.contenedor__encabezado-derecho');
-    const desktopForm = document.querySelector('.form-tarea');
+    const topbarRight = document.querySelector('.topbar__right');
+    const desktopForm = document.querySelector('.task-form');
 
-    if (!headerRight || !desktopForm) return;
+    if (!topbarRight || !desktopForm) return;
 
     let openBtn = null;
     let dialog = null;
@@ -20,10 +20,9 @@
       if (!api) return;
 
       const defaults = api.getDesktopDefaults();
-
-      const mobileTitle = document.getElementById('mobileTituloTarea');
-      const mobileCategory = document.getElementById('mobileCategoriaTarea');
-      const mobilePriority = document.getElementById('mobilePrioridadTarea');
+      const mobileTitle = document.getElementById('mobileTaskTitle');
+      const mobileCategory = document.getElementById('mobileTaskCategory');
+      const mobilePriority = document.getElementById('mobileTaskPriority');
 
       if (!mobileTitle || !mobileCategory || !mobilePriority) return;
 
@@ -34,14 +33,11 @@
 
     function submitMobileTask() {
       const api = window.TaskFlowApp;
-      if (!api) {
-        console.error('TaskFlowApp no está disponible');
-        return;
-      }
+      if (!api) return;
 
-      const mobileTitle = document.getElementById('mobileTituloTarea');
-      const mobileCategory = document.getElementById('mobileCategoriaTarea');
-      const mobilePriority = document.getElementById('mobilePrioridadTarea');
+      const mobileTitle = document.getElementById('mobileTaskTitle');
+      const mobileCategory = document.getElementById('mobileTaskCategory');
+      const mobilePriority = document.getElementById('mobileTaskPriority');
 
       if (!mobileTitle || !mobileCategory || !mobilePriority) return;
 
@@ -65,9 +61,9 @@
 
       openBtn = document.createElement('button');
       openBtn.type = 'button';
-      openBtn.className = 'btn-primario btn-nueva-tarea-mobile';
+      openBtn.className = 'btn mobile-add-btn';
       openBtn.setAttribute('aria-haspopup', 'dialog');
-      openBtn.setAttribute('aria-controls', 'modalNuevaTareaMobile');
+      openBtn.setAttribute('aria-controls', 'mobileTaskModal');
       openBtn.textContent = 'Añadir tarea';
 
       openBtn.addEventListener('click', () => {
@@ -83,66 +79,60 @@
       if (dialog) return dialog;
 
       dialog = document.createElement('dialog');
-      dialog.id = 'modalNuevaTareaMobile';
-      dialog.className = 'modal-tarea-mobile';
+      dialog.id = 'mobileTaskModal';
+      dialog.className = 'task-modal';
 
       dialog.innerHTML = `
-        <div class="modal-tarea-mobile__box">
-          <div class="modal-tarea-mobile__header">
-            <h2 class="modal-tarea-mobile__title">Nueva tarea</h2>
+        <div class="task-modal__box">
+          <div class="task-modal__head">
+            <h2 class="task-modal__title">Nueva tarea</h2>
             <button
               type="button"
-              class="modal-tarea-mobile__close"
+              class="task-modal__close"
               aria-label="Cerrar modal"
             >
               ✕
             </button>
           </div>
 
-          <form
-            class="modal-tarea-mobile__form"
-            id="mobileTaskForm"
-            aria-label="Añadir tarea en móvil"
-          >
-            <div class="form">
-            <div>
-              <div class="form-campo">
-                <label class="form-campo__etiqueta" for="mobileTituloTarea">Título</label>
-                <input
-                  class="form-campo__control"
-                  id="mobileTituloTarea"
-                  type="text"
-                  placeholder="Ej: Enviar propuesta"
-                />
-              </div>
-
-              <div class="form-fila-formulario">
-                <div class="form-campo">
-                  <label class="form-campo__etiqueta" for="mobileCategoriaTarea">Categoría</label>
-                  <select class="form-campo__control" id="mobileCategoriaTarea">
-                    <option>Trabajo</option>
-                    <option>Estudio</option>
-                    <option>Personal</option>
-                    <option>Salud</option>
-                  </select>
+          <form class="task-modal__form" id="mobileTaskForm" aria-label="Añadir tarea en móvil">
+            <div class="form-grid">
+              <div>
+                <div class="field">
+                  <label class="label" for="mobileTaskTitle">Título</label>
+                  <input
+                    class="input"
+                    id="mobileTaskTitle"
+                    type="text"
+                    placeholder="Ej: Enviar propuesta"
+                  />
                 </div>
 
-                <div class="form-campo">
-                  <label class="form-campo__etiqueta" for="mobilePrioridadTarea">Prioridad</label>
-                  <select class="form-campo__control" id="mobilePrioridadTarea">
-                    <option>Alta</option>
-                    <option selected>Media</option>
-                    <option>Baja</option>
-                  </select>
+                <div class="form-row">
+                  <div class="field">
+                    <label class="label" for="mobileTaskCategory">Categoría</label>
+                    <select class="select" id="mobileTaskCategory">
+                      <option>Trabajo</option>
+                      <option>Estudio</option>
+                      <option>Personal</option>
+                      <option>Salud</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label class="label" for="mobileTaskPriority">Prioridad</label>
+                    <select class="select" id="mobileTaskPriority">
+                      <option>Alta</option>
+                      <option selected>Media</option>
+                      <option>Baja</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              </div>
 
-              <div class="modal-tarea-mobile__actions">
-                <button type="button" class="badge modal-cancelar">Cancelar</button>
-                <button class="btn-primario" type="submit">
-                  Añadir tarea
-                </button>
+              <div class="task-modal__actions">
+                <button type="button" class="chip modal-cancel">Cancelar</button>
+                <button class="btn btn--primary" type="submit">Añadir tarea</button>
               </div>
             </div>
           </form>
@@ -151,10 +141,10 @@
 
       document.body.appendChild(dialog);
 
-      const closeBtn = dialog.querySelector('.modal-tarea-mobile__close');
-      const cancelBtn = dialog.querySelector('.modal-cancelar');
+      const closeBtn = dialog.querySelector('.task-modal__close');
+      const cancelBtn = dialog.querySelector('.modal-cancel');
       const mobileForm = dialog.querySelector('#mobileTaskForm');
-      const modalBox = dialog.querySelector('.modal-tarea-mobile__box');
+      const modalBox = dialog.querySelector('.task-modal__box');
 
       closeBtn.addEventListener('click', closeDialog);
       cancelBtn.addEventListener('click', closeDialog);
@@ -178,7 +168,7 @@
 
       if (!openBtn) {
         const btn = createMobileButton();
-        headerRight.insertBefore(btn, headerRight.firstChild);
+        topbarRight.insertBefore(btn, topbarRight.firstChild);
       }
 
       desktopForm.style.display = 'none';

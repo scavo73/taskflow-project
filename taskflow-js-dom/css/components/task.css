@@ -1,0 +1,112 @@
+.task-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--task-min)), 1fr));
+}
+
+.task-grid.is-list {
+  grid-template-columns: 1fr;
+}
+
+.task-list {
+  display: contents;
+}
+
+.task-list__item {
+  min-width: 0;
+}
+
+.task-item {
+  position: relative;
+  height: 100%;
+}
+
+.task-item__toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 160px;
+  height: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: transform var(--ease), box-shadow var(--ease), opacity var(--ease);
+}
+
+.task-card:hover {
+  transform: translateY(-1px);
+}
+
+.task-item__toggle:focus-visible + .task-card {
+  outline: 2px solid rgba(0, 0, 0, 0.24);
+  outline-offset: 3px;
+}
+
+.task-card__top,
+.task-card__bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.task-card__bottom {
+  align-items: center;
+}
+
+.task-card__title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.task-card__cat {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.55rem;
+  font-size: 0.75rem;
+  box-shadow: inset 3px 3px 5px #d4d4d4, inset -3px -3px 5px #ffffff;
+}
+
+.task-card__del {
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.task-item__toggle:checked + .task-card {
+  box-shadow: var(--shadow-inset);
+}
+
+.task-item__toggle:checked + .task-card .task-card__title,
+.task-item__toggle:checked + .task-card .task-card__cat,
+.task-item__toggle:checked + .task-card .prio {
+  opacity: 0.68;
+}
+
+.task-item__toggle:checked + .task-card .task-card__title {
+  text-decoration: line-through;
+}

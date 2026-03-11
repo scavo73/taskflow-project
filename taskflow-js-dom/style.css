@@ -1,21 +1,22 @@
-/* style.css */
+@import url("./css/core/vars.css");
+@import url("./css/core/reset.css");
+@import url("./css/core/base.css");
 
-@import url("./css/base.css");
-@import url("./css/typography.css");
-@import url("./css/utilities.css");
+@import url("./css/layout/topbar.css");
+@import url("./css/layout/app.css");
 
-@import url("./css/componentes/drawer.css");
-@import url("./css/componentes/header.css");
-@import url("./css/componentes/navegacion.css");
-@import url("./css/componentes/panel-filtros.css");
-@import url("./css/componentes/grid-tareas.css");
-@import url("./css/componentes/tarea.css");
-@import url("./css/componentes/badges.css");
-@import url("./css/componentes/btn.css");
-@import url("./css/componentes/form.css");
-@import url("./css/componentes/progres.css");
-@import url("./css/componentes/tabbar.css");
-@import url("./css/componentes/modal-form.css");
+@import url("./css/components/box.css");
+@import url("./css/components/nav.css");
+@import url("./css/components/section.css");
+@import url("./css/components/form.css");
+@import url("./css/components/button.css");
+@import url("./css/components/filter.css");
+@import url("./css/components/chip.css");
+@import url("./css/components/stats.css");
+@import url("./css/components/task.css");
+@import url("./css/components/bottom-nav.css");
+@import url("./css/components/drawer.css");
+@import url("./css/components/modal.css");
 
-
+@import url("./css/utilities/helpers.css");
 @import url("./css/responsive.css");

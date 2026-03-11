@@ -2,258 +2,261 @@
 <html lang="es">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TaskFlow – Maqueta</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TaskFlow – Maqueta</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <header class="contenedor" aria-label="Encabezado principal">
-        <div class="contenedor__encabezado">
-            <div class="contendor__encabezado-izquierdo">
-                <div class="marca">
-                    <span class="marca__logo">TaskFlow</span>
-                </div>
-                <nav class="navegacion" aria-label="Navegación principal">
-                    <a class="navegacion__enlace is-activo" href="#">
-                        <div class="navegacion-seccion">
-                            <span class="navegacion-seccion__titulo">Tareas</span>
-                            <span class="badge-navegacion contador-tareas"></span>
-                        </div>
-                    </a>
-                    <a class="navegacion__enlace" href="#"><span class="navegacion-seccion__titulo">Ajustes</span></a>
-                </nav>
+  <header class="topbar" aria-label="Encabezado principal">
+    <div class="topbar__inner">
+      <div class="topbar__left">
+        <a class="brand" href="#" aria-label="TaskFlow">
+          <span class="brand__logo">TaskFlow</span>
+        </a>
+
+        <nav class="nav" aria-label="Navegación principal">
+          <a class="nav__link is-active" href="#">
+            <span class="nav__text">Tareas</span>
+            <span class="count-pill task-count"></span>
+          </a>
+
+          <a class="nav__link" href="#">
+            <span class="nav__text">Ajustes</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="topbar__right" aria-label="Acciones">
+        <span class="avatar" aria-label="Usuario">OJ</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar" aria-label="Panel lateral">
+      <form class="task-form" aria-label="Añadir tarea">
+        <div class="box box--pad">
+          <div class="sec-head">
+            <span class="sec-head__icon" aria-hidden="true">
+              <i data-lucide="sticky-note"></i>
+            </span>
+            <h2 class="sec-head__title">Crear tarea nueva</h2>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <input
+                class="input"
+                id="taskTitle"
+                type="text"
+                placeholder="Ej: Enviar propuesta"
+              />
             </div>
 
-            <div class=" contenedor__encabezado-derecho" aria-label="Acciones">
-                <span class="avatar-iniciales" aria-label="Usuario">OJ</span>
+            <div class="form-row">
+              <div class="field">
+                <label class="label" for="taskCategory">Categoría</label>
+                <select class="select" id="taskCategory">
+                  <option>Trabajo</option>
+                  <option>Estudio</option>
+                  <option>Personal</option>
+                  <option>Salud</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label class="label" for="taskPriority">Prioridad</label>
+                <select class="select" id="taskPriority">
+                  <option>Alta</option>
+                  <option selected>Media</option>
+                  <option>Baja</option>
+                </select>
+              </div>
             </div>
+
+            <button class="btn btn--primary" type="submit">Añadir tarea</button>
+          </div>
         </div>
-    </header>
+      </form>
 
-    <main class="principal-layout">
+      <div class="box box--pad filter-panel">
+        <div class="sec-head panel__head">
+          <span class="sec-head__icon" aria-hidden="true">
+            <i data-lucide="list-filter"></i>
+          </span>
+          <h2 class="sec-head__title panel__title">Filtros</h2>
+        </div>
 
-        <aside class="barra-lateral" aria-label="">
+        <section class="filter-group" aria-label="Filtro por estado">
+          <h3 class="filter-group__title">Estado</h3>
 
-            <form class="form-tarea" aria-label="Añadir tarea">
-                <div class="form">
-                    <div class="section-title-row">
-                        <span class="section-title-icon" aria-hidden="true">
-                            <i data-lucide="sticky-note"></i>
-                        </span>
-                        <h2 class="section-title-titulo">Crear tarea nueva</h2>
-                    </div>
-                    <div class="form-campo">
-                        <input class="form-campo__control" id="tituloTarea" type="text"
-                            placeholder="Ej: Enviar propuesta" />
-                    </div>
+          <div class="choice-list" role="radiogroup" aria-label="Estado">
+            <label class="choice">
+              <input type="radio" name="status" value="all" checked />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Todos</span>
+            </label>
 
-                    <div class="form-fila-formulario">
-                        <div class="form-campo">
-                            <label class="form-campo__etiqueta" for="categoria-tarea">Categoría</label>
-                            <select class="form-campo__dropdown" id="categoria-tarea">
-                                <option>Trabajo</option>
-                                <option>Estudio</option>
-                                <option>Personal</option>
-                                <option>Salud</option>
-                            </select>
-                        </div>
+            <label class="choice">
+              <input type="radio" name="status" value="pending" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Pendientes</span>
+            </label>
 
-                        <div class="form-campo">
-                            <label class="form-campo__etiqueta" for="prioridad-tarea">Prioridad</label>
-                            <select class="form-campo__dropdown" id="prioridad-tarea">
-                                <option>Alta</option>
-                                <option selected>Media</option>
-                                <option>Baja</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button class="btn-primario mtop" type="submit">
-                        Añadir tarea
-                    </button>
-                </div>
-            </form>
-
-            <div class="panel">
-
-                <div class="section-title-row">
-                    <span class="section-title-icon" aria-hidden="true">
-                        <i data-lucide="list-filter" aria-hidden="true"></i>
-                    </span>
-                    <h2 class="section-title-titulo">Filtros</h2>
-                </div>
-
-                <section class="filtros" aria-label="Filtro por estado">
-                    <h3 class="filtros__titulo">Estado</h3>
-
-                    <div class="filtros__grupo filtros__grupo--stack" role="radiogroup" aria-label="Estado">
-                        <label class="filtro-option">
-                            <input type="radio" name="estado" value="all" checked />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Todos</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="radio" name="estado" value="pending" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Pendientes</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="radio" name="estado" value="done" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Completadas</span>
-                        </label>
-                    </div>
-                </section>
-
-                <section class="filtros" aria-label="Filtro por prioridad">
-                    <h3 class="filtros__titulo">Prioridad</h3>
-
-                    <div class="filtros__grupo filtros__grupo--stack" aria-label="Prioridad">
-                        <label class="filtro-option">
-                            <input type="checkbox" name="prioridad" value="high" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Alta</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="checkbox" name="prioridad" value="med" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Media</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="checkbox" name="prioridad" value="low" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Baja</span>
-                        </label>
-                    </div>
-                </section>
-
-                <section class="filtros" aria-label="Filtro por categoría">
-                    <h3 class="filtros__titulo">Categoría</h3>
-
-                    <div class="filtros__grupo filtros__grupo--stack" aria-label="Categoría">
-                        <label class="filtro-option">
-                            <input type="checkbox" name="cat" value="trabajo" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Trabajo</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="checkbox" name="cat" value="estudio" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Estudio</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="checkbox" name="cat" value="personal" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Personal</span>
-                        </label>
-
-                        <label class="filtro-option">
-                            <input type="checkbox" name="cat" value="salud" />
-                            <span class="filtro-option__checkmark" aria-hidden="true"></span>
-                            <span class="filtro-option__text">Salud</span>
-                        </label>
-                    </div>
-                </section>
-
-                <button type="button" id="btnLimpiarFiltros" class="btn-primario btn-limpiar-filtros" hidden>
-                    Limpiar filtros
-                </button>
-            </div>
-        </aside>
-
-        <section class="seccion-tareas" aria-label="Tareas">
-            <div class="progreso" aria-label="Progreso de tareas">
-
-                <div class="section-title-row">
-                    <span class="section-title-icon" aria-hidden="true">
-                        <i data-lucide="pickaxe" aria-hidden="true"></i>
-                    </span>
-                    <h2 class="section-title-titulo"> <span class="section-title-titulo">Progreso: </span>
-                        <span class="progreso__hechos">0</span>
-                        de
-                        <span class="contador-tareas">6</span>
-                        completadas
-                    </h2>
-                </div>
-
-                <div class="progreso__barra" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                    aria-valuenow="25">
-                    <div class="progreso__relleno" style="width: 0%"></div>
-                </div>
-
-                <div class="progreso__acciones">
-                    <div class="campo-texto">
-                        <i data-lucide="search" aria-hidden="true"></i>
-                        <input type="search" id="buscarTareas" class="busqueda-tareas__input"
-                            placeholder="Buscar tareas" aria-label="Buscar tareas" />
-                    </div>
-
-                </div>
-                <div class="filtros__elegidos">
-                    <ul id="lista-filtros-selecionados"></ul>
-                </div>
-            </div>
-
-            <div class="acciones-tareas" aria-label="Acciones de tareas">
-                <button type="button" class="badge accion-tareas-btn" id="btnToggleLayout" aria-pressed="false">
-                    <i data-lucide="rows-3" aria-hidden="true"></i>
-                    <span>Vista lista</span>
-                </button>
-
-                <button type="button" class="badge accion-tareas-btn" id="btnCompleteAllTasks">
-                    <i data-lucide="check-check" aria-hidden="true"></i>
-                    <span>Completar todas</span>
-                </button>
-
-                <button type="button" class="badge accion-tareas-btn accion-tareas-btn--danger" id="btnDeleteAllTasks">
-                    <i data-lucide="trash-2" aria-hidden="true"></i>
-                    <span>Borrar todas</span>
-                </button>
-            </div>
-
-
-            <div class="grid-tareas" aria-label="Tarjetas de tareas">
-
-                <ul class="lista-tareas" aria-label="Lista de tareas" id="listContainer"></ul>
-            </div>
+            <label class="choice">
+              <input type="radio" name="status" value="done" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Completadas</span>
+            </label>
+          </div>
         </section>
-    </main>
 
-    <nav class="tabbar" aria-label="Navegación inferior">
-        <div class="tabbar__contenedor">
-            <a class="tabbar__enlace is-activo" href="#" aria-current="page">
-                <div class="navegacion-seccion">
-                    <span class="navegacion-seccion__titulo">Tareas</span>
-                    <span class="badge-navegacion contador-tareas"></span>
-                </div>
-            </a>
+        <section class="filter-group" aria-label="Filtro por prioridad">
+          <h3 class="filter-group__title">Prioridad</h3>
 
-            <a class="tabbar__enlace" href="#">
-                <span class="navegacion-seccion__titulo">Ajustes</span>
-            </a>
+          <div class="choice-list" aria-label="Prioridad">
+            <label class="choice">
+              <input type="checkbox" name="priority" value="high" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Alta</span>
+            </label>
+
+            <label class="choice">
+              <input type="checkbox" name="priority" value="med" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Media</span>
+            </label>
+
+            <label class="choice">
+              <input type="checkbox" name="priority" value="low" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Baja</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="filter-group" aria-label="Filtro por categoría">
+          <h3 class="filter-group__title">Categoría</h3>
+
+          <div class="choice-list" aria-label="Categoría">
+            <label class="choice">
+              <input type="checkbox" name="cat" value="trabajo" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Trabajo</span>
+            </label>
+
+            <label class="choice">
+              <input type="checkbox" name="cat" value="estudio" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Estudio</span>
+            </label>
+
+            <label class="choice">
+              <input type="checkbox" name="cat" value="personal" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Personal</span>
+            </label>
+
+            <label class="choice">
+              <input type="checkbox" name="cat" value="salud" />
+              <span class="choice__mark" aria-hidden="true"></span>
+              <span class="choice__text">Salud</span>
+            </label>
+          </div>
+        </section>
+
+        <button type="button" id="btnClearFilters" class="btn btn--primary btn--clear" hidden>
+          Limpiar filtros
+        </button>
+      </div>
+    </aside>
+
+    <section class="tasks" aria-label="Tareas">
+      <div class="stats">
+        <div class="sec-head">
+          <span class="sec-head__icon" aria-hidden="true">
+            <i data-lucide="pickaxe"></i>
+          </span>
+          <h2 class="sec-head__title">
+            Progreso:
+            <span class="stats__done">0</span>
+            de
+            <span class="task-count">6</span>
+            completadas
+          </h2>
         </div>
-    </nav>
 
-    <script src="filtros-drawer.js"></script>
-    <script src="app.js"></script>
-    <script src="mobile-form.js"></script>
+        <div class="stats__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="stats__fill" style="width: 0%"></div>
+        </div>
 
-    <script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
-    <script defer>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
-        });
-    </script>
+        <div class="stats__actions">
+          <label class="search" aria-label="Buscar tareas">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input
+              type="search"
+              id="taskSearch"
+              class="search__input"
+              placeholder="Buscar tareas"
+              aria-label="Buscar tareas"
+            />
+          </label>
+        </div>
+
+        <div class="active-filters">
+          <ul id="selectedFiltersList"></ul>
+        </div>
+      </div>
+
+      <div class="task-actions" aria-label="Acciones de tareas">
+        <button type="button" class="chip action-btn" id="btnToggleLayout" aria-pressed="false">
+          <i data-lucide="rows-3" aria-hidden="true"></i>
+          <span>Vista lista</span>
+        </button>
+
+        <button type="button" class="chip action-btn" id="btnCompleteAllTasks">
+          <i data-lucide="check-check" aria-hidden="true"></i>
+          <span>Completar todas</span>
+        </button>
+
+        <button type="button" class="chip action-btn action-btn--danger" id="btnDeleteAllTasks">
+          <i data-lucide="trash-2" aria-hidden="true"></i>
+          <span>Borrar todas</span>
+        </button>
+      </div>
+
+      <div class="task-grid" aria-label="Tarjetas de tareas">
+        <ul class="task-list" aria-label="Lista de tareas" id="taskList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación inferior">
+    <div class="bottom-nav__inner">
+      <a class="bottom-nav__link is-active" href="#" aria-current="page">
+        <span class="bottom-nav__text">Tareas</span>
+        <span class="count-pill task-count"></span>
+      </a>
+
+      <a class="bottom-nav__link" href="#">
+        <span class="bottom-nav__text">Ajustes</span>
+      </a>
+    </div>
+  </nav>
+
+  <script src="js/filters-drawer.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/mobile-task-form.js"></script>
+  <script src="https://unpkg.com/lucide@0.576.0/dist/umd/lucide.js" defer></script>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
 </body>
 
 </html>

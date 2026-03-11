@@ -1,149 +1,74 @@
-/* =========================
-   <= 1200px
-========================= */
 @media (max-width: 1200px) {
-    .grid-tareas {
-        --grid-gap-tareas: 1.5rem;
-    }
-
-    .campo-texto {
-        padding: 0.8rem;
-    }
-
-    .principal-layout {
-        --grid-gap-layout: 1.5rem;
-    }
+  .app {
+    gap: var(--space-6);
+  }
 }
 
-/* =========================
-   <= 1024px
-========================= */
-@media (max-width: 1024px) {
-    .grid-tareas {
-        --grid-gap-tareas: 1.5rem;
-    }
-}
-
-/* =========================
-   <= 992px
-========================= */
 @media (max-width: 992px) {
-
-    #btnToggleLayout span,
-    #btnCompleteAllTasks span,
-    #btnDeleteAllTasks span {
-        display: none;
-    }
+  #btnToggleLayout span,
+  #btnCompleteAllTasks span,
+  #btnDeleteAllTasks span {
+    display: none;
+  }
 }
 
-/* =========================
-   >= 766px
-========================= */
-@media (min-width: 766px) {
-    .contenedor-vidrio {
-        padding: var(--padding-vidrio-m);
-    }
-
-    .principal-layout {
-        padding: var(--padding-principal-vertical-m) var(--padding-principal-horizontal-m);
-    }
-
-    .tarea {
-        padding: var(--padding-tarjeta-m);
-    }
-
-    .progreso {
-        margin-bottom: var(--padding-bottm-m);
-        gap: var(--progreso--gap-m);
-    }
-}
-
-/* =========================
-   <= 768px
-========================= */
 @media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
 
-    /* Layout general */
-    .principal-layout {
-        grid-template-columns: 1fr;
-    }
+  .nav {
+    display: none;
+  }
 
-    .seccion-tareas {
-        margin-bottom: calc(var(--alto-tabbar) + 62px + env(safe-area-inset-bottom));
-    }
+  .topbar__inner {
+    padding: var(--space-4);
+  }
 
-    /* Navegación móvil */
-    .navegacion {
-        display: none;
-        width: 100%;
-    }
+  .tasks {
+    margin-bottom: calc(var(--bottom-nav-h) + 2rem + env(safe-area-inset-bottom));
+  }
 
-    .tabbar {
-        display: block;
-    }
+  .task-form {
+    display: none;
+  }
 
-    /* Formularios */
-    .fila-formulario,
-    .form-fila-formulario {
-        grid-template-columns: 1fr;
-    }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 
-    .campo-texto {
-        padding: 0.6rem;
-    }
+  .task-actions {
+    justify-content: stretch;
+  }
 
-    .campo-texto--en-header {
-        width: 100%;
-        margin-top: 12px;
-    }
+  .action-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 
-    .campo-texto--en-header .form {
-        width: 100%;
-    }
-
-    .campo-texto--en-header .form-fila-formulario {
-        grid-template-columns: 1fr;
-    }
-
-    /* Header */
-    .contenedor__encabezado-derecho {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    /* Botones / progreso */
-    .btn-primario {
-        padding: 7px;
-    }
-
-    .progreso {
-        padding-top: 2rem;
-        padding-bottom: 1rem;
-        top: 3.9rem;
-    }
-
-    /* Fondo */
-    body {
-        background: var(--color-fondo);
-    }
+  .bottom-nav {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    padding: 0.45rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.92);
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+  }
 }
 
-/* =========================
-   <= 360px
-========================= */
 @media (max-width: 360px) {
-    .principal-layout {
-        gap: 12px;
-        padding: 12px;
-    }
+  .app {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
 
-    .badge-prioridad {
-        margin-left: 8px;
-    }
-
-    .tarea__titulo {
-        font-size: 18px;
-    }
+  .task-card__title {
+    font-size: 0.95rem;
+  }
 }

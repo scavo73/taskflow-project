@@ -1,0 +1,52 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 42px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--ease), color var(--ease), box-shadow var(--ease);
+}
+
+.nav__link:hover {
+  transform: translateY(-1px);
+}
+
+.nav__link.is-active {
+  color: #0040f0;
+}
+
+.nav__text {
+  line-height: 1;
+}
+
+.count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 0.35rem;
+  border-radius: var(--radius-xl);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-xs);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.nav__link .count-pill {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+}

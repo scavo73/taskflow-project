@@ -1,0 +1,89 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.55rem 0.95rem;
+  border-radius: 0.8rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+}
+
+.chip:active {
+  box-shadow: var(--shadow-inset);
+}
+
+.chip svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.filter-chip {
+  cursor: pointer;
+}
+
+.filter-chip--clear {
+  font-weight: 700;
+}
+
+.action-btn {
+  cursor: pointer;
+}
+
+.action-btn--danger {
+  color: var(--danger);
+}
+
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2rem 0 1rem;
+}
+
+.prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.prio::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-xl);
+  flex-shrink: 0;
+}
+
+.prio--high {
+  color: var(--high-text);
+}
+
+.prio--high::before {
+  background: var(--high);
+}
+
+.prio--med {
+  color: var(--med-text);
+}
+
+.prio--med::before {
+  background: var(--med);
+}
+
+.prio--low {
+  color: var(--low-text);
+}
+
+.prio--low::before {
+  background: var(--low);
+}

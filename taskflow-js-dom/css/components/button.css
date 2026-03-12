@@ -32,3 +32,40 @@
 .btn--clear[hidden] {
   display: none;
 }
+
+body.has-no-tasks .task-form .btn--primary,
+body.has-no-tasks .mobile-add-btn,
+body.has-no-tasks .task-empty__cta {
+  animation: ctaNudge 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+body.has-no-tasks .task-form .btn--primary:hover,
+body.has-no-tasks .mobile-add-btn:hover,
+body.has-no-tasks .task-empty__cta:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ctaNudge {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  10% {
+    transform: translateY(-2px);
+  }
+
+  20% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-5px);
+  }
+
+  40% {
+    transform: translateY(0);
+  }
+}

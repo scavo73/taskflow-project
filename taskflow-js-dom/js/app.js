@@ -119,14 +119,17 @@ function setStatusLabel(value) {
 }
 
 function loadTasks() {
-  try {
-    tasks = JSON.parse(localStorage.getItem(LS_KEY)) || [];
-  } catch {
-    tasks = [];
-  }
+  const rawTasks = localStorage.getItem(LS_KEY);
 
-  if (tasks.length === 0) {
+  if (rawTasks === null) {
     tasks = [...demoTasks];
+  } else {
+    try {
+      const parsedTasks = JSON.parse(rawTasks);
+      tasks = Array.isArray(parsedTasks) ? parsedTasks : [];
+    } catch {
+      tasks = [...demoTasks];
+    }
   }
 
   const orderVersion = localStorage.getItem(LS_ORDER_VERSION_KEY);
@@ -136,9 +139,8 @@ function loadTasks() {
     localStorage.setItem(LS_ORDER_VERSION_KEY, '2');
   }
 
-  localStorage.setItem(LS_KEY, JSON.stringify(tasks));
+  saveTasks();
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
-  syncGlobalTasks();
 }
 
 function saveTasks() {
@@ -167,7 +169,6 @@ function updateCategoryManageMode() {
   btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
   btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
 }
-
 
 function loadCategories() {
   let savedCategories = [];
@@ -688,6 +689,24 @@ function removeCategory(categoryKey) {
   return { ok: true };
 }
 
+function openTaskCreator() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const mobileBtn = document.querySelector('.mobile-add-btn');
+  const desktopForm = document.querySelector('.task-form');
+
+  if (isMobile && mobileBtn) {
+    mobileBtn.click();
+    return;
+  }
+
+  desktopForm?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  taskTitle?.focus();
+}
+
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'task-list__item';
@@ -811,10 +830,44 @@ function renderEmptyState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty';
   li.innerHTML = `
-   <p class="task-empty__title">No hay resultados</p>
+    <p class="task-empty__title">No hay resultados</p>
     <div class="task-empty" aria-live="polite">
-     
       <span class="eyes task-empty__eyes" aria-hidden="true"></span>
+    </div>
+  `;
+
+  return li;
+}
+
+function renderNoTasksState() {
+  const li = document.createElement('li');
+  li.className = 'task-list__empty task-list__empty--first-task';
+
+  li.innerHTML = `
+    <div class="task-empty task-empty--first-task" aria-live="polite">
+      <p class="task-empty__eyebrow">Crear nueva tarea</p>
+      <h3 class="task-empty__title">Todavía no hay tareas</h3>
+      <p class="task-empty__text">
+        Empieza creando la primera. En cuanto añadas una, tus tarjetas apareceran por aqui.
+      </p>
+
+      <button type="button" class="btn btn--primary task-empty__cta">
+        Añadir tarea
+      </button>
+
+      <div class="task-empty__visual" aria-hidden="true">
+        <div class="loader">
+          <span><span></span><span></span><span></span><span></span></span>
+          <div class="base">
+            <span></span>
+            <div class="face"></div>
+          </div>
+        </div>
+
+        <div class="longfazers">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
     </div>
   `;
 
@@ -933,18 +986,23 @@ function renderTasksList() {
   if (!taskList) return;
 
   const filteredTasks = getFilteredTasks();
-  const shouldShowEmptyState =
-    tasks.length > 0 &&
+  const hasNoTasks = tasks.length === 0;
+  const shouldShowNoResults =
+    !hasNoTasks &&
     hasActiveFilters() &&
     filteredTasks.length === 0;
 
   taskList.innerHTML = '';
+  document.body.classList.toggle('has-no-tasks', hasNoTasks);
 
   if (taskGrid) {
-    taskGrid.classList.toggle('task-grid--empty', shouldShowEmptyState);
+    taskGrid.classList.toggle('task-grid--empty', hasNoTasks || shouldShowNoResults);
+    taskGrid.classList.toggle('task-grid--no-tasks', hasNoTasks);
   }
 
-  if (shouldShowEmptyState) {
+  if (hasNoTasks) {
+    taskList.appendChild(renderNoTasksState());
+  } else if (shouldShowNoResults) {
     taskList.appendChild(renderEmptyState());
   } else {
     filteredTasks.forEach((task) => {
@@ -1068,6 +1126,13 @@ function bindListEvents() {
   if (!taskList) return;
 
   taskList.addEventListener('click', (event) => {
+    const emptyStateBtn = event.target.closest('.task-empty__cta');
+    if (emptyStateBtn) {
+      event.preventDefault();
+      openTaskCreator();
+      return;
+    }
+
     const clickedButton = event.target.closest('button');
     const clickedInput = event.target.closest('.task-card__input');
     const clickedCard = event.target.closest('.task-card');
@@ -1457,6 +1522,7 @@ function init() {
 window.TaskFlowApp = {
   addTaskFromData,
   addCategory,
+  openTaskCreator,
   getCategories() {
     return [...categories];
   },

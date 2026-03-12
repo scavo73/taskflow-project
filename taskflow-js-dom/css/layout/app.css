@@ -14,3 +14,23 @@
 .tasks {
   min-width: 0;
 }
+
+.task-card__drag-handle {
+  cursor: grab;
+}
+
+.task-card__drag-handle:active {
+  cursor: grabbing;
+}
+
+.task-list__item--ghost {
+  opacity: 0.45;
+}
+
+.task-list__item--chosen .task-card {
+  transform: scale(0.985);
+}
+
+.task-list__item--dragging .task-card {
+  cursor: grabbing;
+}

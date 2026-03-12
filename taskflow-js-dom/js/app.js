@@ -32,6 +32,7 @@ const LS_KEY = 'taskflow_tasks';
 const LS_CATEGORIES_KEY = 'taskflow_categories';
 const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
+const LS_ORDER_VERSION_KEY = 'taskflow_order_version';
 
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 
@@ -51,6 +52,7 @@ let editingTaskId = null;
 let categories = [];
 let editingCategoryKey = null;
 let isManagingCategories = false;
+let sortableTasks = null;
 
 let filtersState = {
   status: 'all',
@@ -125,9 +127,16 @@ function loadTasks() {
 
   if (tasks.length === 0) {
     tasks = [...demoTasks];
-    localStorage.setItem(LS_KEY, JSON.stringify(tasks));
   }
 
+  const orderVersion = localStorage.getItem(LS_ORDER_VERSION_KEY);
+
+  if (orderVersion !== '2') {
+    tasks = [...tasks].reverse();
+    localStorage.setItem(LS_ORDER_VERSION_KEY, '2');
+  }
+
+  localStorage.setItem(LS_KEY, JSON.stringify(tasks));
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
   syncGlobalTasks();
 }
@@ -333,7 +342,7 @@ function addTaskFromData({ title, category, priority }) {
     priority
   });
 
-  tasks.push(task);
+  tasks.unshift(task);
   saveTasks();
   refreshUI();
 
@@ -682,6 +691,7 @@ function removeCategory(categoryKey) {
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'task-list__item';
+  li.dataset.taskId = String(task.id);
 
   const normalizedPriority = normalizePriority(task.priority);
   const isEditing = editingTaskId === task.id;
@@ -724,6 +734,20 @@ function renderTask(task) {
         <span class="task-card__cat"></span>
 
         <div class="task-card__actions">
+          ${isEditing
+      ? ''
+      : `
+              <button
+                class="chip task-card__drag-handle"
+                type="button"
+                aria-label="Reordenar tarea ${task.title}"
+                title="Arrastrar para reordenar"
+              >
+                <i data-lucide="grip-vertical" aria-hidden="true"></i>
+              </button>
+            `
+    }
+
           ${isEditing
       ? `
               <button
@@ -897,7 +921,7 @@ function renderTasksList() {
   const filteredTasks = getFilteredTasks();
   taskList.innerHTML = '';
 
-  [...filteredTasks].reverse().forEach((task) => {
+  filteredTasks.forEach((task) => {
     taskList.appendChild(renderTask(task));
   });
 
@@ -916,6 +940,63 @@ function renderTasksList() {
       input.select();
     }
   }
+}
+
+function reorderTasksFromVisibleIds(visibleIds) {
+  if (!Array.isArray(visibleIds) || visibleIds.length === 0) return;
+
+  const visibleIdSet = new Set(visibleIds);
+  const reorderedVisibleTasks = visibleIds
+    .map((taskId) => getTaskById(taskId))
+    .filter(Boolean);
+
+  if (reorderedVisibleTasks.length !== visibleIds.length) return;
+
+  let visibleIndex = 0;
+
+  tasks = tasks.map((task) => {
+    if (!visibleIdSet.has(task.id)) {
+      return task;
+    }
+
+    const nextTask = reorderedVisibleTasks[visibleIndex];
+    visibleIndex += 1;
+    return nextTask;
+  });
+
+  saveTasks();
+  refreshUI();
+}
+
+function initTaskSorting() {
+  if (!taskList || typeof window.Sortable === 'undefined') {
+    return;
+  }
+
+  if (sortableTasks) {
+    sortableTasks.destroy();
+  }
+
+  sortableTasks = window.Sortable.create(taskList, {
+    animation: 180,
+    handle: '.task-card__drag-handle',
+    draggable: '.task-list__item',
+    ghostClass: 'task-list__item--ghost',
+    chosenClass: 'task-list__item--chosen',
+    dragClass: 'task-list__item--dragging',
+    delay: 120,
+    delayOnTouchOnly: true,
+    forceFallback: false,
+    onEnd(evt) {
+      if (evt.oldIndex === evt.newIndex) return;
+
+      const visibleIds = [...taskList.querySelectorAll('.task-list__item')]
+        .map((item) => Number(item.dataset.taskId))
+        .filter(Boolean);
+
+      reorderTasksFromVisibleIds(visibleIds);
+    }
+  });
 }
 
 function updateTaskCounter() {
@@ -1337,6 +1418,7 @@ function init() {
   bindCategoryEvents();
   bindTaskActionEvents();
   refreshUI();
+  initTaskSorting();
 
   if (typeof window.initFiltersDrawer === 'function') {
     window.initFiltersDrawer();

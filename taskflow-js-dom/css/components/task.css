@@ -272,6 +272,17 @@
   }
 }
 
+[hidden] {
+  display: none !important;
+}
+
+/* Empty mode helpers */
+body.has-no-tasks .tasks {
+  align-content: start;
+}
+
+
+
 .task-grid--no-tasks {
   grid-template-columns: 1fr;
 }

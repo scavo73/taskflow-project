@@ -11,6 +11,8 @@ const btnCompleteAllTasks = document.getElementById('btnCompleteAllTasks');
 const btnDeleteAllTasks = document.getElementById('btnDeleteAllTasks');
 const taskGrid = document.querySelector('.task-grid');
 const filterPanel = document.querySelector('.filter-panel');
+const taskActions = document.querySelector('.task-actions');
+const statsPanel = document.querySelector('.stats');
 
 const taskCount = document.querySelectorAll('.task-count');
 const priorityInputs = document.querySelectorAll('input[name="priority"]');
@@ -36,6 +38,12 @@ const LS_ORDER_VERSION_KEY = 'taskflow_order_version';
 
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 
+/*
+  Set this to true only if you want demo tasks on the very first visit.
+  If you want a real empty state when there is nothing saved yet, keep it false.
+*/
+const USE_DEMO_TASKS_ON_FIRST_LOAD = true;
+
 const demoTasks = [
   { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
   { id: 2, title: 'Estudiar JavaScript', category: 'Estudio', priority: 'Alta', done: false },
@@ -54,12 +62,16 @@ let editingCategoryKey = null;
 let isManagingCategories = false;
 let sortableTasks = null;
 
-let filtersState = {
-  status: 'all',
-  priorities: [],
-  categories: [],
-  search: ''
-};
+function getDefaultFiltersState() {
+  return {
+    status: 'all',
+    priorities: [],
+    categories: [],
+    search: ''
+  };
+}
+
+let filtersState = getDefaultFiltersState();
 
 function syncGlobalTasks() {
   window.tasks = tasks;
@@ -118,17 +130,27 @@ function setStatusLabel(value) {
   return 'Todos';
 }
 
+function resetFiltersState({ persist = true } = {}) {
+  filtersState = getDefaultFiltersState();
+
+  if (persist) {
+    saveFiltersState();
+  }
+
+  applyFiltersToDOM();
+}
+
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
 
   if (rawTasks === null) {
-    tasks = [...demoTasks];
+    tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
   } else {
     try {
       const parsedTasks = JSON.parse(rawTasks);
       tasks = Array.isArray(parsedTasks) ? parsedTasks : [];
     } catch {
-      tasks = [...demoTasks];
+      tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
     }
   }
 
@@ -253,12 +275,7 @@ function loadFiltersState() {
       search: String(saved.search || '')
     };
   } catch {
-    filtersState = {
-      status: 'all',
-      priorities: [],
-      categories: [],
-      search: ''
-    };
+    filtersState = getDefaultFiltersState();
   }
 
   applyFiltersToDOM();
@@ -279,15 +296,7 @@ function hasActiveFilters() {
 }
 
 function clearAllFilters() {
-  filtersState = {
-    status: 'all',
-    priorities: [],
-    categories: [],
-    search: ''
-  };
-
-  saveFiltersState();
-  applyFiltersToDOM();
+  resetFiltersState();
   refreshUI();
 }
 
@@ -415,6 +424,11 @@ function removeTask(taskId) {
   }
 
   saveTasks();
+
+  if (tasks.length === 0) {
+    resetFiltersState();
+  }
+
   refreshUI();
 }
 
@@ -456,6 +470,7 @@ function removeAllTasks() {
   tasks = [];
   editingTaskId = null;
   saveTasks();
+  resetFiltersState();
   refreshUI();
 }
 
@@ -717,101 +732,101 @@ function renderTask(task) {
   const mainTag = isEditing ? 'div' : 'label';
 
   li.innerHTML = `
-  <div class="task-item">
-    <input
-      class="task-item__toggle"
-      type="checkbox"
-      id="task-${task.id}"
-      ${task.done ? 'checked' : ''}
-    />
+    <div class="task-item">
+      <input
+        class="task-item__toggle"
+        type="checkbox"
+        id="task-${task.id}"
+        ${task.done ? 'checked' : ''}
+      />
 
-    <div class="task-card">
-      <${mainTag}
-        class="task-card__main"
-        ${!isEditing ? `for="task-${task.id}"` : ''}
-      >
-        <div class="task-card__top">
-          ${isEditing
+      <div class="task-card">
+        <${mainTag}
+          class="task-card__main"
+          ${!isEditing ? `for="task-${task.id}"` : ''}
+        >
+          <div class="task-card__top">
+            ${isEditing
       ? `
-              <input
-                class="task-card__input"
-                type="text"
-                data-task-id="${task.id}"
-                aria-label="Editar título"
-              />
-            `
+                <input
+                  class="task-card__input"
+                  type="text"
+                  data-task-id="${task.id}"
+                  aria-label="Editar título"
+                />
+              `
       : `
-              <h3 class="task-card__title"></h3>
-            `
+                <h3 class="task-card__title"></h3>
+              `
     }
 
-          <span class="prio prio--${normalizedPriority}"></span>
-        </div>
-      </${mainTag}>
+            <span class="prio prio--${normalizedPriority}"></span>
+          </div>
+        </${mainTag}>
 
-      <div class="task-card__footer">
-        <span class="task-card__cat"></span>
+        <div class="task-card__footer">
+          <span class="task-card__cat"></span>
 
-        <div class="task-card__actions">
-          ${isEditing
+          <div class="task-card__actions">
+            ${isEditing
       ? ''
       : `
-              <button
-                class="chip task-card__drag-handle"
-                type="button"
-                aria-label="Reordenar tarea ${task.title}"
-                title="Arrastrar para reordenar"
-              >
-                <i data-lucide="grip-vertical" aria-hidden="true"></i>
-              </button>
-            `
+                <button
+                  class="chip task-card__drag-handle"
+                  type="button"
+                  aria-label="Reordenar tarea ${task.title}"
+                  title="Arrastrar para reordenar"
+                >
+                  <i data-lucide="grip-vertical" aria-hidden="true"></i>
+                </button>
+              `
     }
 
-          ${isEditing
+            ${isEditing
       ? `
-              <button
-                class="chip task-card__save"
-                type="button"
-                data-task-id="${task.id}"
-                aria-label="Guardar título"
-              >
-                <i data-lucide="check" aria-hidden="true"></i>
-              </button>
+                <button
+                  class="chip task-card__save"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Guardar título"
+                >
+                  <i data-lucide="check" aria-hidden="true"></i>
+                </button>
 
-              <button
-                class="chip task-card__cancel"
-                type="button"
-                data-task-id="${task.id}"
-                aria-label="Cancelar edición"
-              >
-                <i data-lucide="x" aria-hidden="true"></i>
-              </button>
-            `
+                <button
+                  class="chip task-card__cancel"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Cancelar edición"
+                >
+                  <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+              `
       : `
-              <button
-                class="chip task-card__edit"
-                type="button"
-                data-task-id="${task.id}"
-                aria-label="Editar tarea"
-              >
-                <i data-lucide="pencil" aria-hidden="true"></i>
-              </button>
+                <button
+                  class="chip task-card__edit"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Editar tarea"
+                >
+                  <i data-lucide="pencil" aria-hidden="true"></i>
+                </button>
 
-              <button
-                class="chip task-card__del"
-                type="button"
-                data-task-id="${task.id}"
-                aria-label="Borrar tarea ${task.title}"
-              >
-                <i data-lucide="trash-2" aria-hidden="true"></i>
-              </button>
-            `
+                <button
+                  class="chip task-card__del"
+                  type="button"
+                  data-task-id="${task.id}"
+                  aria-label="Borrar tarea ${task.title}"
+                >
+                  <i data-lucide="trash-2" aria-hidden="true"></i>
+                </button>
+              `
     }
+          </div>
         </div>
       </div>
     </div>
-  </div>
-`;
+  `;
 
   const titleEl = li.querySelector('.task-card__title');
   const inputEl = li.querySelector('.task-card__input');
@@ -848,7 +863,7 @@ function renderNoTasksState() {
       <p class="task-empty__eyebrow">Crear nueva tarea</p>
       <h3 class="task-empty__title">Todavía no hay tareas</h3>
       <p class="task-empty__text">
-        Empieza creando la primera. En cuanto añadas una, tus tarjetas apareceran por aqui.
+        Empieza creando la primera. En cuanto añadas una, tus tarjetas aparecerán por aquí.
       </p>
 
       <button type="button" class="btn btn--primary task-empty__cta">
@@ -947,7 +962,29 @@ function renderClearFiltersButton() {
   btnClearFilters.hidden = !hasActiveFilters();
 }
 
+function renderEmptyLayoutVisibility() {
+  const hasTasks = tasks.length > 0;
+
+  if (filterPanel) {
+    filterPanel.hidden = !hasTasks;
+  }
+
+  if (statsPanel) {
+    statsPanel.hidden = !hasTasks;
+  }
+
+  if (taskActions) {
+    taskActions.hidden = !hasTasks;
+  }
+
+  document.body.classList.toggle('has-no-tasks', !hasTasks);
+}
+
 function renderActionButtons() {
+  if (!btnToggleLayout && !btnCompleteAllTasks) {
+    return;
+  }
+
   if (btnToggleLayout) {
     btnToggleLayout.setAttribute('aria-pressed', String(isListLayout));
 
@@ -993,7 +1030,6 @@ function renderTasksList() {
     filteredTasks.length === 0;
 
   taskList.innerHTML = '';
-  document.body.classList.toggle('has-no-tasks', hasNoTasks);
 
   if (taskGrid) {
     taskGrid.classList.toggle('task-grid--empty', hasNoTasks || shouldShowNoResults);
@@ -1106,6 +1142,7 @@ function doneTasksCount() {
 }
 
 function refreshUI() {
+  renderEmptyLayoutVisibility();
   renderTasksList();
   renderActionButtons();
   updateTaskCounter();
@@ -1504,6 +1541,11 @@ function init() {
   loadCategories();
   refreshCategoriesUI();
   loadFiltersState();
+
+  if (tasks.length === 0) {
+    resetFiltersState();
+  }
+
   loadLayoutMode();
   bindDesktopForm();
   bindListEvents();

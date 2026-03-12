@@ -175,7 +175,7 @@
 
           <form class="task-modal__form" id="mobileTaskForm" aria-label="Añadir tarea en móvil">
             <div class="form-grid">
-              <div>
+              <div class=" flex-mobile p-all">
                 <div class="field">
                   <label class="label" for="mobileTaskTitle">Título</label>
                   <input
@@ -196,12 +196,12 @@
 
                         <button
                           type="button"
-                          class="chip category-field__trigger"
+                          class="chip category-field__trigger mr-mobile-top "
                           id="mobileBtnNewCategory"
                           aria-expanded="false"
                           aria-controls="mobileNewCategoryEditor"
                         >
-                          Nueva
+                          Añadir categoria
                         </button>
                       </div>
 
@@ -220,7 +220,6 @@
                             id="mobileBtnSaveNewCategory"
                           >
                             <i data-lucide="check" aria-hidden="true"></i>
-                            <span>Guardar</span>
                           </button>
 
                           <button
@@ -229,7 +228,6 @@
                             id="mobileBtnCancelNewCategory"
                           >
                             <i data-lucide="x" aria-hidden="true"></i>
-                            <span>Cancelar</span>
                           </button>
                         </div>
                       </div>

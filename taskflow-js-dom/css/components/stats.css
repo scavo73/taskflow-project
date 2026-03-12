@@ -1,6 +1,10 @@
 .stats {
   display: grid;
-  /* gap: var(--space-4); */
+  gap: 0;
+}
+
+.stats> :nth-child(n + 3) {
+  margin-top: var(--space-6);
 }
 
 .stats__done {

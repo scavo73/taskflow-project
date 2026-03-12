@@ -149,3 +149,19 @@
 .task-card__del {
   color: var(--danger);
 }
+
+.task-card__footer {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.task-card__cat {
+  margin-right: auto;
+}
+
+.task-card__actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}

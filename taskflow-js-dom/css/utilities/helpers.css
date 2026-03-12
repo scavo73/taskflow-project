@@ -5,3 +5,24 @@
 .ml-auto {
   margin-left: auto;
 }
+
+.mr-auto {
+  margin-right: auto;
+}
+
+
+.p-all {
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .mr-mobile-top {
+    margin-top: 1rem;
+  }
+}
+
+.flex-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

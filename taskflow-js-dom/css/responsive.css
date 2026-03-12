@@ -38,14 +38,14 @@
     grid-template-columns: 1fr;
   }
 
-  .task-actions {
+  /* .task-actions {
     justify-content: stretch;
-  }
-
+  } */
+  /* 
   .action-btn {
     flex: 1 1 100%;
     justify-content: center;
-  }
+  } */
 
   .bottom-nav {
     display: block;

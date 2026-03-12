@@ -688,87 +688,87 @@ function renderTask(task) {
   const mainTag = isEditing ? 'div' : 'label';
 
   li.innerHTML = `
-    <div class="task-item">
-      <input
-        class="task-item__toggle"
-        type="checkbox"
-        id="task-${task.id}"
-        ${task.done ? 'checked' : ''}
-      />
+  <div class="task-item">
+    <input
+      class="task-item__toggle"
+      type="checkbox"
+      id="task-${task.id}"
+      ${task.done ? 'checked' : ''}
+    />
 
-      <div class="task-card">
-        <${mainTag}
-          class="task-card__main"
-          ${!isEditing ? `for="task-${task.id}"` : ''}
-        >
-          <div class="task-card__top">
-            ${isEditing
+    <div class="task-card">
+      <${mainTag}
+        class="task-card__main"
+        ${!isEditing ? `for="task-${task.id}"` : ''}
+      >
+        <div class="task-card__top">
+          ${isEditing
       ? `
-                  <input
-                    class="task-card__input"
-                    type="text"
-                    data-task-id="${task.id}"
-                    aria-label="Editar título"
-                  />
-                `
+              <input
+                class="task-card__input"
+                type="text"
+                data-task-id="${task.id}"
+                aria-label="Editar título"
+              />
+            `
       : `
-                  <h3 class="task-card__title"></h3>
-                `
+              <h3 class="task-card__title"></h3>
+            `
     }
 
-            <span class="prio prio--${normalizedPriority}"></span>
-          </div>
+          <span class="prio prio--${normalizedPriority}"></span>
+        </div>
+      </${mainTag}>
 
-          <div class="task-card__bottom">
-            <span class="task-card__cat"></span>
-          </div>
-        </${mainTag}>
+      <div class="task-card__footer">
+        <span class="task-card__cat"></span>
 
         <div class="task-card__actions">
           ${isEditing
       ? `
-                <button
-                  class="chip task-card__save"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Guardar título"
-                >
-                  <i data-lucide="check" aria-hidden="true"></i>
-                </button>
+              <button
+                class="chip task-card__save"
+                type="button"
+                data-task-id="${task.id}"
+                aria-label="Guardar título"
+              >
+                <i data-lucide="check" aria-hidden="true"></i>
+              </button>
 
-                <button
-                  class="chip task-card__cancel"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Cancelar edición"
-                >
-                  <i data-lucide="x" aria-hidden="true"></i>
-                </button>
-              `
+              <button
+                class="chip task-card__cancel"
+                type="button"
+                data-task-id="${task.id}"
+                aria-label="Cancelar edición"
+              >
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
+            `
       : `
-                <button
-                  class="chip task-card__edit"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Editar tarea"
-                >
-                  <i data-lucide="pencil" aria-hidden="true"></i>
-                </button>
+              <button
+                class="chip task-card__edit"
+                type="button"
+                data-task-id="${task.id}"
+                aria-label="Editar tarea"
+              >
+                <i data-lucide="pencil" aria-hidden="true"></i>
+              </button>
 
-                <button
-                  class="chip task-card__del"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Borrar tarea ${task.title}"
-                >
-                  <i data-lucide="trash-2" aria-hidden="true"></i>
-                </button>
-              `
+              <button
+                class="chip task-card__del"
+                type="button"
+                data-task-id="${task.id}"
+                aria-label="Borrar tarea ${task.title}"
+              >
+                <i data-lucide="trash-2" aria-hidden="true"></i>
+              </button>
+            `
     }
         </div>
       </div>
     </div>
-  `;
+  </div>
+`;
 
   const titleEl = li.querySelector('.task-card__title');
   const inputEl = li.querySelector('.task-card__input');

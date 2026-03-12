@@ -19,7 +19,6 @@
 .task-modal__box {
   width: min(92vw, 560px);
   margin: 8vh auto 0;
-  padding: 1rem;
   border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow-md);
@@ -30,7 +29,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  padding: 1rem;
 }
 
 .task-modal__title {
@@ -98,13 +97,13 @@
   .task-modal__actions {
     position: sticky;
     bottom: 0;
-    margin-top: 1rem;
-    padding-top: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
     background: var(--surface);
     border-top: 1px solid var(--line);
   }
 
-  .task-modal__actions > * {
+  .task-modal__actions>* {
     flex: 1 1 0;
   }
 }

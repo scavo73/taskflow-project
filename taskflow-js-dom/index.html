@@ -75,12 +75,10 @@
                     <div class="category-field__actions">
                       <button type="button" class="chip category-action category-action--save" id="btnSaveNewCategory">
                         <i data-lucide="check" aria-hidden="true"></i>
-                        <span>Guardar</span>
                       </button>
 
                       <button type="button" class="chip category-action" id="btnCancelNewCategory">
                         <i data-lucide="x" aria-hidden="true"></i>
-                        <span>Cancelar</span>
                       </button>
                     </div>
                   </div>
@@ -108,6 +106,9 @@
             <i data-lucide="list-filter"></i>
           </span>
           <h2 class="sec-head__title-dektop panel__title">Filtros</h2>
+          <button type="button" id="btnClearFilters" class="btn btn--primary btn--clear ml-auto" hidden>
+            Limpiar filtros
+          </button>
         </div>
 
         <section class="filter-group" aria-label="Filtro por estado">
@@ -172,10 +173,6 @@
             <div id="categoryManagerList" class="category-manager" hidden></div>
           </div>
         </section>
-
-        <button type="button" id="btnClearFilters" class="btn btn--primary btn--clear" hidden>
-          Limpiar filtros
-        </button>
       </div>
     </aside>
 

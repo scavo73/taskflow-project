@@ -15,20 +15,98 @@
       }
     }
 
+    function renderMobileCategoryOptions(selectedValue = '') {
+      const api = window.TaskFlowApp;
+      const mobileCategory = document.getElementById('mobileTaskCategory');
+      if (!api || !mobileCategory) return;
+
+      const categories = typeof api.getCategories === 'function'
+        ? api.getCategories()
+        : ['Trabajo', 'Estudio', 'Personal', 'Salud'];
+
+      mobileCategory.innerHTML = categories
+        .map((label) => `<option>${label}</option>`)
+        .join('');
+
+      const fallback = categories[0] || '';
+      mobileCategory.value = categories.includes(selectedValue) ? selectedValue : fallback;
+    }
+
+    function updateMobileCategoryFieldMode() {
+      const field = document.getElementById('mobileCategoryField');
+      const selectRow = document.getElementById('mobileCategorySelectRow');
+      const editor = document.getElementById('mobileNewCategoryEditor');
+      const trigger = document.getElementById('mobileBtnNewCategory');
+
+      if (!field || !selectRow || !editor || !trigger) return;
+
+      const isEditing = !editor.hidden;
+      field.classList.toggle('is-editing', isEditing);
+      selectRow.hidden = isEditing;
+      trigger.setAttribute('aria-expanded', String(isEditing));
+    }
+
+    function openMobileCategoryEditor() {
+      const editor = document.getElementById('mobileNewCategoryEditor');
+      const input = document.getElementById('mobileNewCategoryInput');
+
+      if (!editor || !input) return;
+
+      editor.hidden = false;
+      input.value = '';
+      updateMobileCategoryFieldMode();
+      input.focus();
+    }
+
+    function closeMobileCategoryEditor() {
+      const editor = document.getElementById('mobileNewCategoryEditor');
+      const input = document.getElementById('mobileNewCategoryInput');
+
+      if (!editor || !input) return;
+
+      editor.hidden = true;
+      input.value = '';
+      updateMobileCategoryFieldMode();
+    }
+
+    function saveMobileCategory() {
+      const api = window.TaskFlowApp;
+      const input = document.getElementById('mobileNewCategoryInput');
+      const mobileCategory = document.getElementById('mobileTaskCategory');
+      if (!api || !input || !mobileCategory) return;
+
+      const result = api.addCategory(input.value);
+
+      if (!result.ok) {
+        if (result.error === 'duplicate') {
+          alert('Esa categoría ya existe.');
+        } else {
+          alert('Escribe un nombre de categoría válido.');
+        }
+
+        input.focus();
+        return;
+      }
+
+      renderMobileCategoryOptions(result.category);
+      mobileCategory.value = result.category;
+      closeMobileCategoryEditor();
+    }
+
     function syncModalFieldsFromDefaults() {
       const api = window.TaskFlowApp;
       if (!api) return;
 
       const defaults = api.getDesktopDefaults();
       const mobileTitle = document.getElementById('mobileTaskTitle');
-      const mobileCategory = document.getElementById('mobileTaskCategory');
       const mobilePriority = document.getElementById('mobileTaskPriority');
 
-      if (!mobileTitle || !mobileCategory || !mobilePriority) return;
+      if (!mobileTitle || !mobilePriority) return;
 
       mobileTitle.value = '';
-      mobileCategory.value = defaults.category || 'Trabajo';
+      renderMobileCategoryOptions(defaults.category || '');
       mobilePriority.value = defaults.priority || 'Media';
+      closeMobileCategoryEditor();
     }
 
     function submitMobileTask() {
@@ -111,12 +189,51 @@
                 <div class="form-row">
                   <div class="field">
                     <label class="label" for="mobileTaskCategory">Categoría</label>
-                    <select class="select" id="mobileTaskCategory">
-                      <option>Trabajo</option>
-                      <option>Estudio</option>
-                      <option>Personal</option>
-                      <option>Salud</option>
-                    </select>
+
+                    <div class="category-field" id="mobileCategoryField">
+                      <div class="category-field__row" id="mobileCategorySelectRow">
+                        <select class="select category-field__select" id="mobileTaskCategory"></select>
+
+                        <button
+                          type="button"
+                          class="chip category-field__trigger"
+                          id="mobileBtnNewCategory"
+                          aria-expanded="false"
+                          aria-controls="mobileNewCategoryEditor"
+                        >
+                          Nueva
+                        </button>
+                      </div>
+
+                      <div class="category-field__edit" id="mobileNewCategoryEditor" hidden>
+                        <input
+                          class="input category-field__input"
+                          id="mobileNewCategoryInput"
+                          type="text"
+                          placeholder="Nombre de categoría"
+                        />
+
+                        <div class="category-field__actions">
+                          <button
+                            type="button"
+                            class="chip category-action category-action--save"
+                            id="mobileBtnSaveNewCategory"
+                          >
+                            <i data-lucide="check" aria-hidden="true"></i>
+                            <span>Guardar</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            class="chip category-action"
+                            id="mobileBtnCancelNewCategory"
+                          >
+                            <i data-lucide="x" aria-hidden="true"></i>
+                            <span>Cancelar</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="field">
@@ -158,6 +275,21 @@
       mobileForm.addEventListener('submit', (event) => {
         event.preventDefault();
         submitMobileTask();
+      });
+
+      dialog.querySelector('#mobileBtnNewCategory')?.addEventListener('click', openMobileCategoryEditor);
+      dialog.querySelector('#mobileBtnCancelNewCategory')?.addEventListener('click', closeMobileCategoryEditor);
+      dialog.querySelector('#mobileBtnSaveNewCategory')?.addEventListener('click', saveMobileCategory);
+      dialog.querySelector('#mobileNewCategoryInput')?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          saveMobileCategory();
+        }
+
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeMobileCategoryEditor();
+        }
       });
 
       return dialog;

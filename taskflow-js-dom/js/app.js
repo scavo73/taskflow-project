@@ -10,18 +10,30 @@ const btnToggleLayout = document.getElementById('btnToggleLayout');
 const btnCompleteAllTasks = document.getElementById('btnCompleteAllTasks');
 const btnDeleteAllTasks = document.getElementById('btnDeleteAllTasks');
 const taskGrid = document.querySelector('.task-grid');
+const filterPanel = document.querySelector('.filter-panel');
 
 const taskCount = document.querySelectorAll('.task-count');
-const categoryInputs = document.querySelectorAll('input[name="cat"]');
 const priorityInputs = document.querySelectorAll('input[name="priority"]');
 const statusInputs = document.querySelectorAll('input[name="status"]');
 
+const btnNewCategory = document.getElementById('btnNewCategory');
+const newCategoryEditor = document.getElementById('newCategoryEditor');
+const newCategoryInput = document.getElementById('newCategoryInput');
+const btnSaveNewCategory = document.getElementById('btnSaveNewCategory');
+const btnCancelNewCategory = document.getElementById('btnCancelNewCategory');
+const categoryFiltersGroup = document.getElementById('categoryFiltersGroup');
+const categoryManagerList = document.getElementById('categoryManagerList');
+const categoryPanel = document.querySelector('.category-panel');
+const desktopCategoryField = document.getElementById('desktopCategoryField');
+const desktopCategorySelectRow = document.getElementById('desktopCategorySelectRow');
+const btnToggleCategoryManage = document.getElementById('btnToggleCategoryManage');
+
 const LS_KEY = 'taskflow_tasks';
-const LS_FILTERS_KEY = 'taskflow_selected_categories';
-const LS_PRIORITY_KEY = 'taskflow_selected_priority';
-const LS_STATUS_KEY = 'taskflow_selected_status';
-const LS_SEARCH_KEY = 'taskflow_search_text';
+const LS_CATEGORIES_KEY = 'taskflow_categories';
+const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
+
+const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 
 const demoTasks = [
   { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
@@ -36,6 +48,16 @@ let tasks = [];
 let nextId = 1;
 let isListLayout = false;
 let editingTaskId = null;
+let categories = [];
+let editingCategoryKey = null;
+let isManagingCategories = false;
+
+let filtersState = {
+  status: 'all',
+  priorities: [],
+  categories: [],
+  search: ''
+};
 
 function syncGlobalTasks() {
   window.tasks = tasks;
@@ -46,7 +68,7 @@ function normalizeText(value) {
     .toLowerCase()
     .trim()
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 function normalizePriority(value) {
@@ -57,6 +79,28 @@ function normalizePriority(value) {
   if (v === 'baja' || v === 'low') return 'low';
 
   return 'med';
+}
+
+function getCategoryKey(label) {
+  return normalizeText(label);
+}
+
+function getCategoryInputs() {
+  return [...document.querySelectorAll('input[name="cat"]')];
+}
+
+function getCategoryLabel(categoryKey) {
+  return categories.find((label) => getCategoryKey(label) === categoryKey) || categoryKey;
+}
+
+function categoryExists(label, excludeKey = '') {
+  const nextKey = getCategoryKey(label);
+
+  return categories.some((item) => {
+    const itemKey = getCategoryKey(item);
+    if (excludeKey && itemKey === excludeKey) return false;
+    return itemKey === nextKey;
+  });
 }
 
 function setPriorityLabel(value) {
@@ -70,60 +114,6 @@ function setStatusLabel(value) {
   if (value === 'pending') return 'Pendientes';
   if (value === 'done') return 'Completadas';
   return 'Todos';
-}
-
-function setCategoryLabel(value) {
-  if (value === 'trabajo') return 'Trabajo';
-  if (value === 'estudio') return 'Estudio';
-  if (value === 'personal') return 'Personal';
-  return 'Salud';
-}
-
-function getSelectedCategories() {
-  return [...categoryInputs]
-    .filter((input) => input.checked)
-    .map((input) => input.value.toLowerCase());
-}
-
-function getSelectedPriorities() {
-  return [...priorityInputs]
-    .filter((input) => input.checked)
-    .map((input) => input.value);
-}
-
-function getSelectedStatus() {
-  return document.querySelector('input[name="status"]:checked')?.value || 'all';
-}
-
-function getSearchTerm() {
-  return taskSearch ? taskSearch.value.trim() : '';
-}
-
-function hasActiveFilters() {
-  return (
-    getSelectedStatus() !== 'all' ||
-    getSelectedPriorities().length > 0 ||
-    getSelectedCategories().length > 0
-  );
-}
-
-function clearAllFilters() {
-  statusInputs.forEach((input) => {
-    input.checked = input.value === 'all';
-  });
-
-  priorityInputs.forEach((input) => {
-    input.checked = false;
-  });
-
-  categoryInputs.forEach((input) => {
-    input.checked = false;
-  });
-
-  saveSelectedStatus();
-  saveSelectedPriority();
-  saveSelectedFilters();
-  refreshUI();
 }
 
 function loadTasks() {
@@ -147,62 +137,56 @@ function saveTasks() {
   syncGlobalTasks();
 }
 
-function loadSelectedFilters() {
+function updateDesktopCategoryFieldMode() {
+  if (!desktopCategoryField || !desktopCategorySelectRow || !newCategoryEditor || !btnNewCategory) return;
+
+  const isEditing = !newCategoryEditor.hidden;
+  desktopCategoryField.classList.toggle('is-editing', isEditing);
+  desktopCategorySelectRow.hidden = isEditing;
+  btnNewCategory.setAttribute('aria-expanded', String(isEditing));
+  btnNewCategory.classList.toggle('is-active', isEditing);
+}
+
+function updateCategoryManageMode() {
+  if (!categoryFiltersGroup || !categoryManagerList || !btnToggleCategoryManage) return;
+
+  categoryPanel?.classList.toggle('is-managing', isManagingCategories);
+  categoryFiltersGroup.hidden = isManagingCategories;
+  categoryManagerList.hidden = !isManagingCategories;
+  categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
+  categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
+  btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
+  btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
+}
+
+
+function loadCategories() {
   let savedCategories = [];
 
   try {
-    savedCategories = JSON.parse(localStorage.getItem(LS_FILTERS_KEY)) || [];
+    savedCategories = JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || [];
   } catch {
     savedCategories = [];
   }
 
-  categoryInputs.forEach((input) => {
-    input.checked = savedCategories.includes(input.value.toLowerCase());
-  });
+  const merged = [...DEFAULT_CATEGORIES, ...savedCategories, ...tasks.map((task) => task.category)];
+  const seen = new Set();
+
+  categories = merged
+    .map((item) => String(item || '').trim())
+    .filter(Boolean)
+    .filter((item) => {
+      const key = getCategoryKey(item);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+  saveCategories();
 }
 
-function saveSelectedFilters() {
-  localStorage.setItem(LS_FILTERS_KEY, JSON.stringify(getSelectedCategories()));
-}
-
-function saveSelectedPriority() {
-  localStorage.setItem(LS_PRIORITY_KEY, JSON.stringify(getSelectedPriorities()));
-}
-
-function loadSelectedPriority() {
-  let savedPriorities = [];
-
-  try {
-    savedPriorities = JSON.parse(localStorage.getItem(LS_PRIORITY_KEY)) || [];
-  } catch {
-    savedPriorities = [];
-  }
-
-  priorityInputs.forEach((input) => {
-    input.checked = savedPriorities.includes(input.value);
-  });
-}
-
-function saveSelectedStatus() {
-  localStorage.setItem(LS_STATUS_KEY, getSelectedStatus());
-}
-
-function loadSelectedStatus() {
-  const savedStatus = localStorage.getItem(LS_STATUS_KEY) || 'all';
-
-  statusInputs.forEach((input) => {
-    input.checked = input.value === savedStatus;
-  });
-}
-
-function saveSearchTerm() {
-  if (!taskSearch) return;
-  localStorage.setItem(LS_SEARCH_KEY, taskSearch.value.trim());
-}
-
-function loadSearchTerm() {
-  if (!taskSearch) return;
-  taskSearch.value = localStorage.getItem(LS_SEARCH_KEY) || '';
+function saveCategories() {
+  localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(categories));
 }
 
 function saveLayoutMode() {
@@ -213,40 +197,124 @@ function loadLayoutMode() {
   isListLayout = localStorage.getItem(LS_LAYOUT_KEY) === 'list';
 }
 
-function getFilteredTasks() {
-  const selectedCategories = getSelectedCategories();
-  const selectedPriorities = getSelectedPriorities();
-  const selectedStatus = getSelectedStatus();
-  const searchText = normalizeText(getSearchTerm());
+function getFiltersFromDOM() {
+  return {
+    status: document.querySelector('input[name="status"]:checked')?.value || 'all',
+    priorities: [...priorityInputs]
+      .filter((input) => input.checked)
+      .map((input) => input.value),
+    categories: getCategoryInputs()
+      .filter((input) => input.checked)
+      .map((input) => normalizeText(input.value)),
+    search: normalizeText(taskSearch ? taskSearch.value : '')
+  };
+}
 
-  return tasks.filter((task) => {
-    const taskCat = String(task.category || '').toLowerCase().trim();
-    const taskPrio = normalizePriority(task.priority);
-    const searchableText = normalizeText(`${task.title} ${task.category}`);
-
-    const matchesCategory =
-      selectedCategories.length === 0 || selectedCategories.includes(taskCat);
-
-    const matchesPriority =
-      selectedPriorities.length === 0 || selectedPriorities.includes(taskPrio);
-
-    const matchesStatus =
-      selectedStatus === 'all' ||
-      (selectedStatus === 'pending' && !task.done) ||
-      (selectedStatus === 'done' && task.done);
-
-    const matchesSearch =
-      searchText === '' || searchableText.includes(searchText);
-
-    return matchesCategory && matchesPriority && matchesStatus && matchesSearch;
+function applyFiltersToDOM() {
+  statusInputs.forEach((input) => {
+    input.checked = input.value === filtersState.status;
   });
+
+  priorityInputs.forEach((input) => {
+    input.checked = filtersState.priorities.includes(input.value);
+  });
+
+  getCategoryInputs().forEach((input) => {
+    input.checked = filtersState.categories.includes(normalizeText(input.value));
+  });
+
+  if (taskSearch) {
+    taskSearch.value = filtersState.search || '';
+  }
+}
+
+function saveFiltersState() {
+  localStorage.setItem(LS_FILTERS_STATE_KEY, JSON.stringify(filtersState));
+}
+
+function loadFiltersState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_FILTERS_STATE_KEY)) || {};
+
+    filtersState = {
+      status: saved.status || 'all',
+      priorities: Array.isArray(saved.priorities) ? saved.priorities : [],
+      categories: Array.isArray(saved.categories) ? saved.categories : [],
+      search: String(saved.search || '')
+    };
+  } catch {
+    filtersState = {
+      status: 'all',
+      priorities: [],
+      categories: [],
+      search: ''
+    };
+  }
+
+  applyFiltersToDOM();
+}
+
+function syncFiltersState() {
+  filtersState = getFiltersFromDOM();
+  saveFiltersState();
+}
+
+function hasActiveFilters() {
+  return (
+    filtersState.status !== 'all' ||
+    filtersState.priorities.length > 0 ||
+    filtersState.categories.length > 0 ||
+    filtersState.search !== ''
+  );
+}
+
+function clearAllFilters() {
+  filtersState = {
+    status: 'all',
+    priorities: [],
+    categories: [],
+    search: ''
+  };
+
+  saveFiltersState();
+  applyFiltersToDOM();
+  refreshUI();
+}
+
+function taskMatchesFilters(task, filters) {
+  const taskCategoryKey = normalizeText(task.category);
+  const taskPriorityKey = normalizePriority(task.priority);
+  const taskSearchText = normalizeText(`${task.title} ${task.category}`);
+
+  const matchesStatus =
+    filters.status === 'all' ||
+    (filters.status === 'pending' && !task.done) ||
+    (filters.status === 'done' && task.done);
+
+  const matchesPriority =
+    filters.priorities.length === 0 ||
+    filters.priorities.includes(taskPriorityKey);
+
+  const matchesCategory =
+    filters.categories.length === 0 ||
+    filters.categories.includes(taskCategoryKey);
+
+  const matchesSearch =
+    filters.search === '' ||
+    taskSearchText.includes(filters.search);
+
+  return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
+}
+
+function getFilteredTasks() {
+  return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }
 
 function createTaskData({ title, category, priority }) {
   return {
     id: nextId++,
-    title: title.trim(),
-    category: category || 'Personal',
+    title: String(title || '').trim(),
+    category: String(category || categories[0] || 'Personal').trim(),
     priority: priority || 'Media',
     done: false
   };
@@ -277,7 +345,7 @@ function addTaskFromDesktopForm() {
 
   const result = addTaskFromData({
     title: taskTitle.value,
-    category: taskCategory ? taskCategory.value : 'Personal',
+    category: taskCategory ? taskCategory.value : categories[0] || 'Personal',
     priority: taskPriority ? taskPriority.value : 'Media'
   });
 
@@ -381,6 +449,236 @@ function removeAllTasks() {
   refreshUI();
 }
 
+function renderCategorySelect(selectElement, selectedValue = '') {
+  if (!selectElement) return;
+
+  const fallback = categories[0] || '';
+  const nextValue = selectedValue && categories.includes(selectedValue)
+    ? selectedValue
+    : (categories.includes(selectElement.value) ? selectElement.value : fallback);
+
+  selectElement.innerHTML = categories
+    .map((label) => `<option>${label}</option>`)
+    .join('');
+
+  selectElement.value = nextValue;
+}
+
+function renderCategoryFilters() {
+  if (!categoryFiltersGroup) return;
+
+  categoryFiltersGroup.innerHTML = categories
+    .map((label) => {
+      const key = getCategoryKey(label);
+
+      return `
+        <label class="choice">
+          <input type="checkbox" name="cat" value="${key}" />
+          <span class="choice__mark" aria-hidden="true"></span>
+          <span class="choice__text">${label}</span>
+        </label>
+      `;
+    })
+    .join('');
+}
+
+function renderCategoryManager() {
+  if (!categoryManagerList) return;
+
+  if (categories.length === 0) {
+    categoryManagerList.innerHTML = '<p class="category-manager__empty">No hay categorías.</p>';
+    return;
+  }
+
+  categoryManagerList.innerHTML = categories
+    .map((label) => {
+      const key = getCategoryKey(label);
+      const isEditing = editingCategoryKey === key;
+
+      if (isEditing) {
+        return `
+          <div class="category-row is-editing" data-category-key="${key}">
+            <div class="category-row__edit">
+              <input
+                type="text"
+                class="input category-row__input"
+                value="${label}"
+                data-category-input="${key}"
+              />
+
+              <div class="category-row__actions category-row__actions--edit">
+                <button
+                  type="button"
+                  class="chip category-action category-action--save"
+                  data-category-save="${key}"
+                >
+                  <i data-lucide="check" aria-hidden="true"></i>
+                  <span>Guardar</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="chip category-action"
+                  data-category-cancel="${key}"
+                >
+                  <i data-lucide="x" aria-hidden="true"></i>
+                  <span>Cancelar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="category-row" data-category-key="${key}">
+          <span class="category-row__label">${label}</span>
+
+          <div class="category-row__actions">
+            <button
+              type="button"
+              class="chip category-row__btn"
+              data-category-edit="${key}"
+              aria-label="Editar categoría ${label}"
+            >
+              <i data-lucide="pencil" aria-hidden="true"></i>
+            </button>
+
+            <button
+              type="button"
+              class="chip category-row__btn category-row__btn--danger"
+              data-category-delete="${key}"
+              aria-label="Borrar categoría ${label}"
+            >
+              <i data-lucide="trash-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function refreshCategoriesUI() {
+  const currentDesktopCategory = taskCategory ? taskCategory.value : '';
+
+  renderCategorySelect(taskCategory, currentDesktopCategory);
+  renderCategoryFilters();
+  renderCategoryManager();
+  applyFiltersToDOM();
+  updateDesktopCategoryFieldMode();
+  updateCategoryManageMode();
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+function openNewCategoryEditor() {
+  if (!newCategoryEditor || !newCategoryInput) return;
+
+  newCategoryEditor.hidden = false;
+  newCategoryInput.value = '';
+  updateDesktopCategoryFieldMode();
+  newCategoryInput.focus();
+}
+
+function closeNewCategoryEditor() {
+  if (!newCategoryEditor || !newCategoryInput) return;
+
+  newCategoryEditor.hidden = true;
+  newCategoryInput.value = '';
+  updateDesktopCategoryFieldMode();
+}
+
+function addCategory(rawLabel) {
+  const cleanLabel = String(rawLabel || '').trim();
+
+  if (!cleanLabel) {
+    return { ok: false, error: 'empty' };
+  }
+
+  if (categoryExists(cleanLabel)) {
+    return { ok: false, error: 'duplicate' };
+  }
+
+  categories.push(cleanLabel);
+  saveCategories();
+  refreshCategoriesUI();
+
+  return { ok: true, category: cleanLabel };
+}
+
+function renameCategory(categoryKey, rawLabel) {
+  const cleanLabel = String(rawLabel || '').trim();
+
+  if (!cleanLabel) {
+    return { ok: false, error: 'empty' };
+  }
+
+  if (categoryExists(cleanLabel, categoryKey)) {
+    return { ok: false, error: 'duplicate' };
+  }
+
+  const currentLabel = getCategoryLabel(categoryKey);
+  if (!currentLabel) {
+    return { ok: false, error: 'not-found' };
+  }
+
+  categories = categories.map((label) =>
+    getCategoryKey(label) === categoryKey ? cleanLabel : label
+  );
+
+  tasks = tasks.map((task) =>
+    getCategoryKey(task.category) === categoryKey
+      ? { ...task, category: cleanLabel }
+      : task
+  );
+
+  filtersState.categories = filtersState.categories.map((key) =>
+    key === categoryKey ? getCategoryKey(cleanLabel) : key
+  );
+
+  if (taskCategory && getCategoryKey(taskCategory.value) === categoryKey) {
+    taskCategory.value = cleanLabel;
+  }
+
+  editingCategoryKey = null;
+  saveCategories();
+  saveTasks();
+  saveFiltersState();
+  refreshCategoriesUI();
+  refreshUI();
+
+  return { ok: true, category: cleanLabel };
+}
+
+function removeCategory(categoryKey) {
+  if (categories.length <= 1) {
+    return { ok: false, error: 'last-category' };
+  }
+
+  const inUse = tasks.some((task) => getCategoryKey(task.category) === categoryKey);
+  if (inUse) {
+    return { ok: false, error: 'in-use' };
+  }
+
+  categories = categories.filter((label) => getCategoryKey(label) !== categoryKey);
+  filtersState.categories = filtersState.categories.filter((key) => key !== categoryKey);
+
+  if (taskCategory && getCategoryKey(taskCategory.value) === categoryKey) {
+    taskCategory.value = categories[0] || '';
+  }
+
+  editingCategoryKey = null;
+  saveCategories();
+  saveFiltersState();
+  refreshCategoriesUI();
+  refreshUI();
+
+  return { ok: true };
+}
+
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'task-list__item';
@@ -479,7 +777,7 @@ function renderTask(task) {
 
   if (titleEl) titleEl.textContent = task.title;
   if (inputEl) inputEl.value = task.title;
-  if (catEl) catEl.textContent = task.category || 'Personal';
+  if (catEl) catEl.textContent = task.category || categories[0] || 'Personal';
   if (prioEl) prioEl.textContent = setPriorityLabel(task.priority);
 
   return li;
@@ -490,27 +788,23 @@ function renderSelectedFilters() {
 
   selectedFiltersList.innerHTML = '';
 
-  const selectedCategories = getSelectedCategories();
-  const selectedPriorities = getSelectedPriorities();
-  const selectedStatus = getSelectedStatus();
-
-  if (selectedStatus !== 'all') {
+  if (filtersState.status !== 'all') {
     const li = document.createElement('li');
     li.innerHTML = `
       <button
         type="button"
         class="chip filter-chip remove-filter"
-        data-status="${selectedStatus}"
-        aria-label="Quitar filtro de estado ${setStatusLabel(selectedStatus)}"
+        data-status="${filtersState.status}"
+        aria-label="Quitar filtro de estado ${setStatusLabel(filtersState.status)}"
       >
-        <span>${setStatusLabel(selectedStatus)}</span>
+        <span>${setStatusLabel(filtersState.status)}</span>
         <i data-lucide="x" aria-hidden="true"></i>
       </button>
     `;
     selectedFiltersList.appendChild(li);
   }
 
-  selectedPriorities.forEach((priority) => {
+  filtersState.priorities.forEach((priority) => {
     const li = document.createElement('li');
     li.innerHTML = `
       <button
@@ -526,16 +820,16 @@ function renderSelectedFilters() {
     selectedFiltersList.appendChild(li);
   });
 
-  selectedCategories.forEach((category) => {
+  filtersState.categories.forEach((categoryKey) => {
     const li = document.createElement('li');
     li.innerHTML = `
       <button
         type="button"
         class="chip filter-chip remove-filter"
-        data-category="${category}"
-        aria-label="Quitar filtro ${category}"
+        data-category="${categoryKey}"
+        aria-label="Quitar filtro ${getCategoryLabel(categoryKey)}"
       >
-        <span>${setCategoryLabel(category)}</span>
+        <span>${getCategoryLabel(categoryKey)}</span>
         <i data-lucide="x" aria-hidden="true"></i>
       </button>
     `;
@@ -662,6 +956,7 @@ function bindDesktopForm() {
 
 function bindListEvents() {
   if (!taskList) return;
+
   taskList.addEventListener('click', (event) => {
     const clickedButton = event.target.closest('button');
     const clickedInput = event.target.closest('.task-card__input');
@@ -737,59 +1032,6 @@ function bindListEvents() {
       return;
     }
   });
-  taskList.addEventListener('click', (event) => {
-    const editBtn = event.target.closest('.task-card__edit');
-    if (editBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(editBtn.dataset.taskId);
-      if (!taskId) return;
-
-      startTaskEdit(taskId);
-      return;
-    }
-
-    const saveBtn = event.target.closest('.task-card__save');
-    if (saveBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(saveBtn.dataset.taskId);
-      const input = taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
-
-      if (!taskId || !input) return;
-
-      const result = updateTaskTitle(taskId, input.value);
-
-      if (!result.ok) {
-        alert('El título no puede estar vacío.');
-        input.focus();
-        input.select();
-      }
-
-      return;
-    }
-
-    const cancelBtn = event.target.closest('.task-card__cancel');
-    if (cancelBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-      cancelTaskEdit();
-      return;
-    }
-
-    const deleteBtn = event.target.closest('.task-card__del');
-    if (deleteBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(deleteBtn.dataset.taskId);
-      if (!taskId) return;
-
-      removeTask(taskId);
-    }
-  });
 
   taskList.addEventListener('keydown', (event) => {
     const input = event.target.closest('.task-card__input');
@@ -832,37 +1074,29 @@ function bindSearchEvents() {
   if (!taskSearch) return;
 
   taskSearch.addEventListener('input', () => {
-    saveSearchTerm();
+    syncFiltersState();
     refreshUI();
   });
 
   taskSearch.addEventListener('search', () => {
-    saveSearchTerm();
+    syncFiltersState();
     refreshUI();
   });
 }
 
 function bindFilterEvents() {
-  categoryInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      saveSelectedFilters();
-      refreshUI();
-    });
-  });
+  if (filterPanel) {
+    filterPanel.addEventListener('change', (event) => {
+      const target = event.target;
 
-  priorityInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      saveSelectedPriority();
-      refreshUI();
-    });
-  });
+      if (!target.matches('input[name="status"], input[name="priority"], input[name="cat"]')) {
+        return;
+      }
 
-  statusInputs.forEach((input) => {
-    input.addEventListener('change', () => {
-      saveSelectedStatus();
+      syncFiltersState();
       refreshUI();
     });
-  });
+  }
 
   if (btnClearFilters) {
     btnClearFilters.addEventListener('click', clearAllFilters);
@@ -885,24 +1119,194 @@ function bindFilterEvents() {
     const status = removeBtn.dataset.status;
 
     if (category) {
-      const inputCategory = [...categoryInputs].find((input) => input.value.toLowerCase() === category.toLowerCase());
-      if (inputCategory) inputCategory.checked = false;
-      saveSelectedFilters();
+      filtersState.categories = filtersState.categories.filter((item) => item !== category);
     }
 
     if (priority) {
-      const inputPriority = [...priorityInputs].find((input) => input.value === priority);
-      if (inputPriority) inputPriority.checked = false;
-      saveSelectedPriority();
+      filtersState.priorities = filtersState.priorities.filter((item) => item !== priority);
     }
 
     if (status) {
-      const allStatus = document.querySelector('input[name="status"][value="all"]');
-      if (allStatus) allStatus.checked = true;
-      saveSelectedStatus();
+      filtersState.status = 'all';
     }
 
+    saveFiltersState();
+    applyFiltersToDOM();
     refreshUI();
+  });
+}
+
+function bindCategoryEvents() {
+  if (btnNewCategory) {
+    btnNewCategory.addEventListener('click', () => {
+      if (!newCategoryEditor) return;
+
+      if (newCategoryEditor.hidden) {
+        openNewCategoryEditor();
+      } else {
+        closeNewCategoryEditor();
+      }
+    });
+  }
+
+  if (btnToggleCategoryManage) {
+    btnToggleCategoryManage.addEventListener('click', () => {
+      isManagingCategories = !isManagingCategories;
+      editingCategoryKey = null;
+      updateCategoryManageMode();
+      renderCategoryManager();
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+  }
+
+  if (btnCancelNewCategory) {
+    btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
+  }
+
+  if (btnSaveNewCategory) {
+    btnSaveNewCategory.addEventListener('click', () => {
+      const result = addCategory(newCategoryInput?.value);
+
+      if (!result.ok) {
+        if (result.error === 'duplicate') {
+          alert('Esa categoría ya existe.');
+        } else {
+          alert('Escribe un nombre de categoría válido.');
+        }
+
+        newCategoryInput?.focus();
+        return;
+      }
+
+      if (taskCategory) {
+        taskCategory.value = result.category;
+      }
+
+      closeNewCategoryEditor();
+      refreshUI();
+    });
+  }
+
+  if (newCategoryInput) {
+    newCategoryInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        btnSaveNewCategory?.click();
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeNewCategoryEditor();
+      }
+    });
+  }
+
+  if (!categoryManagerList) return;
+
+  categoryManagerList.addEventListener('click', (event) => {
+    const editBtn = event.target.closest('[data-category-edit]');
+    if (editBtn) {
+      editingCategoryKey = editBtn.dataset.categoryEdit;
+      renderCategoryManager();
+
+      const input = categoryManagerList.querySelector(`[data-category-input="${editingCategoryKey}"]`);
+      if (input) {
+        input.focus();
+        input.select();
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+      return;
+    }
+
+    const cancelBtn = event.target.closest('[data-category-cancel]');
+    if (cancelBtn) {
+      editingCategoryKey = null;
+      renderCategoryManager();
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+      return;
+    }
+
+    const saveBtn = event.target.closest('[data-category-save]');
+    if (saveBtn) {
+      const key = saveBtn.dataset.categorySave;
+      const input = categoryManagerList.querySelector(`[data-category-input="${key}"]`);
+      const result = renameCategory(key, input?.value || '');
+
+      if (!result.ok) {
+        if (result.error === 'duplicate') {
+          alert('Esa categoría ya existe.');
+        } else {
+          alert('No se pudo guardar la categoría.');
+        }
+
+        input?.focus();
+        input?.select();
+      }
+
+      return;
+    }
+
+    const deleteBtn = event.target.closest('[data-category-delete]');
+    if (deleteBtn) {
+      const key = deleteBtn.dataset.categoryDelete;
+      const result = removeCategory(key);
+
+      if (!result.ok) {
+        if (result.error === 'in-use') {
+          alert('No puedes borrar esa categoría porque está asignada a tareas.');
+          return;
+        }
+
+        if (result.error === 'last-category') {
+          alert('Debe quedar al menos una categoría.');
+          return;
+        }
+
+        alert('No se pudo borrar la categoría.');
+      }
+    }
+  });
+
+  categoryManagerList.addEventListener('keydown', (event) => {
+    const input = event.target.closest('.category-row__input');
+    if (!input) return;
+
+    const key = input.dataset.categoryInput;
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const result = renameCategory(key, input.value);
+
+      if (!result.ok) {
+        if (result.error === 'duplicate') {
+          alert('Esa categoría ya existe.');
+        } else {
+          alert('No se pudo guardar la categoría.');
+        }
+
+        input.focus();
+        input.select();
+      }
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      editingCategoryKey = null;
+      renderCategoryManager();
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
   });
 }
 
@@ -922,15 +1326,15 @@ function bindTaskActionEvents() {
 
 function init() {
   loadTasks();
-  loadSelectedFilters();
-  loadSelectedPriority();
-  loadSelectedStatus();
-  loadSearchTerm();
+  loadCategories();
+  refreshCategoriesUI();
+  loadFiltersState();
   loadLayoutMode();
   bindDesktopForm();
   bindListEvents();
   bindSearchEvents();
   bindFilterEvents();
+  bindCategoryEvents();
   bindTaskActionEvents();
   refreshUI();
 
@@ -941,36 +1345,28 @@ function init() {
 
 window.TaskFlowApp = {
   addTaskFromData,
-
+  addCategory,
+  getCategories() {
+    return [...categories];
+  },
   getDesktopDefaults() {
     return {
-      category: taskCategory ? taskCategory.value : 'Personal',
+      category: taskCategory ? taskCategory.value : categories[0] || 'Personal',
       priority: taskPriority ? taskPriority.value : 'Media'
     };
   },
+  getFilteredCountByState({ status = 'all', priorities = [], categories: inputCategories = [], search = '' } = {}) {
+    const tempFilters = {
+      status,
+      priorities,
+      categories: inputCategories.map((item) => normalizeText(item)),
+      search: normalizeText(search)
+    };
 
-  getFilteredCountByState({ status = 'all', priorities = [], categories = [], search = '' } = {}) {
-    const searchText = normalizeText(search);
-
-    return tasks.filter((task) => {
-      const taskPriority = normalizePriority(task.priority);
-      const taskCategory = String(task.category || '').toLowerCase().trim();
-      const searchableText = normalizeText(`${task.title} ${task.category}`);
-
-      const matchesStatus =
-        status === 'all' ||
-        (status === 'pending' && !task.done) ||
-        (status === 'done' && task.done);
-
-      const matchesPriority = priorities.length === 0 || priorities.includes(taskPriority);
-      const matchesCategory = categories.length === 0 || categories.includes(taskCategory);
-      const matchesSearch = searchText === '' || searchableText.includes(searchText);
-
-      return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
-    }).length;
+    return tasks.filter((task) => taskMatchesFilters(task, tempFilters)).length;
   },
-
-  refreshUI
+  refreshUI,
+  refreshCategoriesUI
 };
 
 document.addEventListener('DOMContentLoaded', init);

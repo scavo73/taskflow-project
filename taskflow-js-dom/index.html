@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TaskFlow – Maqueta</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="category-management.css" />
 </head>
 
 <body>
@@ -52,13 +53,37 @@
 
             <div class="form-row">
               <div class="field">
-                <label class="label" for="taskCategory">Categoría</label>
-                <select class="select" id="taskCategory">
-                  <option>Trabajo</option>
-                  <option>Estudio</option>
-                  <option>Personal</option>
-                  <option>Salud</option>
-                </select>
+                <div class="field__head">
+                  <label class="label" for="taskCategory">Categoría</label>
+
+                  <button type="button" class="chip category-field__trigger category-field__trigger--inline"
+                    id="btnNewCategory" aria-expanded="false" aria-controls="newCategoryEditor">
+                    Añadir
+                  </button>
+                </div>
+
+                <div class="category-field" id="desktopCategoryField">
+                  <div class="category-field__row" id="desktopCategorySelectRow">
+                    <select class="select category-field__select" id="taskCategory"></select>
+                  </div>
+
+                  <div class="category-field__edit" id="newCategoryEditor" hidden>
+                    <input class="input category-field__input" id="newCategoryInput" type="text"
+                      placeholder="Nombre de categoría" />
+
+                    <div class="category-field__actions">
+                      <button type="button" class="chip category-action category-action--save" id="btnSaveNewCategory">
+                        <i data-lucide="check" aria-hidden="true"></i>
+                        <span>Guardar</span>
+                      </button>
+
+                      <button type="button" class="chip category-action" id="btnCancelNewCategory">
+                        <i data-lucide="x" aria-hidden="true"></i>
+                        <span>Cancelar</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="field">
@@ -133,32 +158,17 @@
         </section>
 
         <section class="filter-group" aria-label="Filtro por categoría">
-          <h3 class="filter-group__title">Categoría</h3>
+          <div class="filter-group__head">
+            <h3 class="filter-group__title">Categoría</h3>
 
-          <div class="choice-list" aria-label="Categoría">
-            <label class="choice">
-              <input type="checkbox" name="cat" value="trabajo" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Trabajo</span>
-            </label>
+            <button type="button" class="chip category-manage-toggle" id="btnToggleCategoryManage" aria-pressed="false">
+              Editar
+            </button>
+          </div>
 
-            <label class="choice">
-              <input type="checkbox" name="cat" value="estudio" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Estudio</span>
-            </label>
-
-            <label class="choice">
-              <input type="checkbox" name="cat" value="personal" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Personal</span>
-            </label>
-
-            <label class="choice">
-              <input type="checkbox" name="cat" value="salud" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Salud</span>
-            </label>
+          <div class="category-panel">
+            <div class="choice-list" id="categoryFiltersGroup" aria-label="Categoría"></div>
+            <div id="categoryManagerList" class="category-manager" hidden></div>
           </div>
         </section>
 

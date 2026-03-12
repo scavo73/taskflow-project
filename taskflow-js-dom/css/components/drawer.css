@@ -4,7 +4,8 @@
 .filters-footer,
 .filters-cancel,
 .filters-apply,
-.filters-handle {
+.filters-handle,
+.sec-head__title {
   display: none;
 }
 
@@ -70,8 +71,12 @@
   }
 
 
-  .filter-panel > .panel__head {
+  .filter-panel>.panel__head {
     display: none;
+  }
+
+  .sec-head__title {
+    display: block;
   }
 
   .sidebar .filter-panel {

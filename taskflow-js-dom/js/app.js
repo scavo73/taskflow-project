@@ -807,6 +807,20 @@ function renderTask(task) {
   return li;
 }
 
+function renderEmptyState() {
+  const li = document.createElement('li');
+  li.className = 'task-list__empty';
+  li.innerHTML = `
+   <p class="task-empty__title">No hay resultados</p>
+    <div class="task-empty" aria-live="polite">
+     
+      <span class="eyes task-empty__eyes" aria-hidden="true"></span>
+    </div>
+  `;
+
+  return li;
+}
+
 function renderSelectedFilters() {
   if (!selectedFiltersList) return;
 
@@ -919,11 +933,24 @@ function renderTasksList() {
   if (!taskList) return;
 
   const filteredTasks = getFilteredTasks();
+  const shouldShowEmptyState =
+    tasks.length > 0 &&
+    hasActiveFilters() &&
+    filteredTasks.length === 0;
+
   taskList.innerHTML = '';
 
-  filteredTasks.forEach((task) => {
-    taskList.appendChild(renderTask(task));
-  });
+  if (taskGrid) {
+    taskGrid.classList.toggle('task-grid--empty', shouldShowEmptyState);
+  }
+
+  if (shouldShowEmptyState) {
+    taskList.appendChild(renderEmptyState());
+  } else {
+    filteredTasks.forEach((task) => {
+      taskList.appendChild(renderTask(task));
+    });
+  }
 
   renderSelectedFilters();
   renderClearFiltersButton();
@@ -933,7 +960,9 @@ function renderTasksList() {
   }
 
   if (editingTaskId !== null) {
-    const input = taskList.querySelector(`.task-card__input[data-task-id="${editingTaskId}"]`);
+    const input = taskList.querySelector(
+      `.task-card__input[data-task-id="${editingTaskId}"]`
+    );
 
     if (input) {
       input.focus();

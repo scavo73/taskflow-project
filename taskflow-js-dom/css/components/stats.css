@@ -1,6 +1,6 @@
 .stats {
   display: grid;
-  gap: var(--space-4);
+  /* gap: var(--space-4); */
 }
 
 .stats__done {

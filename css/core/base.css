@@ -1,0 +1,19 @@
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  transition: background-color 240ms ease, color 240ms ease;
+}
+
+svg,
+i {
+  display: block;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--muted) 35%, transparent) transparent;
+}

@@ -1,0 +1,124 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar__inner {
+  width: 100%;
+  min-height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+}
+
+.topbar__left,
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar__left {
+  min-width: 0;
+}
+
+/* .brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+} */
+
+.brand__logo {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 40px !important;
+  padding: 0 !important;
+  border: 0;
+  box-shadow: none !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  background: none !important;
+}
+
+.theme-switch:hover {
+  transform: none;
+}
+
+.theme-switch:focus-visible {
+  outline: 2px solid var(--accent, #7aa2ff);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+.theme-switch__track {
+  position: relative;
+  display: inline-block;
+  width: 43px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 0.5em;
+  background-color: #ccc;
+  box-shadow: inset 2px 5px 10px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+
+
+.theme-switch__thumb {
+  position: absolute;
+  content: "";
+  height: 17px;
+  width: 0.18em;
+  left: 0.3em;
+  bottom: 0.3em;
+  border-radius: 999px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  transition: transform 0.4s ease, width 0.4s ease, border-radius 0.4s ease;
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch__track {
+  background-color: #171717;
+  box-shadow: inset 2px 5px 10px rgb(0, 0, 0);
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch__thumb {
+  transform: translateX(30px) rotate(360deg);
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch__sun {
+  opacity: 0.45;
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch__moon {
+  opacity: 0.95;
+}
+
+.theme-switch[aria-pressed="false"] .theme-switch__sun {
+  opacity: 0.95;
+}
+
+.theme-switch[aria-pressed="false"] .theme-switch__moon {
+  opacity: 0.45;
+}
+
+.theme-switch__label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+}

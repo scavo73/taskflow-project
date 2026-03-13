@@ -1,0 +1,125 @@
+@media (max-width: 1200px) {
+  .app {
+    gap: var(--space-8);
+  }
+}
+
+@media (max-width: 992px) {
+
+  #btnToggleLayout span,
+  #btnCompleteAllTasks span,
+  #btnDeleteAllTasks span {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .topbar__inner {
+    padding: var(--space-2);
+  }
+
+  .tasks {
+    margin-bottom: calc(var(--bottom-nav-h) + 2rem + env(safe-area-inset-bottom));
+  }
+
+  .task-form {
+    display: none;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .task-actions {
+    margin: 1rem 0 1rem;
+  }
+
+  /* 
+  .action-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  } */
+
+  .bottom-nav {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    padding: 0.45rem 0.75rem calc(0.45rem + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@media (max-width: 360px) {
+  .app {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .task-card__title {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .theme-switch__label {
+    display: none;
+  }
+
+  .theme-switch {
+    min-width: auto;
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .search {
+    padding: 0.95rem 1rem;
+    ;
+  }
+
+  .btn {
+    padding: 0.8rem 1.2rem;
+  }
+
+  .theme-switch__track {
+    width: 56px;
+    height: 32px;
+  }
+
+  .theme-switch__thumb {
+    height: 21px;
+  }
+
+  .theme-switch[aria-pressed="true"] .theme-switch__thumb {
+    transform: translateX(2.8em) rotate(360deg);
+  }
+
+  #selectedFiltersList {
+    display: none;
+  }
+
+}
+
+
+
+@media (max-width: 623px) {
+  #btnToggleLayout {
+    display: none;
+  }
+}

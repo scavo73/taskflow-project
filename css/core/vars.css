@@ -1,0 +1,111 @@
+:root {
+  color-scheme: light;
+  --bg: #e8e8e8;
+  --surface: #e8e8e8;
+  --surface-2: #f1f1f1;
+  --surface-3: #dfdfdf;
+  --text: rgba(0, 0, 0, 0.86);
+  --muted: rgba(0, 0, 0, 0.58);
+  --line: rgba(0, 0, 0, 0.14);
+  --line-strong: rgba(0, 0, 0, 0.22);
+  --focus-ring: rgba(0, 0, 0, 0.24);
+  --focus-ring-soft: rgba(0, 0, 0, 0.12);
+  --choice-check: rgba(0, 0, 0, 0.55);
+  --accent: #2453ff;
+
+  --high: #ff2f5e;
+  --high-text: #b30a33;
+  --med: #ffb703;
+  --med-text: #9e6900;
+  --low: #00b879;
+  --low-text: #006c46;
+  --danger: #d24646;
+  --danger-bg: rgba(210, 70, 70, 0.14);
+
+  --ui-ink: #000000;
+  --ui-paper: #ffffff;
+  --eye-shadow: rgba(13, 22, 27, 0.14);
+  --backdrop: rgba(255, 255, 255, 0.5);
+  --drawer-shadow: 0 -12px 36px rgba(0, 0, 0, 0.18);
+  --handle: rgba(0, 0, 0, 0.18);
+  --progress-from: rgba(46, 229, 157, 0.95);
+  --progress-to: rgba(124, 92, 255, 0.95);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 21px;
+  --radius-xl: 999px;
+
+  --shadow-xs: 3px 3px 6px #cfcfcf, -3px -3px 6px #ffffff;
+  --shadow-sm: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  --shadow-md: 10px 10px 20px #c9c9c9, -10px -10px 20px #ffffff;
+  --shadow-lg: 25px 25px 49px #c7c7c7, -25px -25px 49px #ffffff;
+  --shadow-inset: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
+  --shadow-inset-soft: inset 3px 3px 5px #d4d4d4, inset -3px -3px 5px #ffffff;
+
+  --shadow-inset-i: 6px 6px 12px #ffffff,
+    -6px -6px 12px #c5c5c5;
+
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+
+  --topbar-h: 68px;
+  --bottom-nav-h: 64px;
+  --side-w: minmax(260px, 340px);
+  --task-min: 280px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+
+  --ease: 180ms ease;
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg: #212121;
+  --surface: #212121;
+  --surface-2: #272727;
+  --surface-3: #1d1d1d;
+  --text: rgba(255, 255, 255, 0.94);
+  --muted: rgba(255, 255, 255, 0.68);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --focus-ring: rgba(255, 255, 255, 0.18);
+  --focus-ring-soft: rgba(255, 255, 255, 0.14);
+  --choice-check: rgba(255, 255, 255, 0.8);
+  --accent: #8cb6ff;
+
+  --high: #ff587e;
+  --high-text: #ffb1c3;
+  --med: #ffc84d;
+  --med-text: #ffe2a3;
+  --low: #22d39a;
+  --low-text: #aaf0d7;
+  --danger: #ff7b7b;
+  --danger-bg: rgba(255, 123, 123, 0.16);
+
+  --ui-ink: #f5f5f5;
+  --ui-paper: #2d2d2d;
+  --eye-shadow: rgba(0, 0, 0, 0.3);
+  --backdrop: rgba(0, 0, 0, 0.45);
+  --drawer-shadow: 0 -16px 42px rgba(0, 0, 0, 0.44);
+  --handle: rgba(255, 255, 255, 0.18);
+  --progress-from: rgba(34, 211, 154, 0.95);
+  --progress-to: rgba(140, 182, 255, 0.95);
+
+  --shadow-xs: 6px 6px 12px rgb(25, 25, 25), -6px -6px 12px rgb(39, 39, 39);
+  --shadow-sm: 10px 10px 20px rgb(25, 25, 25), -10px -10px 20px rgb(39, 39, 39);
+  --shadow-md: 12px 12px 24px rgb(25, 25, 25), -12px -12px 24px rgb(39, 39, 39);
+  --shadow-lg: 15px 15px 30px rgb(25, 25, 25), -15px -15px 30px rgb(39, 39, 39);
+  --shadow-inset: inset 8px 8px 16px rgb(25, 25, 25), inset -8px -8px 16px rgb(39, 39, 39);
+  --shadow-inset-soft: inset 4px 4px 8px rgb(25, 25, 25), inset -4px -4px 8px rgb(39, 39, 39);
+
+  --shadow-inset-i: 6px 6px 12px rgb(39, 39, 39),
+    -6px -6px 12px rgb(25, 25, 25);
+
+}

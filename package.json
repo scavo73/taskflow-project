@@ -1,0 +1,14 @@
+{
+  "name": "taskflow-tailwind-neumorphism",
+  "private": true,
+  "scripts": {
+    "dev": "postcss ./tailwind.css -o ./dist/styles.css --watch",
+    "build": "postcss ./tailwind.css -o ./dist/styles.css"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "postcss": "^8.5.8",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.2.1"
+  }
+}

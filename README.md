@@ -1,7 +1,6 @@
 # TaskFlow Project
 
-## Descripción de la app
-ToDo app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visualizar, completar y eliminar tareas. El proecto se dividira en partes, cada parte es la continuacion de las tareas marcadas por tutor de practicas.
+TaskFlow es una app de tareas hecha con **HTML, CSS, JavaScript y Tailwind CSS**, con interfaz responsive, estado persistente y una estructura clara para mantener la lógica ordenada.
 
 ## Capturas de pantalla
 
@@ -11,61 +10,39 @@ ToDo app sencilla desarrollada con HTML, CSS y JavaScript. Permite crear, visual
 ### Vista mobile
 ![Vista mobile](images/task-app-mobile.png)
 
-## taskflow-maqueta
-Maqueta de TaskFlow en `index.html` usando `<header>`, `<main>`, `<aside>` y `<section>`, con variables CSS en `:root` para colores/espaciados y lista de tareas maquetada con Flex + transiciones.
-Incluye Media Queries para que la barra lateral se reubique en móvil y el layout sea responsive.
-Se ha añadido la librería de iconos Lucide para checks y botones (p. ej. borrar) y el proyecto se despliega en Vercel con URL pública.
+- Crear, editar, completar y borrar tareas
+- Filtros por estado, prioridad, categoría y búsqueda
+- Persistencia con **localStorage**
+- Vista adaptable para escritorio y móvil
+- Tema claro/oscuro
+- Drag & drop para reordenar tareas
+- Drawer de filtros y modal de nueva tarea en móvil
 
 
-## taskflow-js-dom
+## Capas clave del JavaScript
 
-Interactividad con JavaScript y el DOM
-Manipulación de elementos y persistencia local
-Uso de JavaScript para transformar la página estática en una aplicación dinámica que responde a las acciones del usuario.
+### Estado
+Controla los datos principales de la app: tareas, categorías, filtros, layout y modo de edición.
 
+### Persistencia
+Guarda y recupera el estado con `localStorage` para que el usuario no pierda sus cambios al recargar.
 
-## Lógica principal de la app
+### Lógica
+Aplica las reglas del sistema: crear tareas válidas, filtrar, completar, borrar, renombrar categorías y mantener consistencia.
 
-### 1. Creación de tareas
-La función `addTask()` valida que el título no esté vacío y crea una nueva tarea con la información introducida por el usuario. Después, genera el elemento HTML correspondiente, lo añade a la lista de tareas, limpia el campo de entrada y actualiza el identificador para la siguiente tarea.
+### Render
+Convierte el estado actual en interfaz: lista de tareas, contador, progreso, filtros activos y estados vacíos.
 
-### 2. Eliminación de tareas
-Se utiliza `DOMContentLoaded` para asegurarse de que el DOM esté completamente cargado antes de trabajar con los elementos de la interfaz. La eliminación de tareas se gestiona mediante delegación de eventos sobre el contenedor de la lista, lo que permite que también funcionen correctamente las tareas añadidas de forma dinámica. Cuando el usuario pulsa el botón de borrar, se localiza la tarea correspondiente y se elimina de la interfaz.
+### Eventos
+Conecta la UI con la lógica: formularios, botones, búsqueda, filtros, drawer móvil y acciones sobre tareas.
 
-### 3. Persistencia de datos
-La persistencia se gestiona con `localStorage`. Cada vez que se añade, elimina o actualiza una tarea, el array de tareas se guarda usando `JSON.stringify()`. Al recargar la página, los datos almacenados se recuperan con `JSON.parse()` y la lista se reconstruye automáticamente en pantalla para mantener el estado anterior.
+## Archivos principales
 
-#### Persistencia y datos de ejemplo
+- `app.js`: núcleo de la aplicación
+- `mobile-task-form.js`: modal móvil para crear tareas
+- `filters-drawer.js`: filtros móviles con aplicar/cancelar
+- `theme.js`: gestión del tema visual
 
-Se ha añadido un pequeño array llamado `demoTasks` para cargar tareas de ejemplo solo cuando `localStorage` está vacío. Esto permite probar la interfaz desde el primer momento sin tener que crear tareas manualmente.
+## Objetivo
 
-Cada vez que se añade, elimina o actualiza una tarea, los datos se guardan de nuevo usando `JSON.stringify()`.
-
-Para limpiar todas las tareas guardadas durante las pruebas, se puede ejecutar en la consola del navegador:
-
-```js
-localStorage.clear();
-```
-
-## Recursos utilizados
-
-1. **JSON y forEach en JavaScript: Guardar y Recorrer Datos Como un Pro**  
-   StudyCode Pro  
-   https://studycodepro.com/blog/json-foreach-javascript-guardar-recorrer-datos-localstorage/
-
-2. **How To Create To-Do List App Using HTML CSS And JavaScript | Task App In JavaScript**  
-   YouTube  
-   https://www.youtube.com/watch?v=G0jO8kUrg-I
-
-3. **JavaScript: The Complete Crash Course**  
-   YouTube  
-   https://www.youtube.com/watch?v=OOOfBC1grl0
-
-4. **How To Create A Search Bar In JavaScript**  
-   YouTube  
-   https://www.youtube.com/watch?v=TlP5WIxVirU
-
-#### Pendiente
-- Implementar un filtro de búsqueda que oculte las tareas que no coincidan con el texto introducido.
-- Implementar un sistema de filtrado por categorías y prioridad.
-- Implementar la lógica de la barra de progreso de las tareas.
+Proyecto pequeño, pero bien resuelto: **estado controlado, persistencia real, render dinámico y separación clara de responsabilidades**.

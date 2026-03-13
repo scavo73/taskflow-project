@@ -3,9 +3,6 @@
 TaskFlow es una app de tareas hecha con **HTML, CSS, JavaScript y Tailwind CSS**, con una interfaz **responsive**, estado persistente y una estética inspirada en el **neumorfismo**.
 
 
-### Vista desktop
-![Vista desktop](images/task-app-desktop.png)
-
 ### Vista mobile
 ![Vista mobile](images/task-app-mobile.png)
 
@@ -34,6 +31,9 @@ Convierte el estado actual en interfaz: lista de tareas, contador, progreso, fil
 
 ### Eventos
 Conecta la UI con la lógica: formularios, botones, búsqueda, filtros, drawer móvil y acciones sobre tareas.
+
+### Vista desktop
+![Vista desktop](images/task-app-desktop.png)
 
 ## Archivos principales
 

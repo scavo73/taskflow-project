@@ -39,7 +39,7 @@ const LS_ORDER_VERSION_KEY = 'taskflow_order_version';
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 
 
-const USE_DEMO_TASKS_ON_FIRST_LOAD = false;
+const USE_DEMO_TASKS_ON_FIRST_LOAD = true;
 
 const demoTasks = [
   { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },

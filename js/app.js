@@ -1,3 +1,7 @@
+// =====================================================
+// CAPA 1: REFERENCIAS DEL DOM
+// =====================================================
+
 const taskTitle = document.getElementById('taskTitle');
 const taskList = document.getElementById('taskList');
 const taskCategory = document.getElementById('taskCategory');
@@ -30,14 +34,17 @@ const desktopCategoryField = document.getElementById('desktopCategoryField');
 const desktopCategorySelectRow = document.getElementById('desktopCategorySelectRow');
 const btnToggleCategoryManage = document.getElementById('btnToggleCategoryManage');
 
+
+// =====================================================
+// CAPA 2: CONFIGURACIÓN Y CONSTANTES
+// =====================================================
+
 const LS_KEY = 'taskflow_tasks';
 const LS_CATEGORIES_KEY = 'taskflow_categories';
 const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
-const LS_ORDER_VERSION_KEY = 'taskflow_order_version';
 
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
-
 
 const USE_DEMO_TASKS_ON_FIRST_LOAD = true;
 
@@ -50,6 +57,12 @@ const demoTasks = [
   { id: 6, title: 'Pedir cita médica', category: 'Salud', priority: 'Alta', done: false }
 ];
 
+
+// =====================================================
+// CAPA 3: ESTADO GLOBAL EN MEMORIA
+// =====================================================
+
+// esto vivie su vida mientras la app esta abierta, no es persisitencia
 let tasks = [];
 let nextId = 1;
 let isListLayout = false;
@@ -59,6 +72,14 @@ let editingCategoryKey = null;
 let isManagingCategories = false;
 let sortableTasks = null;
 
+let filtersState = getDefaultFiltersState();
+
+
+// =====================================================
+// CAPA 4: HELPERS Y NORMALIZACIÓN
+// =====================================================
+
+// Funcion reutlizable para inicializar, hacer un resent o recuperar un estado limpio
 function getDefaultFiltersState() {
   return {
     status: 'all',
@@ -68,12 +89,12 @@ function getDefaultFiltersState() {
   };
 }
 
-let filtersState = getDefaultFiltersState();
-
+// expone el arrya globalmente, 
 function syncGlobalTasks() {
   window.tasks = tasks;
 }
 
+// evitar errores, input a texto, minusicula, quita espacios, marca diacritica y elmina 
 function normalizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -96,14 +117,17 @@ function getCategoryKey(label) {
   return normalizeText(label);
 }
 
+// crea un arrya con filtro de cateogrias en el dom
 function getCategoryInputs() {
   return [...document.querySelectorAll('input[name="cat"]')];
 }
 
+// recibe la categforia normalizda y la devulve a la UI
 function getCategoryLabel(categoryKey) {
   return categories.find((label) => getCategoryKey(label) === categoryKey) || categoryKey;
 }
 
+// comporbar si una cateogria ya existe con label, con exlucedKey si se edita un categoria y se vulve poner le mismo nombre, se evita el duplicado
 function categoryExists(label, excludeKey = '') {
   const nextKey = getCategoryKey(label);
 
@@ -127,19 +151,16 @@ function setStatusLabel(value) {
   return 'Todos';
 }
 
-function resetFiltersState({ persist = true } = {}) {
-  filtersState = getDefaultFiltersState();
 
-  if (persist) {
-    saveFiltersState();
-  }
+// =====================================================
+// CAPA 5: PERSISTENCIA LOCALSTORAGE
+// =====================================================
 
-  applyFiltersToDOM();
-}
 
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
 
+  // si no hay tarreas guardadas, lo que hago es devolver un demo, es solo para debag TODO: limpiar.
   if (rawTasks === null) {
     tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
   } else {
@@ -151,13 +172,6 @@ function loadTasks() {
     }
   }
 
-  const orderVersion = localStorage.getItem(LS_ORDER_VERSION_KEY);
-
-  if (orderVersion !== '2') {
-    tasks = [...tasks].reverse();
-    localStorage.setItem(LS_ORDER_VERSION_KEY, '2');
-  }
-
   saveTasks();
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
 }
@@ -165,28 +179,6 @@ function loadTasks() {
 function saveTasks() {
   localStorage.setItem(LS_KEY, JSON.stringify(tasks));
   syncGlobalTasks();
-}
-
-function updateDesktopCategoryFieldMode() {
-  if (!desktopCategoryField || !desktopCategorySelectRow || !newCategoryEditor || !btnNewCategory) return;
-
-  const isEditing = !newCategoryEditor.hidden;
-  desktopCategoryField.classList.toggle('is-editing', isEditing);
-  desktopCategorySelectRow.hidden = isEditing;
-  btnNewCategory.setAttribute('aria-expanded', String(isEditing));
-  btnNewCategory.classList.toggle('is-active', isEditing);
-}
-
-function updateCategoryManageMode() {
-  if (!categoryFiltersGroup || !categoryManagerList || !btnToggleCategoryManage) return;
-
-  categoryPanel?.classList.toggle('is-managing', isManagingCategories);
-  categoryFiltersGroup.hidden = isManagingCategories;
-  categoryManagerList.hidden = !isManagingCategories;
-  categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
-  categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
-  btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
-  btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
 }
 
 function loadCategories() {
@@ -198,22 +190,30 @@ function loadCategories() {
     savedCategories = [];
   }
 
-  const merged = [...DEFAULT_CATEGORIES, ...savedCategories, ...tasks.map((task) => task.category)];
+  // aqui merged devuelve vategorias gaurdaras o creadas por usuario y las categorias qeu existen dentro de de las tareas guardadas 
+  const merged = [...savedCategories, ...tasks.map((task) => task.category)];
   const seen = new Set();
 
+  // limpieza 
   categories = merged
+    //convertir todoa string y quitar espacio
     .map((item) => String(item || '').trim())
+    //quitar vacios
     .filter(Boolean)
+    //eliminar duplicados con Set
     .filter((item) => {
+      // se guardan las categorias en set, si seen tiene categoria=key  devuelve false y no carga la etiqueta, si deuvel tru la carga.
       const key = getCategoryKey(item);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
 
+  // vuelve a cargar la etiqueta
   saveCategories();
 }
 
+// 
 function saveCategories() {
   localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(categories));
 }
@@ -224,37 +224,6 @@ function saveLayoutMode() {
 
 function loadLayoutMode() {
   isListLayout = localStorage.getItem(LS_LAYOUT_KEY) === 'list';
-}
-
-function getFiltersFromDOM() {
-  return {
-    status: document.querySelector('input[name="status"]:checked')?.value || 'all',
-    priorities: [...priorityInputs]
-      .filter((input) => input.checked)
-      .map((input) => input.value),
-    categories: getCategoryInputs()
-      .filter((input) => input.checked)
-      .map((input) => normalizeText(input.value)),
-    search: normalizeText(taskSearch ? taskSearch.value : '')
-  };
-}
-
-function applyFiltersToDOM() {
-  statusInputs.forEach((input) => {
-    input.checked = input.value === filtersState.status;
-  });
-
-  priorityInputs.forEach((input) => {
-    input.checked = filtersState.priorities.includes(input.value);
-  });
-
-  getCategoryInputs().forEach((input) => {
-    input.checked = filtersState.categories.includes(normalizeText(input.value));
-  });
-
-  if (taskSearch) {
-    taskSearch.value = filtersState.search || '';
-  }
 }
 
 function saveFiltersState() {
@@ -278,11 +247,68 @@ function loadFiltersState() {
   applyFiltersToDOM();
 }
 
+
+// =====================================================
+// CAPA 6: SINCRONIZACIÓN ESTADO <-> DOM
+// =====================================================
+
+// Esta funcion reinicia los fitros a su estado inicial y lo guarda en sotorage, por ejmpl si borras todas la tarreas se borran los fitros 
+function resetFiltersState({ persist = true } = {}) {
+  filtersState = getDefaultFiltersState();
+
+  if (persist) {
+    saveFiltersState();
+  }
+
+  applyFiltersToDOM();
+}
+
+// sacamos fitros de busqueda categorias y prioridas y la convertimos en un objeto
+function getFiltersFromDOM() {
+  return {
+    status: document.querySelector('input[name="status"]:checked')?.value || 'all',
+    priorities: [...priorityInputs]
+      .filter((input) => input.checked)
+      .map((input) => input.value),
+    categories: getCategoryInputs()
+      .filter((input) => input.checked)
+      .map((input) => normalizeText(input.value)),
+    search: normalizeText(taskSearch ? taskSearch.value : '')
+  };
+}
+
+// esta funcion aplica los fitros a la pantalla, filtra fitros desde storage, o por cambios producidos por acciones de usaurios 
+function applyFiltersToDOM() {
+  statusInputs.forEach((input) => {
+    input.checked = input.value === filtersState.status;
+  });
+
+  priorityInputs.forEach((input) => {
+    input.checked = filtersState.priorities.includes(input.value);
+  });
+
+  getCategoryInputs().forEach((input) => {
+    input.checked = filtersState.categories.includes(normalizeText(input.value));
+  });
+
+  if (taskSearch) {
+    taskSearch.value = filtersState.search || '';
+  }
+}
+
+// aqui cada vez que usuario hace un cambio en la pantalla los fitros se actulizan y se guardan.
+// por ejemplo cuando usuario marca un chebox, se dispara sync, sync llama a getfiltersDromDOM(), filterState se actuliza, y se guarda.
 function syncFiltersState() {
   filtersState = getFiltersFromDOM();
   saveFiltersState();
 }
 
+
+// =====================================================
+// CAPA 7: LÓGICA DE FILTROS
+// =====================================================
+
+// aqui pregunta si hay fitros activos
 function hasActiveFilters() {
   return (
     filtersState.status !== 'all' ||
@@ -292,11 +318,14 @@ function hasActiveFilters() {
   );
 }
 
+// Borrar filtros y pintar la interfaz 
 function clearAllFilters() {
   resetFiltersState();
   refreshUI();
 }
 
+
+// devuleve true or false segun la busqueda, filtra todas las combinaciones posibles una tarjeta puede tener y si se hace match devuelve true en lo contrario devuelve false 
 function taskMatchesFilters(task, filters) {
   const taskCategoryKey = normalizeText(task.category);
   const taskPriorityKey = normalizePriority(task.priority);
@@ -322,10 +351,17 @@ function taskMatchesFilters(task, filters) {
   return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
 }
 
+// aqui devuelve la coleccion de tareas segun la busqueda y filtrado
 function getFilteredTasks() {
   return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }
 
+
+// =====================================================
+// CAPA 8: LÓGICA DE TAREAS
+// =====================================================
+
+// crear objeto tarea
 function createTaskData({ title, category, priority }) {
   return {
     id: nextId++,
@@ -336,6 +372,7 @@ function createTaskData({ title, category, priority }) {
   };
 }
 
+// funcion que aniade la tarrea 
 function addTaskFromData({ title, category, priority }) {
   const cleanTitle = String(title || '').trim();
 
@@ -349,6 +386,7 @@ function addTaskFromData({ title, category, priority }) {
     priority
   });
 
+  // con unshit() la tarrea siempre se quedara arriba 
   tasks.unshift(task);
   saveTasks();
   refreshUI();
@@ -356,6 +394,7 @@ function addTaskFromData({ title, category, priority }) {
   return { ok: true, task };
 }
 
+//función conecta el formulario desktop con la lógica de creación.
 function addTaskFromDesktopForm() {
   if (!taskTitle) return;
 
@@ -374,10 +413,12 @@ function addTaskFromDesktopForm() {
   taskTitle.value = '';
 }
 
+// buscar tarea por id 
 function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
 
+// activar edicion de la tarea
 function startTaskEdit(taskId) {
   const task = getTaskById(taskId);
   if (!task) return;
@@ -393,6 +434,7 @@ function cancelTaskEdit() {
   refreshUI();
 }
 
+// guarda el titulo de la tarrea y sale de modo de edicion
 function updateTaskTitle(taskId, rawTitle) {
   const task = getTaskById(taskId);
   if (!task) {
@@ -413,7 +455,9 @@ function updateTaskTitle(taskId, rawTitle) {
   return { ok: true, task };
 }
 
+// borra la tarea desdea 
 function removeTask(taskId) {
+  //crea un arreglo nuevo sin tarjeta marcada
   tasks = tasks.filter((task) => task.id !== taskId);
 
   if (editingTaskId === taskId) {
@@ -469,6 +513,51 @@ function removeAllTasks() {
   saveTasks();
   resetFiltersState();
   refreshUI();
+}
+
+function openTaskCreator() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const mobileBtn = document.querySelector('.mobile-add-btn');
+  const desktopForm = document.querySelector('.task-form');
+
+  if (isMobile && mobileBtn) {
+    mobileBtn.click();
+    return;
+  }
+
+  desktopForm?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  taskTitle?.focus();
+}
+
+
+// =====================================================
+// CAPA 9: LÓGICA DE CATEGORÍAS
+// =====================================================
+
+function updateDesktopCategoryFieldMode() {
+  if (!desktopCategoryField || !desktopCategorySelectRow || !newCategoryEditor || !btnNewCategory) return;
+
+  const isEditing = !newCategoryEditor.hidden;
+  desktopCategoryField.classList.toggle('is-editing', isEditing);
+  desktopCategorySelectRow.hidden = isEditing;
+  btnNewCategory.setAttribute('aria-expanded', String(isEditing));
+  btnNewCategory.classList.toggle('is-active', isEditing);
+}
+
+function updateCategoryManageMode() {
+  if (!categoryFiltersGroup || !categoryManagerList || !btnToggleCategoryManage) return;
+
+  categoryPanel?.classList.toggle('is-managing', isManagingCategories);
+  categoryFiltersGroup.hidden = isManagingCategories;
+  categoryManagerList.hidden = !isManagingCategories;
+  categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
+  categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
+  btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
+  btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
 }
 
 function renderCategorySelect(selectElement, selectedValue = '') {
@@ -701,23 +790,10 @@ function removeCategory(categoryKey) {
   return { ok: true };
 }
 
-function openTaskCreator() {
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
-  const mobileBtn = document.querySelector('.mobile-add-btn');
-  const desktopForm = document.querySelector('.task-form');
 
-  if (isMobile && mobileBtn) {
-    mobileBtn.click();
-    return;
-  }
-
-  desktopForm?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start'
-  });
-
-  taskTitle?.focus();
-}
+// =====================================================
+// CAPA 10: RENDER DE TAREAS Y ESTADOS VACÍOS
+// =====================================================
 
 function renderTask(task) {
   const li = document.createElement('li');
@@ -885,6 +961,11 @@ function renderNoTasksState() {
 
   return li;
 }
+
+
+// =====================================================
+// CAPA 11: RENDER DE FILTROS Y CONTROLES VISUALES
+// =====================================================
 
 function renderSelectedFilters() {
   if (!selectedFiltersList) return;
@@ -1062,6 +1143,11 @@ function renderTasksList() {
   }
 }
 
+
+// =====================================================
+// CAPA 12: ORDENACIÓN DRAG & DROP
+// =====================================================
+
 function reorderTasksFromVisibleIds(visibleIds) {
   if (!Array.isArray(visibleIds) || visibleIds.length === 0) return;
 
@@ -1119,6 +1205,11 @@ function initTaskSorting() {
   });
 }
 
+
+// =====================================================
+// CAPA 13: STATS Y CONTADORES
+// =====================================================
+
 function updateTaskCounter() {
   const total = tasks.length;
   taskCount.forEach((node) => {
@@ -1138,6 +1229,11 @@ function doneTasksCount() {
   if (progressBar) progressBar.setAttribute('aria-valuenow', String(percent));
 }
 
+
+// =====================================================
+// CAPA 14: ORQUESTACIÓN DE UI
+// =====================================================
+
 function refreshUI() {
   renderEmptyLayoutVisibility();
   renderTasksList();
@@ -1145,6 +1241,11 @@ function refreshUI() {
   updateTaskCounter();
   doneTasksCount();
 }
+
+
+// =====================================================
+// CAPA 15: BINDING DE EVENTOS
+// =====================================================
 
 function bindDesktopForm() {
   const desktopForm = document.querySelector('.task-form');
@@ -1533,6 +1634,11 @@ function bindTaskActionEvents() {
   }
 }
 
+
+// =====================================================
+// CAPA 16: INICIALIZACIÓN
+// =====================================================
+
 function init() {
   loadTasks();
   loadCategories();
@@ -1557,6 +1663,11 @@ function init() {
     window.initFiltersDrawer();
   }
 }
+
+
+// =====================================================
+// CAPA 17: API PÚBLICA GLOBAL
+// =====================================================
 
 window.TaskFlowApp = {
   addTaskFromData,
@@ -1584,5 +1695,10 @@ window.TaskFlowApp = {
   refreshUI,
   refreshCategoriesUI
 };
+
+
+// =====================================================
+// CAPA 18: ARRANQUE DE LA APP
+// =====================================================
 
 document.addEventListener('DOMContentLoaded', init);

@@ -120,6 +120,31 @@
 
     <section class="tasks" aria-label="Tareas">
 
+      <div class="task-actions" aria-label="Acciones de tareas">
+        <div class="section-search">
+          <label class="search" aria-label="Buscar tareas">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input type="search" id="taskSearch" class="search__input" placeholder="Buscar tareas"
+              aria-label="Buscar tareas" />
+          </label>
+        </div>
+
+        <button type="button" class="chip action-btn" id="btnToggleLayout" aria-pressed="false">
+          <i data-lucide="rows-3" aria-hidden="true"></i>
+          <span>Vista lista</span>
+        </button>
+
+        <button type="button" class="chip action-btn" id="btnCompleteAllTasks">
+          <i data-lucide="check-check" aria-hidden="true"></i>
+          <span>Completar todas</span>
+        </button>
+
+        <button type="button" class="chip action-btn action-btn--danger" id="btnDeleteAllTasks">
+          <i data-lucide="trash-2" aria-hidden="true"></i>
+          <span>Borrar todas</span>
+        </button>
+      </div>
+
       <form class="task-form" aria-label="Añadir tarea">
         <div class="box box--pad">
           <div class="sec-head">
@@ -190,30 +215,7 @@
         <ul id="selectedFiltersList"></ul>
       </div>
 
-      <div class="task-actions" aria-label="Acciones de tareas">
-        <div class="section-search">
-          <label class="search" aria-label="Buscar tareas">
-            <i data-lucide="search" aria-hidden="true"></i>
-            <input type="search" id="taskSearch" class="search__input" placeholder="Buscar tareas"
-              aria-label="Buscar tareas" />
-          </label>
-        </div>
 
-        <button type="button" class="chip action-btn" id="btnToggleLayout" aria-pressed="false">
-          <i data-lucide="rows-3" aria-hidden="true"></i>
-          <span>Vista lista</span>
-        </button>
-
-        <button type="button" class="chip action-btn" id="btnCompleteAllTasks">
-          <i data-lucide="check-check" aria-hidden="true"></i>
-          <span>Completar todas</span>
-        </button>
-
-        <button type="button" class="chip action-btn action-btn--danger" id="btnDeleteAllTasks">
-          <i data-lucide="trash-2" aria-hidden="true"></i>
-          <span>Borrar todas</span>
-        </button>
-      </div>
 
       <div class="task-grid" aria-label="Tarjetas de tareas">
         <ul class="task-list" aria-label="Lista de tareas" id="taskList"></ul>

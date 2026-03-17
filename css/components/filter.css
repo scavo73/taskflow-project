@@ -98,3 +98,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+.active-filters:has(#selectedFiltersList:empty) {
+  display: none;
+}

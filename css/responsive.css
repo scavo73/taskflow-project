@@ -38,10 +38,6 @@
     grid-template-columns: 1fr;
   }
 
-  .task-actions {
-    margin: 1rem 0 1rem;
-  }
-
   /* 
   .action-btn {
     flex: 1 1 100%;

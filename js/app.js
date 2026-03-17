@@ -1632,6 +1632,7 @@ function bindTaskActionEvents() {
 }
 
 
+
 // =====================================================
 // CAPA 16: INICIALIZACIÓN
 // =====================================================
@@ -1654,6 +1655,7 @@ function init() {
   bindFilterEvents();
   bindCategoryEvents();
   bindTaskActionEvents();
+
   refreshUI();
   initTaskSorting();
 

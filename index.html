@@ -33,14 +33,20 @@
           <span class="brand__logo">TaskFlow</span>
         </a>
 
-        <nav class="nav" aria-label="Navegación principal">
-          <a class="nav__link is-active" href="#">
+        <nav class="nav" aria-label="Estado de tareas">
+          <a class="nav__link is-active" href="#" data-status-nav data-status-value="all" aria-current="page">
             <span class="nav__text">Tareas</span>
             <span class="count-pill task-count"></span>
           </a>
 
-          <a class="nav__link" href="#">
-            <span class="nav__text">Ajustes</span>
+          <a class="nav__link" href="#" data-status-nav data-status-value="pending">
+            <span class="nav__text">Pendientes</span>
+            <span class="count-pill task-count-pending"></span>
+          </a>
+
+          <a class="nav__link" href="#" data-status-nav data-status-value="done">
+            <span class="nav__text">Completadas</span>
+            <span class="count-pill task-count-done"></span>
           </a>
         </nav>
       </div>
@@ -131,30 +137,6 @@
           </button>
         </div>
 
-        <section class="filter-group" aria-label="Filtro por estado">
-          <h3 class="filter-group__title">Estado</h3>
-
-          <div class="choice-list" role="radiogroup" aria-label="Estado">
-            <label class="choice">
-              <input type="radio" name="status" value="all" checked />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Todos</span>
-            </label>
-
-            <label class="choice">
-              <input type="radio" name="status" value="pending" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Pendientes</span>
-            </label>
-
-            <label class="choice">
-              <input type="radio" name="status" value="done" />
-              <span class="choice__mark" aria-hidden="true"></span>
-              <span class="choice__text">Completadas</span>
-            </label>
-          </div>
-        </section>
-
         <section class="filter-group" aria-label="Filtro por prioridad">
           <h3 class="filter-group__title">Prioridad</h3>
 
@@ -206,7 +188,7 @@
             Progreso:
             <span class="stats__done">0</span>
             de
-            <span class="task-count">6</span>
+            <span class="task-count">0</span>
             completadas
           </h2>
         </div>
@@ -251,15 +233,21 @@
     </section>
   </main>
 
-  <nav class="bottom-nav" aria-label="Navegación inferior">
+  <nav class="bottom-nav" aria-label="Estado de tareas">
     <div class="bottom-nav__inner">
-      <a class="bottom-nav__link is-active" href="#" aria-current="page">
+      <a class="bottom-nav__link is-active" href="#" data-status-nav data-status-value="all" aria-current="page">
         <span class="bottom-nav__text">Tareas</span>
         <span class="count-pill task-count"></span>
       </a>
 
-      <a class="bottom-nav__link" href="#">
-        <span class="bottom-nav__text">Ajustes</span>
+      <a class="bottom-nav__link" href="#" data-status-nav data-status-value="pending">
+        <span class="bottom-nav__text">Pendientes</span>
+        <span class="count-pill task-count-pending"></span>
+      </a>
+
+      <a class="bottom-nav__link" href="#" data-status-nav data-status-value="done">
+        <span class="bottom-nav__text">Completadas</span>
+        <span class="count-pill task-count-done"></span>
       </a>
     </div>
   </nav>

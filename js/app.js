@@ -19,8 +19,10 @@ const taskActions = document.querySelector('.task-actions');
 const statsPanel = document.querySelector('.stats');
 
 const taskCount = document.querySelectorAll('.task-count');
+const taskCountPending = document.querySelectorAll('.task-count-pending');
+const taskCountDone = document.querySelectorAll('.task-count-done');
+
 const priorityInputs = document.querySelectorAll('input[name="priority"]');
-const statusInputs = document.querySelectorAll('input[name="status"]');
 
 const btnNewCategory = document.getElementById('btnNewCategory');
 const newCategoryEditor = document.getElementById('newCategoryEditor');
@@ -62,7 +64,6 @@ const demoTasks = [
 // CAPA 3: ESTADO GLOBAL EN MEMORIA
 // =====================================================
 
-// esto vivie su vida mientras la app esta abierta, no es persisitencia
 let tasks = [];
 let nextId = 1;
 let isListLayout = false;
@@ -79,7 +80,6 @@ let filtersState = getDefaultFiltersState();
 // CAPA 4: HELPERS Y NORMALIZACIÓN
 // =====================================================
 
-// Funcion reutlizable para inicializar, hacer un resent o recuperar un estado limpio
 function getDefaultFiltersState() {
   return {
     status: 'all',
@@ -89,12 +89,10 @@ function getDefaultFiltersState() {
   };
 }
 
-// expone el arrya globalmente, 
 function syncGlobalTasks() {
   window.tasks = tasks;
 }
 
-// evitar errores, input a texto, minusicula, quita espacios, marca diacritica y elmina 
 function normalizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -117,17 +115,14 @@ function getCategoryKey(label) {
   return normalizeText(label);
 }
 
-// crea un arrya con filtro de cateogrias en el dom
 function getCategoryInputs() {
   return [...document.querySelectorAll('input[name="cat"]')];
 }
 
-// recibe la categforia normalizda y la devulve a la UI
 function getCategoryLabel(categoryKey) {
   return categories.find((label) => getCategoryKey(label) === categoryKey) || categoryKey;
 }
 
-// comporbar si una cateogria ya existe con label, con exlucedKey si se edita un categoria y se vulve poner le mismo nombre, se evita el duplicado
 function categoryExists(label, excludeKey = '') {
   const nextKey = getCategoryKey(label);
 
@@ -145,10 +140,8 @@ function setPriorityLabel(value) {
   return 'Media';
 }
 
-function setStatusLabel(value) {
-  if (value === 'pending') return 'Pendientes';
-  if (value === 'done') return 'Completadas';
-  return 'Todos';
+function getStatusFromDOM() {
+  return document.querySelector('[data-status-nav].is-active')?.dataset.statusValue || 'all';
 }
 
 
@@ -156,11 +149,9 @@ function setStatusLabel(value) {
 // CAPA 5: PERSISTENCIA LOCALSTORAGE
 // =====================================================
 
-
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
 
-  // si no hay tarreas guardadas, lo que hago es devolver un demo, es solo para debag TODO: limpiar.
   if (rawTasks === null) {
     tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
   } else {
@@ -190,30 +181,22 @@ function loadCategories() {
     savedCategories = [];
   }
 
-  // aqui merged devuelve vategorias gaurdaras o creadas por usuario y las categorias qeu existen dentro de de las tareas guardadas 
-  const merged = [...savedCategories, ...tasks.map((task) => task.category)];
+  const merged = [...DEFAULT_CATEGORIES, ...savedCategories, ...tasks.map((task) => task.category)];
   const seen = new Set();
 
-  // limpieza 
   categories = merged
-    //convertir todoa string y quitar espacio
     .map((item) => String(item || '').trim())
-    //quitar vacios
     .filter(Boolean)
-    //eliminar duplicados con Set
     .filter((item) => {
-      // se guardan las categorias en set, si seen tiene categoria=key  devuelve false y no carga la etiqueta, si deuvel tru la carga.
       const key = getCategoryKey(item);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
 
-  // vuelve a cargar la etiqueta
   saveCategories();
 }
 
-// 
 function saveCategories() {
   localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(categories));
 }
@@ -233,9 +216,10 @@ function saveFiltersState() {
 function loadFiltersState() {
   try {
     const saved = JSON.parse(localStorage.getItem(LS_FILTERS_STATE_KEY)) || {};
+    const allowedStatus = ['all', 'pending', 'done'];
 
     filtersState = {
-      status: saved.status || 'all',
+      status: allowedStatus.includes(saved.status) ? saved.status : 'all',
       priorities: Array.isArray(saved.priorities) ? saved.priorities : [],
       categories: Array.isArray(saved.categories) ? saved.categories : [],
       search: String(saved.search || '')
@@ -252,9 +236,11 @@ function loadFiltersState() {
 // CAPA 6: SINCRONIZACIÓN ESTADO <-> DOM
 // =====================================================
 
-// Esta funcion reinicia los fitros a su estado inicial y lo guarda en sotorage, por ejmpl si borras todas la tarreas se borran los fitros 
-function resetFiltersState({ persist = true } = {}) {
+function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
+  const nextStatus = preserveStatus ? filtersState.status : 'all';
+
   filtersState = getDefaultFiltersState();
+  filtersState.status = nextStatus;
 
   if (persist) {
     saveFiltersState();
@@ -263,10 +249,9 @@ function resetFiltersState({ persist = true } = {}) {
   applyFiltersToDOM();
 }
 
-// sacamos fitros de busqueda categorias y prioridas y la convertimos en un objeto
 function getFiltersFromDOM() {
   return {
-    status: document.querySelector('input[name="status"]:checked')?.value || 'all',
+    status: getStatusFromDOM(),
     priorities: [...priorityInputs]
       .filter((input) => input.checked)
       .map((input) => input.value),
@@ -277,10 +262,16 @@ function getFiltersFromDOM() {
   };
 }
 
-// esta funcion aplica los fitros a la pantalla, filtra fitros desde storage, o por cambios producidos por acciones de usaurios 
 function applyFiltersToDOM() {
-  statusInputs.forEach((input) => {
-    input.checked = input.value === filtersState.status;
+  document.querySelectorAll('[data-status-nav]').forEach((link) => {
+    const isActive = link.dataset.statusValue === filtersState.status;
+    link.classList.toggle('is-active', isActive);
+
+    if (isActive) {
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.removeAttribute('aria-current');
+    }
   });
 
   priorityInputs.forEach((input) => {
@@ -296,8 +287,6 @@ function applyFiltersToDOM() {
   }
 }
 
-// aqui cada vez que usuario hace un cambio en la pantalla los fitros se actulizan y se guardan.
-// por ejemplo cuando usuario marca un chebox, se dispara sync, sync llama a getfiltersDromDOM(), filterState se actuliza, y se guarda.
 function syncFiltersState() {
   filtersState = getFiltersFromDOM();
   saveFiltersState();
@@ -308,24 +297,23 @@ function syncFiltersState() {
 // CAPA 7: LÓGICA DE FILTROS
 // =====================================================
 
-// aqui pregunta si hay fitros activos
 function hasActiveFilters() {
   return (
-    filtersState.status !== 'all' ||
     filtersState.priorities.length > 0 ||
     filtersState.categories.length > 0 ||
     filtersState.search !== ''
   );
 }
 
-// Borrar filtros y pintar la interfaz 
+function hasActiveTaskView() {
+  return filtersState.status !== 'all' || hasActiveFilters();
+}
+
 function clearAllFilters() {
-  resetFiltersState();
+  resetFiltersState({ preserveStatus: true });
   refreshUI();
 }
 
-
-// devuleve true or false segun la busqueda, filtra todas las combinaciones posibles una tarjeta puede tener y si se hace match devuelve true en lo contrario devuelve false 
 function taskMatchesFilters(task, filters) {
   const taskCategoryKey = normalizeText(task.category);
   const taskPriorityKey = normalizePriority(task.priority);
@@ -351,7 +339,6 @@ function taskMatchesFilters(task, filters) {
   return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
 }
 
-// aqui devuelve la coleccion de tareas segun la busqueda y filtrado
 function getFilteredTasks() {
   return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }
@@ -361,7 +348,6 @@ function getFilteredTasks() {
 // CAPA 8: LÓGICA DE TAREAS
 // =====================================================
 
-// crear objeto tarea
 function createTaskData({ title, category, priority }) {
   return {
     id: nextId++,
@@ -372,7 +358,6 @@ function createTaskData({ title, category, priority }) {
   };
 }
 
-// funcion que aniade la tarrea 
 function addTaskFromData({ title, category, priority }) {
   const cleanTitle = String(title || '').trim();
 
@@ -386,7 +371,6 @@ function addTaskFromData({ title, category, priority }) {
     priority
   });
 
-  // con unshit() la tarrea siempre se quedara arriba 
   tasks.unshift(task);
   saveTasks();
   refreshUI();
@@ -394,7 +378,6 @@ function addTaskFromData({ title, category, priority }) {
   return { ok: true, task };
 }
 
-//función conecta el formulario desktop con la lógica de creación.
 function addTaskFromDesktopForm() {
   if (!taskTitle) return;
 
@@ -413,12 +396,10 @@ function addTaskFromDesktopForm() {
   taskTitle.value = '';
 }
 
-// buscar tarea por id 
 function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
 
-// activar edicion de la tarea
 function startTaskEdit(taskId) {
   const task = getTaskById(taskId);
   if (!task) return;
@@ -434,7 +415,6 @@ function cancelTaskEdit() {
   refreshUI();
 }
 
-// guarda el titulo de la tarrea y sale de modo de edicion
 function updateTaskTitle(taskId, rawTitle) {
   const task = getTaskById(taskId);
   if (!task) {
@@ -455,9 +435,7 @@ function updateTaskTitle(taskId, rawTitle) {
   return { ok: true, task };
 }
 
-// borra la tarea desdea 
 function removeTask(taskId) {
-  //crea un arreglo nuevo sin tarjeta marcada
   tasks = tasks.filter((task) => task.id !== taskId);
 
   if (editingTaskId === taskId) {
@@ -972,22 +950,6 @@ function renderSelectedFilters() {
 
   selectedFiltersList.innerHTML = '';
 
-  if (filtersState.status !== 'all') {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <button
-        type="button"
-        class="chip filter-chip remove-filter"
-        data-status="${filtersState.status}"
-        aria-label="Quitar filtro de estado ${setStatusLabel(filtersState.status)}"
-      >
-        <span>${setStatusLabel(filtersState.status)}</span>
-        <i data-lucide="x" aria-hidden="true"></i>
-      </button>
-    `;
-    selectedFiltersList.appendChild(li);
-  }
-
   filtersState.priorities.forEach((priority) => {
     const li = document.createElement('li');
     li.innerHTML = `
@@ -1104,7 +1066,7 @@ function renderTasksList() {
   const hasNoTasks = tasks.length === 0;
   const shouldShowNoResults =
     !hasNoTasks &&
-    hasActiveFilters() &&
+    hasActiveTaskView() &&
     filteredTasks.length === 0;
 
   taskList.innerHTML = '';
@@ -1212,16 +1174,27 @@ function initTaskSorting() {
 
 function updateTaskCounter() {
   const total = tasks.length;
+  const done = tasks.filter((task) => task.done).length;
+  const pending = total - done;
+
   taskCount.forEach((node) => {
     node.textContent = total;
+  });
+
+  taskCountPending.forEach((node) => {
+    node.textContent = pending;
+  });
+
+  taskCountDone.forEach((node) => {
+    node.textContent = done;
   });
 }
 
 function doneTasksCount() {
   const done = tasks.filter((task) => task.done).length;
-  const doneCounter = document.querySelector('.stats__done');
   const fill = document.querySelector('.stats__fill');
   const progressBar = document.querySelector('.stats__bar');
+  const doneCounter = document.querySelector('.stats__done');
   const percent = tasks.length === 0 ? 0 : Math.round((done / tasks.length) * 100);
 
   if (doneCounter) doneCounter.textContent = done;
@@ -1394,12 +1367,29 @@ function bindSearchEvents() {
   });
 }
 
+function bindStatusNavEvents() {
+  document.querySelectorAll('[data-status-nav]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const nextStatus = link.dataset.statusValue || 'all';
+      if (!['all', 'pending', 'done'].includes(nextStatus)) return;
+      if (filtersState.status === nextStatus) return;
+
+      filtersState.status = nextStatus;
+      saveFiltersState();
+      applyFiltersToDOM();
+      refreshUI();
+    });
+  });
+}
+
 function bindFilterEvents() {
   if (filterPanel) {
     filterPanel.addEventListener('change', (event) => {
       const target = event.target;
 
-      if (!target.matches('input[name="status"], input[name="priority"], input[name="cat"]')) {
+      if (!target.matches('input[name="priority"], input[name="cat"]')) {
         return;
       }
 
@@ -1426,7 +1416,6 @@ function bindFilterEvents() {
 
     const category = removeBtn.dataset.category;
     const priority = removeBtn.dataset.priority;
-    const status = removeBtn.dataset.status;
 
     if (category) {
       filtersState.categories = filtersState.categories.filter((item) => item !== category);
@@ -1434,10 +1423,6 @@ function bindFilterEvents() {
 
     if (priority) {
       filtersState.priorities = filtersState.priorities.filter((item) => item !== priority);
-    }
-
-    if (status) {
-      filtersState.status = 'all';
     }
 
     saveFiltersState();
@@ -1653,6 +1638,7 @@ function init() {
   bindDesktopForm();
   bindListEvents();
   bindSearchEvents();
+  bindStatusNavEvents();
   bindFilterEvents();
   bindCategoryEvents();
   bindTaskActionEvents();

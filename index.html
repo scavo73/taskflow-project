@@ -130,12 +130,12 @@
           </div>
 
           <div class="form-flex">
-            <div class="field">
+            <div class="field field--title">
               <input class="input" id="taskTitle" type="text" placeholder="Ej: Enviar propuesta" />
             </div>
 
             <div class="form-row">
-              <div class="field">
+              <div class="field field--category">
                 <div class="field__head">
                   <label class="label" for="taskCategory">Categoría</label>
 
@@ -167,7 +167,7 @@
                 </div>
               </div>
 
-              <div class="field">
+              <div class="field field--priority">
                 <label class="label" for="taskPriority">Prioridad</label>
                 <select class="select" id="taskPriority">
                   <option>Alta</option>
@@ -175,9 +175,11 @@
                   <option>Baja</option>
                 </select>
               </div>
-            </div>
 
-            <button class="btn btn--primary" type="submit">Añadir tarea</button>
+              <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Añadir tarea</button>
+              </div>
+            </div>
           </div>
         </div>
       </form>

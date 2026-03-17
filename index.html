@@ -64,67 +64,7 @@
 
   <main class="app mx-auto ">
     <aside class="sidebar" aria-label="Panel lateral">
-      <form class="task-form" aria-label="Añadir tarea">
-        <div class="box box--pad">
-          <div class="sec-head">
-            <span class="sec-head__icon" aria-hidden="true">
-              <i data-lucide="sticky-note"></i>
-            </span>
-            <h2 class="sec-head__title-desktop">Crear tarea nueva</h2>
-          </div>
 
-          <div class="form-grid">
-            <div class="field">
-              <input class="input" id="taskTitle" type="text" placeholder="Ej: Enviar propuesta" />
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <div class="field__head">
-                  <label class="label" for="taskCategory">Categoría</label>
-
-                  <button type="button" class="category-field__trigger category-field__trigger--inline"
-                    id="btnNewCategory" aria-expanded="false" aria-controls="newCategoryEditor">
-                    Añadir
-                  </button>
-                </div>
-
-                <div class="category-field" id="desktopCategoryField">
-                  <div class="category-field__row" id="desktopCategorySelectRow">
-                    <select class="select category-field__select" id="taskCategory"></select>
-                  </div>
-
-                  <div class="category-field__edit" id="newCategoryEditor" hidden>
-                    <input class="input category-field__input" id="newCategoryInput" type="text"
-                      placeholder="Nombre de categoría" />
-
-                    <div class="category-field__actions">
-                      <button type="button" class="chip category-action category-action--save" id="btnSaveNewCategory">
-                        <i data-lucide="check" aria-hidden="true"></i>
-                      </button>
-
-                      <button type="button" class="chip category-action" id="btnCancelNewCategory">
-                        <i data-lucide="x" aria-hidden="true"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="label" for="taskPriority">Prioridad</label>
-                <select class="select" id="taskPriority">
-                  <option>Alta</option>
-                  <option selected>Media</option>
-                  <option>Baja</option>
-                </select>
-              </div>
-            </div>
-
-            <button class="btn btn--primary" type="submit">Añadir tarea</button>
-          </div>
-        </div>
-      </form>
 
       <div class="box box--pad filter-panel">
         <div class="sec-head panel__head">
@@ -179,25 +119,77 @@
     </aside>
 
     <section class="tasks" aria-label="Tareas">
-      <div class="stats">
-        <div class="sec-head">
-          <span class="sec-head__icon" aria-hidden="true">
-            <i data-lucide="pickaxe"></i>
-          </span>
-          <h2 class="sec-head__title-desktop">
-            Progreso:
-            <span class="stats__done">0</span>
-            de
-            <span class="task-count">0</span>
-            completadas
-          </h2>
-        </div>
 
-        <div class="stats__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-          <div class="stats__fill" style="width: 0%"></div>
-        </div>
+      <form class="task-form" aria-label="Añadir tarea">
+        <div class="box box--pad">
+          <div class="sec-head">
+            <span class="sec-head__icon" aria-hidden="true">
+              <i data-lucide="sticky-note"></i>
+            </span>
+            <h2 class="sec-head__title-desktop">Crear tarea nueva</h2>
+          </div>
 
-        <div class="stats__actions">
+          <div class="form-flex">
+            <div class="field">
+              <input class="input" id="taskTitle" type="text" placeholder="Ej: Enviar propuesta" />
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <div class="field__head">
+                  <label class="label" for="taskCategory">Categoría</label>
+
+                  <button type="button" class="category-field__trigger category-field__trigger--inline"
+                    id="btnNewCategory" aria-expanded="false" aria-controls="newCategoryEditor">
+                    Añadir
+                  </button>
+                </div>
+
+                <div class="category-field" id="desktopCategoryField">
+                  <div class="category-field__row" id="desktopCategorySelectRow">
+                    <select class="select category-field__select" id="taskCategory"></select>
+                  </div>
+
+                  <div class="category-field__edit" id="newCategoryEditor" hidden>
+                    <input class="input category-field__input" id="newCategoryInput" type="text"
+                      placeholder="Nombre de categoría" />
+
+                    <div class="category-field__actions">
+                      <button type="button" class="chip category-action category-action--save" id="btnSaveNewCategory">
+                        <i data-lucide="check" aria-hidden="true"></i>
+                      </button>
+
+                      <button type="button" class="chip category-action" id="btnCancelNewCategory">
+                        <i data-lucide="x" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="taskPriority">Prioridad</label>
+                <select class="select" id="taskPriority">
+                  <option>Alta</option>
+                  <option selected>Media</option>
+                  <option>Baja</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn--primary" type="submit">Añadir tarea</button>
+          </div>
+        </div>
+      </form>
+
+
+
+      <div class="active-filters">
+        <ul id="selectedFiltersList"></ul>
+      </div>
+
+      <div class="task-actions" aria-label="Acciones de tareas">
+        <div class="section-search">
           <label class="search" aria-label="Buscar tareas">
             <i data-lucide="search" aria-hidden="true"></i>
             <input type="search" id="taskSearch" class="search__input" placeholder="Buscar tareas"
@@ -205,12 +197,6 @@
           </label>
         </div>
 
-        <div class="active-filters">
-          <ul id="selectedFiltersList"></ul>
-        </div>
-      </div>
-
-      <div class="task-actions" aria-label="Acciones de tareas">
         <button type="button" class="chip action-btn" id="btnToggleLayout" aria-pressed="false">
           <i data-lucide="rows-3" aria-hidden="true"></i>
           <span>Vista lista</span>
@@ -229,6 +215,25 @@
 
       <div class="task-grid" aria-label="Tarjetas de tareas">
         <ul class="task-list" aria-label="Lista de tareas" id="taskList"></ul>
+      </div>
+
+      <div class="stats">
+        <div class="sec-head">
+          <span class="sec-head__icon" aria-hidden="true">
+            <i data-lucide="pickaxe"></i>
+          </span>
+          <h2 class="sec-head__title-desktop">
+            Progreso:
+            <span class="stats__done">0</span>
+            de
+            <span class="task-count">0</span>
+            completadas
+          </h2>
+        </div>
+
+        <div class="stats__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="stats__fill" style="width: 0%"></div>
+        </div>
       </div>
     </section>
   </main>

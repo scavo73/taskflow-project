@@ -67,7 +67,7 @@
 }
 
 .category-field__edit {
-  display: grid;
+  display: flex;
   gap: 0.75rem;
   padding-top: 0.1rem;
 }

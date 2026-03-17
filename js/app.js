@@ -36,6 +36,9 @@ const desktopCategoryField = document.getElementById('desktopCategoryField');
 const desktopCategorySelectRow = document.getElementById('desktopCategorySelectRow');
 const btnToggleCategoryManage = document.getElementById('btnToggleCategoryManage');
 
+const priorityField = document.querySelector('#taskPriority')?.closest('.field');
+const submitTaskBtn = document.querySelector('.task-form button[type="submit"]');
+
 
 // =====================================================
 // CAPA 2: CONFIGURACIÓN Y CONSTANTES
@@ -520,10 +523,19 @@ function updateDesktopCategoryFieldMode() {
   if (!desktopCategoryField || !desktopCategorySelectRow || !newCategoryEditor || !btnNewCategory) return;
 
   const isEditing = !newCategoryEditor.hidden;
+
   desktopCategoryField.classList.toggle('is-editing', isEditing);
   desktopCategorySelectRow.hidden = isEditing;
   btnNewCategory.setAttribute('aria-expanded', String(isEditing));
   btnNewCategory.classList.toggle('is-active', isEditing);
+
+  if (priorityField) {
+    priorityField.hidden = isEditing;
+  }
+
+  if (submitTaskBtn) {
+    submitTaskBtn.hidden = isEditing;
+  }
 }
 
 function updateCategoryManageMode() {

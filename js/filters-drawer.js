@@ -1,7 +1,7 @@
 function initFiltersDrawer() {
   const mediaQuery = window.matchMedia('(max-width: 768px)');
   const sidebar = document.querySelector('.sidebar');
-  const statsActions = document.querySelector('.stats__actions');
+  const statsActions = document.querySelector('.task-actions');
 
   if (!sidebar || !statsActions) return;
 

@@ -38,8 +38,16 @@
     display: none;
   }
 
+  .task-card {
+    min-height: 140px;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .task-grid {
+    margin-top: 0;
   }
 
   .bottom-nav {

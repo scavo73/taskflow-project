@@ -283,11 +283,6 @@ body.has-no-tasks .tasks {
 }
 
 
-
-.task-grid--no-tasks {
-  grid-template-columns: 1fr;
-}
-
 .task-list__empty--first-task {
   grid-column: 1 / -1;
 }
@@ -297,9 +292,6 @@ body.has-no-tasks .tasks {
   overflow: hidden;
   min-height: 420px;
   padding: clamp(1.5rem, 4vw, 2.5rem);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-lg);
   justify-items: center;
   align-content: start;
   text-align: center;

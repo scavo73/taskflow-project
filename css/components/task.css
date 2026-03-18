@@ -314,10 +314,6 @@ body.has-no-tasks .tasks {
   opacity: 0.72;
 }
 
-.task-empty__title {
-  max-width: 22ch;
-}
-
 .task-empty__text {
   max-width: 42ch;
   margin: 0;

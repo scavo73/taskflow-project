@@ -33,7 +33,7 @@
 .form-actions {
   display: flex;
   align-items: flex-end;
-  flex: 0 0 auto;
+  flex: 1;
 }
 
 .form-actions .btn {

@@ -102,3 +102,22 @@
 .active-filters:has(#selectedFiltersList:empty) {
   display: none;
 }
+
+/* hidden on desktop */
+.filters-handle,
+.filters-head,
+.filters-footer {
+  display: none;
+}
+
+/* mobile only */
+@media (max-width: 768px) {
+  .filters-handle {
+    display: block;
+  }
+
+  .filters-head,
+  .filters-footer {
+    display: flex;
+  }
+}

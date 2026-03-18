@@ -1,47 +1,53 @@
-// =====================================================
-// CAPA 1: REFERENCIAS DEL DOM
-// =====================================================
-
-const taskTitle = document.getElementById('taskTitle');
-const taskList = document.getElementById('taskList');
-const taskCategory = document.getElementById('taskCategory');
-const taskPriority = document.getElementById('taskPriority');
-const selectedFiltersList = document.getElementById('selectedFiltersList');
-const taskSearch = document.getElementById('taskSearch');
-const btnClearFilters = document.getElementById('btnClearFilters');
-
-const btnToggleLayout = document.getElementById('btnToggleLayout');
-const btnCompleteAllTasks = document.getElementById('btnCompleteAllTasks');
-const btnDeleteAllTasks = document.getElementById('btnDeleteAllTasks');
-const taskGrid = document.querySelector('.task-grid');
-const filterPanel = document.querySelector('.filter-panel');
-const taskActions = document.querySelector('.task-actions');
-const statsPanel = document.querySelector('.stats');
-
-const taskCount = document.querySelectorAll('.task-count');
-const taskCountPending = document.querySelectorAll('.task-count-pending');
-const taskCountDone = document.querySelectorAll('.task-count-done');
-
-const priorityInputs = document.querySelectorAll('input[name="priority"]');
-
-const btnNewCategory = document.getElementById('btnNewCategory');
-const newCategoryEditor = document.getElementById('newCategoryEditor');
-const newCategoryInput = document.getElementById('newCategoryInput');
-const btnSaveNewCategory = document.getElementById('btnSaveNewCategory');
-const btnCancelNewCategory = document.getElementById('btnCancelNewCategory');
-const categoryFiltersGroup = document.getElementById('categoryFiltersGroup');
-const categoryManagerList = document.getElementById('categoryManagerList');
-const categoryPanel = document.querySelector('.category-panel');
-const desktopCategoryField = document.getElementById('desktopCategoryField');
-const desktopCategorySelectRow = document.getElementById('desktopCategorySelectRow');
-const btnToggleCategoryManage = document.getElementById('btnToggleCategoryManage');
-
-const priorityField = document.querySelector('#taskPriority')?.closest('.field');
-const submitTaskBtn = document.querySelector('.task-form button[type="submit"]');
 
 
 // =====================================================
-// CAPA 2: CONFIGURACIÓN Y CONSTANTES
+// DOM
+// =====================================================
+
+const dom = {
+  taskTitle: document.getElementById('taskTitle'),
+  taskList: document.getElementById('taskList'),
+  taskCategory: document.getElementById('taskCategory'),
+  taskPriority: document.getElementById('taskPriority'),
+  selectedFiltersList: document.getElementById('selectedFiltersList'),
+  taskSearch: document.getElementById('taskSearch'),
+  btnClearFilters: document.getElementById('btnClearFilters'),
+
+  btnToggleLayout: document.getElementById('btnToggleLayout'),
+  btnCompleteAllTasks: document.getElementById('btnCompleteAllTasks'),
+  btnDeleteAllTasks: document.getElementById('btnDeleteAllTasks'),
+
+  taskGrid: document.querySelector('.task-grid'),
+  filterPanel: document.querySelector('.filter-panel'),
+  taskActions: document.querySelector('.task-actions'),
+  statsPanel: document.querySelector('.stats'),
+  aside: document.querySelector('aside'),
+
+  taskCount: document.querySelectorAll('.task-count'),
+  taskCountPending: document.querySelectorAll('.task-count-pending'),
+  taskCountDone: document.querySelectorAll('.task-count-done'),
+
+  priorityInputs: document.querySelectorAll('input[name="priority"]'),
+
+  btnNewCategory: document.getElementById('btnNewCategory'),
+  newCategoryEditor: document.getElementById('newCategoryEditor'),
+  newCategoryInput: document.getElementById('newCategoryInput'),
+  btnSaveNewCategory: document.getElementById('btnSaveNewCategory'),
+  btnCancelNewCategory: document.getElementById('btnCancelNewCategory'),
+  categoryFiltersGroup: document.getElementById('categoryFiltersGroup'),
+  categoryManagerList: document.getElementById('categoryManagerList'),
+  categoryPanel: document.querySelector('.category-panel'),
+  desktopCategoryField: document.getElementById('desktopCategoryField'),
+  desktopCategorySelectRow: document.getElementById('desktopCategorySelectRow'),
+  btnToggleCategoryManage: document.getElementById('btnToggleCategoryManage'),
+
+  priorityField: document.querySelector('#taskPriority')?.closest('.field'),
+  submitTaskBtn: document.querySelector('.task-form button[type="submit"]'),
+  desktopForm: document.querySelector('.task-form')
+};
+
+// =====================================================
+// CONFIG
 // =====================================================
 
 const LS_KEY = 'taskflow_tasks';
@@ -50,7 +56,6 @@ const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
 
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
-
 const USE_DEMO_TASKS_ON_FIRST_LOAD = true;
 
 const demoTasks = [
@@ -62,9 +67,8 @@ const demoTasks = [
   { id: 6, title: 'Pedir cita médica', category: 'Salud', priority: 'Alta', done: false }
 ];
 
-
 // =====================================================
-// CAPA 3: ESTADO GLOBAL EN MEMORIA
+// STATE
 // =====================================================
 
 let tasks = [];
@@ -75,12 +79,10 @@ let categories = [];
 let editingCategoryKey = null;
 let isManagingCategories = false;
 let sortableTasks = null;
-
 let filtersState = getDefaultFiltersState();
 
-
 // =====================================================
-// CAPA 4: HELPERS Y NORMALIZACIÓN
+// HELPERS
 // =====================================================
 
 function getDefaultFiltersState() {
@@ -92,8 +94,17 @@ function getDefaultFiltersState() {
   };
 }
 
-function syncGlobalTasks() {
-  window.tasks = tasks;
+function readStorage(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
 function normalizeText(value) {
@@ -112,6 +123,13 @@ function normalizePriority(value) {
   if (v === 'baja' || v === 'low') return 'low';
 
   return 'med';
+}
+
+function setPriorityLabel(value) {
+  const normalized = normalizePriority(value);
+  if (normalized === 'high') return 'Alta';
+  if (normalized === 'low') return 'Baja';
+  return 'Media';
 }
 
 function getCategoryKey(label) {
@@ -136,21 +154,54 @@ function categoryExists(label, excludeKey = '') {
   });
 }
 
-function setPriorityLabel(value) {
-  const normalized = normalizePriority(value);
-  if (normalized === 'high') return 'Alta';
-  if (normalized === 'low') return 'Baja';
-  return 'Media';
+function getStatusLinks() {
+  return [...document.querySelectorAll('[data-status-nav]')];
 }
 
 function getStatusFromDOM() {
   return document.querySelector('[data-status-nav].is-active')?.dataset.statusValue || 'all';
 }
 
+function refreshIcons() {
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+function syncGlobalTasks() {
+  window.tasks = tasks;
+}
+
+function showFieldError(message, input) {
+  alert(message);
+  input?.focus();
+  input?.select?.();
+}
+
+function commit({
+  saveTasks: shouldSaveTasks = false,
+  saveCategories: shouldSaveCategories = false,
+  saveFilters: shouldSaveFilters = false,
+  saveLayout: shouldSaveLayout = false,
+  renderCategories: shouldRenderCategories = false,
+  render = true
+} = {}) {
+  if (shouldSaveTasks) saveTasks();
+  if (shouldSaveCategories) saveCategories();
+  if (shouldSaveFilters) saveFiltersState();
+  if (shouldSaveLayout) saveLayoutMode();
+  if (shouldRenderCategories) refreshCategoriesUI();
+  if (render) refreshUI();
+}
 
 // =====================================================
-// CAPA 5: PERSISTENCIA LOCALSTORAGE
+// STORAGE
 // =====================================================
+
+function saveTasks() {
+  writeStorage(LS_KEY, tasks);
+  syncGlobalTasks();
+}
 
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
@@ -158,10 +209,8 @@ function loadTasks() {
   if (rawTasks === null) {
     tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
   } else {
-    try {
-      const parsedTasks = JSON.parse(rawTasks);
-      tasks = Array.isArray(parsedTasks) ? parsedTasks : [];
-    } catch {
+    tasks = readStorage(LS_KEY, USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : []);
+    if (!Array.isArray(tasks)) {
       tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
     }
   }
@@ -170,21 +219,18 @@ function loadTasks() {
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
 }
 
-function saveTasks() {
-  localStorage.setItem(LS_KEY, JSON.stringify(tasks));
-  syncGlobalTasks();
+function saveCategories() {
+  writeStorage(LS_CATEGORIES_KEY, categories);
 }
 
 function loadCategories() {
-  let savedCategories = [];
+  const savedCategories = readStorage(LS_CATEGORIES_KEY, []);
+  const merged = [
+    ...DEFAULT_CATEGORIES,
+    ...(Array.isArray(savedCategories) ? savedCategories : []),
+    ...tasks.map((task) => task.category)
+  ];
 
-  try {
-    savedCategories = JSON.parse(localStorage.getItem(LS_CATEGORIES_KEY)) || [];
-  } catch {
-    savedCategories = [];
-  }
-
-  const merged = [...DEFAULT_CATEGORIES, ...savedCategories, ...tasks.map((task) => task.category)];
   const seen = new Set();
 
   categories = merged
@@ -200,10 +246,6 @@ function loadCategories() {
   saveCategories();
 }
 
-function saveCategories() {
-  localStorage.setItem(LS_CATEGORIES_KEY, JSON.stringify(categories));
-}
-
 function saveLayoutMode() {
   localStorage.setItem(LS_LAYOUT_KEY, isListLayout ? 'list' : 'grid');
 }
@@ -213,30 +255,25 @@ function loadLayoutMode() {
 }
 
 function saveFiltersState() {
-  localStorage.setItem(LS_FILTERS_STATE_KEY, JSON.stringify(filtersState));
+  writeStorage(LS_FILTERS_STATE_KEY, filtersState);
 }
 
 function loadFiltersState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(LS_FILTERS_STATE_KEY)) || {};
-    const allowedStatus = ['all', 'pending', 'done'];
+  const saved = readStorage(LS_FILTERS_STATE_KEY, {});
+  const allowedStatus = ['all', 'pending', 'done'];
 
-    filtersState = {
-      status: allowedStatus.includes(saved.status) ? saved.status : 'all',
-      priorities: Array.isArray(saved.priorities) ? saved.priorities : [],
-      categories: Array.isArray(saved.categories) ? saved.categories : [],
-      search: String(saved.search || '')
-    };
-  } catch {
-    filtersState = getDefaultFiltersState();
-  }
+  filtersState = {
+    status: allowedStatus.includes(saved.status) ? saved.status : 'all',
+    priorities: Array.isArray(saved.priorities) ? saved.priorities : [],
+    categories: Array.isArray(saved.categories) ? saved.categories : [],
+    search: String(saved.search || '')
+  };
 
   applyFiltersToDOM();
 }
 
-
 // =====================================================
-// CAPA 6: SINCRONIZACIÓN ESTADO <-> DOM
+// FILTER STATE <-> DOM
 // =====================================================
 
 function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
@@ -255,18 +292,18 @@ function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
 function getFiltersFromDOM() {
   return {
     status: getStatusFromDOM(),
-    priorities: [...priorityInputs]
+    priorities: [...dom.priorityInputs]
       .filter((input) => input.checked)
       .map((input) => input.value),
     categories: getCategoryInputs()
       .filter((input) => input.checked)
       .map((input) => normalizeText(input.value)),
-    search: normalizeText(taskSearch ? taskSearch.value : '')
+    search: normalizeText(dom.taskSearch?.value || '')
   };
 }
 
 function applyFiltersToDOM() {
-  document.querySelectorAll('[data-status-nav]').forEach((link) => {
+  getStatusLinks().forEach((link) => {
     const isActive = link.dataset.statusValue === filtersState.status;
     link.classList.toggle('is-active', isActive);
 
@@ -277,7 +314,7 @@ function applyFiltersToDOM() {
     }
   });
 
-  priorityInputs.forEach((input) => {
+  dom.priorityInputs.forEach((input) => {
     input.checked = filtersState.priorities.includes(input.value);
   });
 
@@ -285,8 +322,8 @@ function applyFiltersToDOM() {
     input.checked = filtersState.categories.includes(normalizeText(input.value));
   });
 
-  if (taskSearch) {
-    taskSearch.value = filtersState.search || '';
+  if (dom.taskSearch) {
+    dom.taskSearch.value = filtersState.search || '';
   }
 }
 
@@ -295,9 +332,8 @@ function syncFiltersState() {
   saveFiltersState();
 }
 
-
 // =====================================================
-// CAPA 7: LÓGICA DE FILTROS
+// FILTER LOGIC
 // =====================================================
 
 function hasActiveFilters() {
@@ -346,9 +382,8 @@ function getFilteredTasks() {
   return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }
 
-
 // =====================================================
-// CAPA 8: LÓGICA DE TAREAS
+// TASKS
 // =====================================================
 
 function createTaskData({ title, category, priority }) {
@@ -359,6 +394,10 @@ function createTaskData({ title, category, priority }) {
     priority: priority || 'Media',
     done: false
   };
+}
+
+function getTaskById(taskId) {
+  return tasks.find((task) => task.id === taskId);
 }
 
 function addTaskFromData({ title, category, priority }) {
@@ -375,45 +414,36 @@ function addTaskFromData({ title, category, priority }) {
   });
 
   tasks.unshift(task);
-  saveTasks();
-  refreshUI();
+  commit({ saveTasks: true });
 
   return { ok: true, task };
 }
 
 function addTaskFromDesktopForm() {
-  if (!taskTitle) return;
+  if (!dom.taskTitle) return;
 
   const result = addTaskFromData({
-    title: taskTitle.value,
-    category: taskCategory ? taskCategory.value : categories[0] || 'Personal',
-    priority: taskPriority ? taskPriority.value : 'Media'
+    title: dom.taskTitle.value,
+    category: dom.taskCategory ? dom.taskCategory.value : categories[0] || 'Personal',
+    priority: dom.taskPriority ? dom.taskPriority.value : 'Media'
   });
 
   if (!result.ok) {
-    alert('Por favor, ingresa un título para la tarea.');
-    taskTitle.focus();
+    showFieldError('Por favor, ingresa un título para la tarea.', dom.taskTitle);
     return;
   }
 
-  taskTitle.value = '';
-}
-
-function getTaskById(taskId) {
-  return tasks.find((task) => task.id === taskId);
+  dom.taskTitle.value = '';
 }
 
 function startTaskEdit(taskId) {
-  const task = getTaskById(taskId);
-  if (!task) return;
-
+  if (!getTaskById(taskId)) return;
   editingTaskId = taskId;
   refreshUI();
 }
 
 function cancelTaskEdit() {
   if (editingTaskId === null) return;
-
   editingTaskId = null;
   refreshUI();
 }
@@ -432,8 +462,7 @@ function updateTaskTitle(taskId, rawTitle) {
 
   task.title = cleanTitle;
   editingTaskId = null;
-  saveTasks();
-  refreshUI();
+  commit({ saveTasks: true });
 
   return { ok: true, task };
 }
@@ -455,18 +484,16 @@ function removeTask(taskId) {
 }
 
 function toggleTask(taskId, isDone) {
-  const task = tasks.find((item) => item.id === taskId);
+  const task = getTaskById(taskId);
   if (!task) return;
 
   task.done = isDone;
-  saveTasks();
-  refreshUI();
+  commit({ saveTasks: true });
 }
 
 function toggleLayoutMode() {
   isListLayout = !isListLayout;
-  saveLayoutMode();
-  refreshUI();
+  commit({ saveLayout: true });
 }
 
 function completeAllTasks() {
@@ -479,8 +506,7 @@ function completeAllTasks() {
     done: !areAllCompleted
   }));
 
-  saveTasks();
-  refreshUI();
+  commit({ saveTasks: true });
 }
 
 function removeAllTasks() {
@@ -499,55 +525,48 @@ function removeAllTasks() {
 function openTaskCreator() {
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const mobileBtn = document.querySelector('.mobile-add-btn');
-  const desktopForm = document.querySelector('.task-form');
 
   if (isMobile && mobileBtn) {
     mobileBtn.click();
     return;
   }
 
-  desktopForm?.scrollIntoView({
+  dom.desktopForm?.scrollIntoView({
     behavior: 'smooth',
     block: 'start'
   });
 
-  taskTitle?.focus();
+  dom.taskTitle?.focus();
 }
 
-
 // =====================================================
-// CAPA 9: LÓGICA DE CATEGORÍAS
+// CATEGORIES
 // =====================================================
 
 function updateDesktopCategoryFieldMode() {
-  if (!desktopCategoryField || !desktopCategorySelectRow || !newCategoryEditor || !btnNewCategory) return;
+  if (!dom.desktopCategoryField || !dom.desktopCategorySelectRow || !dom.newCategoryEditor || !dom.btnNewCategory) return;
 
-  const isEditing = !newCategoryEditor.hidden;
+  const isEditing = !dom.newCategoryEditor.hidden;
 
-  desktopCategoryField.classList.toggle('is-editing', isEditing);
-  desktopCategorySelectRow.hidden = isEditing;
-  btnNewCategory.setAttribute('aria-expanded', String(isEditing));
-  btnNewCategory.classList.toggle('is-active', isEditing);
+  dom.desktopCategoryField.classList.toggle('is-editing', isEditing);
+  dom.desktopCategorySelectRow.hidden = isEditing;
+  dom.btnNewCategory.setAttribute('aria-expanded', String(isEditing));
+  dom.btnNewCategory.classList.toggle('is-active', isEditing);
 
-  if (priorityField) {
-    priorityField.hidden = isEditing;
-  }
-
-  if (submitTaskBtn) {
-    submitTaskBtn.hidden = isEditing;
-  }
+  if (dom.priorityField) dom.priorityField.hidden = isEditing;
+  if (dom.submitTaskBtn) dom.submitTaskBtn.hidden = isEditing;
 }
 
 function updateCategoryManageMode() {
-  if (!categoryFiltersGroup || !categoryManagerList || !btnToggleCategoryManage) return;
+  if (!dom.categoryFiltersGroup || !dom.categoryManagerList || !dom.btnToggleCategoryManage) return;
 
-  categoryPanel?.classList.toggle('is-managing', isManagingCategories);
-  categoryFiltersGroup.hidden = isManagingCategories;
-  categoryManagerList.hidden = !isManagingCategories;
-  categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
-  categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
-  btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
-  btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
+  dom.categoryPanel?.classList.toggle('is-managing', isManagingCategories);
+  dom.categoryFiltersGroup.hidden = isManagingCategories;
+  dom.categoryManagerList.hidden = !isManagingCategories;
+  dom.categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
+  dom.categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
+  dom.btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
+  dom.btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
 }
 
 function renderCategorySelect(selectElement, selectedValue = '') {
@@ -566,9 +585,9 @@ function renderCategorySelect(selectElement, selectedValue = '') {
 }
 
 function renderCategoryFilters() {
-  if (!categoryFiltersGroup) return;
+  if (!dom.categoryFiltersGroup) return;
 
-  categoryFiltersGroup.innerHTML = categories
+  dom.categoryFiltersGroup.innerHTML = categories
     .map((label) => {
       const key = getCategoryKey(label);
 
@@ -584,14 +603,14 @@ function renderCategoryFilters() {
 }
 
 function renderCategoryManager() {
-  if (!categoryManagerList) return;
+  if (!dom.categoryManagerList) return;
 
   if (categories.length === 0) {
-    categoryManagerList.innerHTML = '<p class="category-manager__empty">No hay categorías.</p>';
+    dom.categoryManagerList.innerHTML = '<p class="category-manager__empty">No hay categorías.</p>';
     return;
   }
 
-  categoryManagerList.innerHTML = categories
+  dom.categoryManagerList.innerHTML = categories
     .map((label) => {
       const key = getCategoryKey(label);
       const isEditing = editingCategoryKey === key;
@@ -661,34 +680,31 @@ function renderCategoryManager() {
 }
 
 function refreshCategoriesUI() {
-  const currentDesktopCategory = taskCategory ? taskCategory.value : '';
+  const currentDesktopCategory = dom.taskCategory ? dom.taskCategory.value : '';
 
-  renderCategorySelect(taskCategory, currentDesktopCategory);
+  renderCategorySelect(dom.taskCategory, currentDesktopCategory);
   renderCategoryFilters();
   renderCategoryManager();
   applyFiltersToDOM();
   updateDesktopCategoryFieldMode();
   updateCategoryManageMode();
-
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
+  refreshIcons();
 }
 
 function openNewCategoryEditor() {
-  if (!newCategoryEditor || !newCategoryInput) return;
+  if (!dom.newCategoryEditor || !dom.newCategoryInput) return;
 
-  newCategoryEditor.hidden = false;
-  newCategoryInput.value = '';
+  dom.newCategoryEditor.hidden = false;
+  dom.newCategoryInput.value = '';
   updateDesktopCategoryFieldMode();
-  newCategoryInput.focus();
+  dom.newCategoryInput.focus();
 }
 
 function closeNewCategoryEditor() {
-  if (!newCategoryEditor || !newCategoryInput) return;
+  if (!dom.newCategoryEditor || !dom.newCategoryInput) return;
 
-  newCategoryEditor.hidden = true;
-  newCategoryInput.value = '';
+  dom.newCategoryEditor.hidden = true;
+  dom.newCategoryInput.value = '';
   updateDesktopCategoryFieldMode();
 }
 
@@ -704,8 +720,7 @@ function addCategory(rawLabel) {
   }
 
   categories.push(cleanLabel);
-  saveCategories();
-  refreshCategoriesUI();
+  commit({ saveCategories: true, renderCategories: true, render: false });
 
   return { ok: true, category: cleanLabel };
 }
@@ -740,16 +755,18 @@ function renameCategory(categoryKey, rawLabel) {
     key === categoryKey ? getCategoryKey(cleanLabel) : key
   );
 
-  if (taskCategory && getCategoryKey(taskCategory.value) === categoryKey) {
-    taskCategory.value = cleanLabel;
+  if (dom.taskCategory && getCategoryKey(dom.taskCategory.value) === categoryKey) {
+    dom.taskCategory.value = cleanLabel;
   }
 
   editingCategoryKey = null;
-  saveCategories();
-  saveTasks();
-  saveFiltersState();
-  refreshCategoriesUI();
-  refreshUI();
+
+  commit({
+    saveCategories: true,
+    saveTasks: true,
+    saveFilters: true,
+    renderCategories: true
+  });
 
   return { ok: true, category: cleanLabel };
 }
@@ -767,22 +784,31 @@ function removeCategory(categoryKey) {
   categories = categories.filter((label) => getCategoryKey(label) !== categoryKey);
   filtersState.categories = filtersState.categories.filter((key) => key !== categoryKey);
 
-  if (taskCategory && getCategoryKey(taskCategory.value) === categoryKey) {
-    taskCategory.value = categories[0] || '';
+  if (dom.taskCategory && getCategoryKey(dom.taskCategory.value) === categoryKey) {
+    dom.taskCategory.value = categories[0] || '';
   }
 
   editingCategoryKey = null;
-  saveCategories();
-  saveFiltersState();
-  refreshCategoriesUI();
-  refreshUI();
+
+  commit({
+    saveCategories: true,
+    saveFilters: true,
+    renderCategories: true
+  });
 
   return { ok: true };
 }
 
+function getCategoryErrorMessage(error) {
+  if (error === 'duplicate') return 'Esa categoría ya existe.';
+  if (error === 'empty') return 'Escribe un nombre de categoría válido.';
+  if (error === 'in-use') return 'No puedes borrar esa categoría porque está asignada a tareas.';
+  if (error === 'last-category') return 'Debe quedar al menos una categoría.';
+  return 'No se pudo completar la acción.';
+}
 
 // =====================================================
-// CAPA 10: RENDER DE TAREAS Y ESTADOS VACÍOS
+// RENDER TASKS + EMPTY STATES
 // =====================================================
 
 function renderTask(task) {
@@ -913,7 +939,6 @@ function renderEmptyState() {
       <span class="eyes task-empty__eyes" aria-hidden="true"></span>
     </div>
   `;
-
   return li;
 }
 
@@ -952,46 +977,57 @@ function renderNoTasksState() {
   return li;
 }
 
+// =====================================================
+// RENDER FILTERS + ACTIONS + STATS
+// =====================================================
 
-// =====================================================
-// CAPA 11: RENDER DE FILTROS Y CONTROLES VISUALES
-// =====================================================
+function createFilterChip({ label, ariaLabel, dataName, dataValue }) {
+  const li = document.createElement('li');
+
+  li.innerHTML = `
+    <button
+      type="button"
+      class="chip filter-chip remove-filter"
+      ${dataName}="${dataValue}"
+      aria-label="${ariaLabel}"
+    >
+      <span>${label}</span>
+      <i data-lucide="x" aria-hidden="true"></i>
+    </button>
+  `;
+
+  return li;
+}
 
 function renderSelectedFilters() {
-  if (!selectedFiltersList) return;
+  if (!dom.selectedFiltersList) return;
 
-  selectedFiltersList.innerHTML = '';
+  dom.selectedFiltersList.innerHTML = '';
 
   filtersState.priorities.forEach((priority) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <button
-        type="button"
-        class="chip filter-chip remove-filter"
-        data-priority="${priority}"
-        aria-label="Quitar filtro de prioridad ${setPriorityLabel(priority)}"
-      >
-        <span>${setPriorityLabel(priority)}</span>
-        <i data-lucide="x" aria-hidden="true"></i>
-      </button>
-    `;
-    selectedFiltersList.appendChild(li);
+    const label = setPriorityLabel(priority);
+
+    dom.selectedFiltersList.appendChild(
+      createFilterChip({
+        label,
+        ariaLabel: `Quitar filtro de prioridad ${label}`,
+        dataName: 'data-priority',
+        dataValue: priority
+      })
+    );
   });
 
   filtersState.categories.forEach((categoryKey) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <button
-        type="button"
-        class="chip filter-chip remove-filter"
-        data-category="${categoryKey}"
-        aria-label="Quitar filtro ${getCategoryLabel(categoryKey)}"
-      >
-        <span>${getCategoryLabel(categoryKey)}</span>
-        <i data-lucide="x" aria-hidden="true"></i>
-      </button>
-    `;
-    selectedFiltersList.appendChild(li);
+    const label = getCategoryLabel(categoryKey);
+
+    dom.selectedFiltersList.appendChild(
+      createFilterChip({
+        label,
+        ariaLabel: `Quitar filtro ${label}`,
+        dataName: 'data-category',
+        dataValue: categoryKey
+      })
+    );
   });
 
   if (hasActiveFilters()) {
@@ -1005,43 +1041,31 @@ function renderSelectedFilters() {
         <span>Limpiar filtros</span>
       </button>
     `;
-    selectedFiltersList.appendChild(li);
+    dom.selectedFiltersList.appendChild(li);
   }
 }
 
 function renderClearFiltersButton() {
-  if (!btnClearFilters) return;
-  btnClearFilters.hidden = !hasActiveFilters();
+  if (!dom.btnClearFilters) return;
+  dom.btnClearFilters.hidden = !hasActiveFilters();
 }
 
 function renderEmptyLayoutVisibility() {
   const hasTasks = tasks.length > 0;
 
-  if (filterPanel) {
-    filterPanel.hidden = !hasTasks;
-  }
-
-  if (statsPanel) {
-    statsPanel.hidden = !hasTasks;
-  }
-
-  if (taskActions) {
-    taskActions.hidden = !hasTasks;
-  }
+  if (dom.filterPanel) dom.aside.hidden = !hasTasks;
+  if (dom.statsPanel) dom.statsPanel.hidden = !hasTasks;
+  if (dom.taskActions) dom.taskActions.hidden = !hasTasks;
 
   document.body.classList.toggle('has-no-tasks', !hasTasks);
 }
 
 function renderActionButtons() {
-  if (!btnToggleLayout && !btnCompleteAllTasks) {
-    return;
-  }
+  if (dom.btnToggleLayout) {
+    dom.btnToggleLayout.setAttribute('aria-pressed', String(isListLayout));
 
-  if (btnToggleLayout) {
-    btnToggleLayout.setAttribute('aria-pressed', String(isListLayout));
-
-    const icon = btnToggleLayout.querySelector('i');
-    const text = btnToggleLayout.querySelector('span');
+    const icon = dom.btnToggleLayout.querySelector('i');
+    const text = dom.btnToggleLayout.querySelector('span');
 
     if (icon) {
       icon.setAttribute('data-lucide', isListLayout ? 'layout-grid' : 'rows-3');
@@ -1052,9 +1076,9 @@ function renderActionButtons() {
     }
   }
 
-  if (btnCompleteAllTasks) {
-    const icon = btnCompleteAllTasks.querySelector('i');
-    const text = btnCompleteAllTasks.querySelector('span');
+  if (dom.btnCompleteAllTasks) {
+    const icon = dom.btnCompleteAllTasks.querySelector('i');
+    const text = dom.btnCompleteAllTasks.querySelector('span');
     const areAllCompleted = tasks.length > 0 && tasks.every((task) => task.done);
 
     if (icon) {
@@ -1066,50 +1090,40 @@ function renderActionButtons() {
     }
   }
 
-  if (taskGrid) {
-    taskGrid.classList.toggle('is-list', isListLayout);
+  if (dom.taskGrid) {
+    dom.taskGrid.classList.toggle('is-list', isListLayout);
   }
 }
 
 function renderTasksList() {
-  if (!taskList) return;
+  if (!dom.taskList) return;
 
   const filteredTasks = getFilteredTasks();
   const hasNoTasks = tasks.length === 0;
-  const shouldShowNoResults =
-    !hasNoTasks &&
-    hasActiveTaskView() &&
-    filteredTasks.length === 0;
+  const shouldShowNoResults = !hasNoTasks && hasActiveTaskView() && filteredTasks.length === 0;
 
-  taskList.innerHTML = '';
+  dom.taskList.innerHTML = '';
 
-  if (taskGrid) {
-    taskGrid.classList.toggle('task-grid--empty', hasNoTasks || shouldShowNoResults);
-    taskGrid.classList.toggle('task-grid--no-tasks', hasNoTasks);
+  if (dom.taskGrid) {
+    dom.taskGrid.classList.toggle('task-grid--empty', hasNoTasks || shouldShowNoResults);
+    dom.taskGrid.classList.toggle('task-grid--no-tasks', hasNoTasks);
   }
 
   if (hasNoTasks) {
-    taskList.appendChild(renderNoTasksState());
+    dom.taskList.appendChild(renderNoTasksState());
   } else if (shouldShowNoResults) {
-    taskList.appendChild(renderEmptyState());
+    dom.taskList.appendChild(renderEmptyState());
   } else {
     filteredTasks.forEach((task) => {
-      taskList.appendChild(renderTask(task));
+      dom.taskList.appendChild(renderTask(task));
     });
   }
 
   renderSelectedFilters();
   renderClearFiltersButton();
 
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
-
   if (editingTaskId !== null) {
-    const input = taskList.querySelector(
-      `.task-card__input[data-task-id="${editingTaskId}"]`
-    );
-
+    const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${editingTaskId}"]`);
     if (input) {
       input.focus();
       input.select();
@@ -1117,9 +1131,35 @@ function renderTasksList() {
   }
 }
 
+function renderStats() {
+  const total = tasks.length;
+  const done = tasks.filter((task) => task.done).length;
+  const pending = total - done;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+  dom.taskCount.forEach((node) => {
+    node.textContent = total;
+  });
+
+  dom.taskCountPending.forEach((node) => {
+    node.textContent = pending;
+  });
+
+  dom.taskCountDone.forEach((node) => {
+    node.textContent = done;
+  });
+
+  const fill = document.querySelector('.stats__fill');
+  const progressBar = document.querySelector('.stats__bar');
+  const doneCounter = document.querySelector('.stats__done');
+
+  if (doneCounter) doneCounter.textContent = done;
+  if (fill) fill.style.width = `${percent}%`;
+  if (progressBar) progressBar.setAttribute('aria-valuenow', String(percent));
+}
 
 // =====================================================
-// CAPA 12: ORDENACIÓN DRAG & DROP
+// DRAG & DROP
 // =====================================================
 
 function reorderTasksFromVisibleIds(visibleIds) {
@@ -1144,20 +1184,17 @@ function reorderTasksFromVisibleIds(visibleIds) {
     return nextTask;
   });
 
-  saveTasks();
-  refreshUI();
+  commit({ saveTasks: true });
 }
 
 function initTaskSorting() {
-  if (!taskList || typeof window.Sortable === 'undefined') {
-    return;
-  }
+  if (!dom.taskList || typeof window.Sortable === 'undefined') return;
 
   if (sortableTasks) {
     sortableTasks.destroy();
   }
 
-  sortableTasks = window.Sortable.create(taskList, {
+  sortableTasks = window.Sortable.create(dom.taskList, {
     animation: 180,
     handle: '.task-card__drag-handle',
     draggable: '.task-list__item',
@@ -1170,7 +1207,7 @@ function initTaskSorting() {
     onEnd(evt) {
       if (evt.oldIndex === evt.newIndex) return;
 
-      const visibleIds = [...taskList.querySelectorAll('.task-list__item')]
+      const visibleIds = [...dom.taskList.querySelectorAll('.task-list__item')]
         .map((item) => Number(item.dataset.taskId))
         .filter(Boolean);
 
@@ -1179,73 +1216,39 @@ function initTaskSorting() {
   });
 }
 
-
 // =====================================================
-// CAPA 13: STATS Y CONTADORES
-// =====================================================
-
-function updateTaskCounter() {
-  const total = tasks.length;
-  const done = tasks.filter((task) => task.done).length;
-  const pending = total - done;
-
-  taskCount.forEach((node) => {
-    node.textContent = total;
-  });
-
-  taskCountPending.forEach((node) => {
-    node.textContent = pending;
-  });
-
-  taskCountDone.forEach((node) => {
-    node.textContent = done;
-  });
-}
-
-function doneTasksCount() {
-  const done = tasks.filter((task) => task.done).length;
-  const fill = document.querySelector('.stats__fill');
-  const progressBar = document.querySelector('.stats__bar');
-  const doneCounter = document.querySelector('.stats__done');
-  const percent = tasks.length === 0 ? 0 : Math.round((done / tasks.length) * 100);
-
-  if (doneCounter) doneCounter.textContent = done;
-  if (fill) fill.style.width = `${percent}%`;
-  if (progressBar) progressBar.setAttribute('aria-valuenow', String(percent));
-}
-
-
-// =====================================================
-// CAPA 14: ORQUESTACIÓN DE UI
+// UI ORCHESTRATION
 // =====================================================
 
 function refreshUI() {
   renderEmptyLayoutVisibility();
   renderTasksList();
   renderActionButtons();
-  updateTaskCounter();
-  doneTasksCount();
+  renderStats();
+  refreshIcons();
+
+  if (sortableTasks) {
+    sortableTasks.option('disabled', editingTaskId !== null || tasks.length === 0);
+  }
 }
 
-
 // =====================================================
-// CAPA 15: BINDING DE EVENTOS
+// EVENTS
 // =====================================================
 
 function bindDesktopForm() {
-  const desktopForm = document.querySelector('.task-form');
-  if (!desktopForm) return;
+  if (!dom.desktopForm) return;
 
-  desktopForm.addEventListener('submit', (event) => {
+  dom.desktopForm.addEventListener('submit', (event) => {
     event.preventDefault();
     addTaskFromDesktopForm();
   });
 }
 
 function bindListEvents() {
-  if (!taskList) return;
+  if (!dom.taskList) return;
 
-  taskList.addEventListener('click', (event) => {
+  dom.taskList.addEventListener('click', (event) => {
     const emptyStateBtn = event.target.closest('.task-empty__cta');
     if (emptyStateBtn) {
       event.preventDefault();
@@ -1263,9 +1266,7 @@ function bindListEvents() {
       if (checkbox) {
         checkbox.checked = !checkbox.checked;
 
-        const rawId = checkbox.id.replace('task-', '');
-        const taskId = Number(rawId);
-
+        const taskId = Number(checkbox.id.replace('task-', ''));
         if (taskId) {
           toggleTask(taskId, checkbox.checked);
         }
@@ -1280,9 +1281,9 @@ function bindListEvents() {
       event.stopPropagation();
 
       const taskId = Number(editBtn.dataset.taskId);
-      if (!taskId) return;
-
-      startTaskEdit(taskId);
+      if (taskId) {
+        startTaskEdit(taskId);
+      }
       return;
     }
 
@@ -1292,16 +1293,14 @@ function bindListEvents() {
       event.stopPropagation();
 
       const taskId = Number(saveBtn.dataset.taskId);
-      const input = taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
+      const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
 
       if (!taskId || !input) return;
 
       const result = updateTaskTitle(taskId, input.value);
 
       if (!result.ok) {
-        alert('El título no puede estar vacío.');
-        input.focus();
-        input.select();
+        showFieldError('El título no puede estar vacío.', input);
       }
 
       return;
@@ -1321,14 +1320,13 @@ function bindListEvents() {
       event.stopPropagation();
 
       const taskId = Number(deleteBtn.dataset.taskId);
-      if (!taskId) return;
-
-      removeTask(taskId);
-      return;
+      if (taskId) {
+        removeTask(taskId);
+      }
     }
   });
 
-  taskList.addEventListener('keydown', (event) => {
+  dom.taskList.addEventListener('keydown', (event) => {
     const input = event.target.closest('.task-card__input');
     if (!input) return;
 
@@ -1341,9 +1339,7 @@ function bindListEvents() {
       const result = updateTaskTitle(taskId, input.value);
 
       if (!result.ok) {
-        alert('El título no puede estar vacío.');
-        input.focus();
-        input.select();
+        showFieldError('El título no puede estar vacío.', input);
       }
     }
 
@@ -1353,12 +1349,11 @@ function bindListEvents() {
     }
   });
 
-  taskList.addEventListener('change', (event) => {
+  dom.taskList.addEventListener('change', (event) => {
     const checkbox = event.target.closest('.task-item__toggle');
     if (!checkbox) return;
 
-    const rawId = checkbox.id.replace('task-', '');
-    const taskId = Number(rawId);
+    const taskId = Number(checkbox.id.replace('task-', ''));
     if (!taskId) return;
 
     toggleTask(taskId, checkbox.checked);
@@ -1366,21 +1361,19 @@ function bindListEvents() {
 }
 
 function bindSearchEvents() {
-  if (!taskSearch) return;
+  if (!dom.taskSearch) return;
 
-  taskSearch.addEventListener('input', () => {
+  const handleSearch = () => {
     syncFiltersState();
     refreshUI();
-  });
+  };
 
-  taskSearch.addEventListener('search', () => {
-    syncFiltersState();
-    refreshUI();
-  });
+  dom.taskSearch.addEventListener('input', handleSearch);
+  dom.taskSearch.addEventListener('search', handleSearch);
 }
 
 function bindStatusNavEvents() {
-  document.querySelectorAll('[data-status-nav]').forEach((link) => {
+  getStatusLinks().forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
 
@@ -1397,8 +1390,8 @@ function bindStatusNavEvents() {
 }
 
 function bindFilterEvents() {
-  if (filterPanel) {
-    filterPanel.addEventListener('change', (event) => {
+  if (dom.filterPanel) {
+    dom.filterPanel.addEventListener('change', (event) => {
       const target = event.target;
 
       if (!target.matches('input[name="priority"], input[name="cat"]')) {
@@ -1410,13 +1403,13 @@ function bindFilterEvents() {
     });
   }
 
-  if (btnClearFilters) {
-    btnClearFilters.addEventListener('click', clearAllFilters);
+  if (dom.btnClearFilters) {
+    dom.btnClearFilters.addEventListener('click', clearAllFilters);
   }
 
-  if (!selectedFiltersList) return;
+  if (!dom.selectedFiltersList) return;
 
-  selectedFiltersList.addEventListener('click', (event) => {
+  dom.selectedFiltersList.addEventListener('click', (event) => {
     const btnClearAll = event.target.closest('.clear-all-filters');
     if (btnClearAll) {
       clearAllFilters();
@@ -1444,11 +1437,11 @@ function bindFilterEvents() {
 }
 
 function bindCategoryEvents() {
-  if (btnNewCategory) {
-    btnNewCategory.addEventListener('click', () => {
-      if (!newCategoryEditor) return;
+  if (dom.btnNewCategory) {
+    dom.btnNewCategory.addEventListener('click', () => {
+      if (!dom.newCategoryEditor) return;
 
-      if (newCategoryEditor.hidden) {
+      if (dom.newCategoryEditor.hidden) {
         openNewCategoryEditor();
       } else {
         closeNewCategoryEditor();
@@ -1456,40 +1449,31 @@ function bindCategoryEvents() {
     });
   }
 
-  if (btnToggleCategoryManage) {
-    btnToggleCategoryManage.addEventListener('click', () => {
+  if (dom.btnToggleCategoryManage) {
+    dom.btnToggleCategoryManage.addEventListener('click', () => {
       isManagingCategories = !isManagingCategories;
       editingCategoryKey = null;
       updateCategoryManageMode();
       renderCategoryManager();
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+      refreshIcons();
     });
   }
 
-  if (btnCancelNewCategory) {
-    btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
+  if (dom.btnCancelNewCategory) {
+    dom.btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
   }
 
-  if (btnSaveNewCategory) {
-    btnSaveNewCategory.addEventListener('click', () => {
-      const result = addCategory(newCategoryInput?.value);
+  if (dom.btnSaveNewCategory) {
+    dom.btnSaveNewCategory.addEventListener('click', () => {
+      const result = addCategory(dom.newCategoryInput?.value);
 
       if (!result.ok) {
-        if (result.error === 'duplicate') {
-          alert('Esa categoría ya existe.');
-        } else {
-          alert('Escribe un nombre de categoría válido.');
-        }
-
-        newCategoryInput?.focus();
+        showFieldError(getCategoryErrorMessage(result.error), dom.newCategoryInput);
         return;
       }
 
-      if (taskCategory) {
-        taskCategory.value = result.category;
+      if (dom.taskCategory) {
+        dom.taskCategory.value = result.category;
       }
 
       closeNewCategoryEditor();
@@ -1497,11 +1481,11 @@ function bindCategoryEvents() {
     });
   }
 
-  if (newCategoryInput) {
-    newCategoryInput.addEventListener('keydown', (event) => {
+  if (dom.newCategoryInput) {
+    dom.newCategoryInput.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        btnSaveNewCategory?.click();
+        dom.btnSaveNewCategory?.click();
       }
 
       if (event.key === 'Escape') {
@@ -1511,23 +1495,21 @@ function bindCategoryEvents() {
     });
   }
 
-  if (!categoryManagerList) return;
+  if (!dom.categoryManagerList) return;
 
-  categoryManagerList.addEventListener('click', (event) => {
+  dom.categoryManagerList.addEventListener('click', (event) => {
     const editBtn = event.target.closest('[data-category-edit]');
     if (editBtn) {
       editingCategoryKey = editBtn.dataset.categoryEdit;
       renderCategoryManager();
 
-      const input = categoryManagerList.querySelector(`[data-category-input="${editingCategoryKey}"]`);
+      const input = dom.categoryManagerList.querySelector(`[data-category-input="${editingCategoryKey}"]`);
       if (input) {
         input.focus();
         input.select();
       }
 
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+      refreshIcons();
       return;
     }
 
@@ -1535,28 +1517,18 @@ function bindCategoryEvents() {
     if (cancelBtn) {
       editingCategoryKey = null;
       renderCategoryManager();
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+      refreshIcons();
       return;
     }
 
     const saveBtn = event.target.closest('[data-category-save]');
     if (saveBtn) {
       const key = saveBtn.dataset.categorySave;
-      const input = categoryManagerList.querySelector(`[data-category-input="${key}"]`);
+      const input = dom.categoryManagerList.querySelector(`[data-category-input="${key}"]`);
       const result = renameCategory(key, input?.value || '');
 
       if (!result.ok) {
-        if (result.error === 'duplicate') {
-          alert('Esa categoría ya existe.');
-        } else {
-          alert('No se pudo guardar la categoría.');
-        }
-
-        input?.focus();
-        input?.select();
+        showFieldError(getCategoryErrorMessage(result.error), input);
       }
 
       return;
@@ -1568,22 +1540,12 @@ function bindCategoryEvents() {
       const result = removeCategory(key);
 
       if (!result.ok) {
-        if (result.error === 'in-use') {
-          alert('No puedes borrar esa categoría porque está asignada a tareas.');
-          return;
-        }
-
-        if (result.error === 'last-category') {
-          alert('Debe quedar al menos una categoría.');
-          return;
-        }
-
-        alert('No se pudo borrar la categoría.');
+        alert(getCategoryErrorMessage(result.error));
       }
     }
   });
 
-  categoryManagerList.addEventListener('keydown', (event) => {
+  dom.categoryManagerList.addEventListener('keydown', (event) => {
     const input = event.target.closest('.category-row__input');
     if (!input) return;
 
@@ -1591,17 +1553,10 @@ function bindCategoryEvents() {
 
     if (event.key === 'Enter') {
       event.preventDefault();
+
       const result = renameCategory(key, input.value);
-
       if (!result.ok) {
-        if (result.error === 'duplicate') {
-          alert('Esa categoría ya existe.');
-        } else {
-          alert('No se pudo guardar la categoría.');
-        }
-
-        input.focus();
-        input.select();
+        showFieldError(getCategoryErrorMessage(result.error), input);
       }
     }
 
@@ -1609,32 +1564,19 @@ function bindCategoryEvents() {
       event.preventDefault();
       editingCategoryKey = null;
       renderCategoryManager();
-
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+      refreshIcons();
     }
   });
 }
 
 function bindTaskActionEvents() {
-  if (btnToggleLayout) {
-    btnToggleLayout.addEventListener('click', toggleLayoutMode);
-  }
-
-  if (btnCompleteAllTasks) {
-    btnCompleteAllTasks.addEventListener('click', completeAllTasks);
-  }
-
-  if (btnDeleteAllTasks) {
-    btnDeleteAllTasks.addEventListener('click', removeAllTasks);
-  }
+  dom.btnToggleLayout?.addEventListener('click', toggleLayoutMode);
+  dom.btnCompleteAllTasks?.addEventListener('click', completeAllTasks);
+  dom.btnDeleteAllTasks?.addEventListener('click', removeAllTasks);
 }
 
-
-
 // =====================================================
-// CAPA 16: INICIALIZACIÓN
+// INIT
 // =====================================================
 
 function init() {
@@ -1648,6 +1590,7 @@ function init() {
   }
 
   loadLayoutMode();
+
   bindDesktopForm();
   bindListEvents();
   bindSearchEvents();
@@ -1664,9 +1607,8 @@ function init() {
   }
 }
 
-
 // =====================================================
-// CAPA 17: API PÚBLICA GLOBAL
+// PUBLIC API
 // =====================================================
 
 window.TaskFlowApp = {
@@ -1678,11 +1620,16 @@ window.TaskFlowApp = {
   },
   getDesktopDefaults() {
     return {
-      category: taskCategory ? taskCategory.value : categories[0] || 'Personal',
-      priority: taskPriority ? taskPriority.value : 'Media'
+      category: dom.taskCategory ? dom.taskCategory.value : categories[0] || 'Personal',
+      priority: dom.taskPriority ? dom.taskPriority.value : 'Media'
     };
   },
-  getFilteredCountByState({ status = 'all', priorities = [], categories: inputCategories = [], search = '' } = {}) {
+  getFilteredCountByState({
+    status = 'all',
+    priorities = [],
+    categories: inputCategories = [],
+    search = ''
+  } = {}) {
     const tempFilters = {
       status,
       priorities,
@@ -1696,9 +1643,8 @@ window.TaskFlowApp = {
   refreshCategoriesUI
 };
 
-
 // =====================================================
-// CAPA 18: ARRANQUE DE LA APP
+// START
 // =====================================================
 
 document.addEventListener('DOMContentLoaded', init);

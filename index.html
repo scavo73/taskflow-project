@@ -72,28 +72,25 @@
             <i data-lucide="list-filter"></i>
           </span>
           <h2 class="sec-head__title-desktop panel__title">Filtros</h2>
-          <button type="button" id="btnClearFilters" class="btn btn--primary btn--clear ml-auto" hidden>
-            Limpiar filtros
-          </button>
         </div>
 
         <section class="filter-group" aria-label="Filtro por prioridad">
           <h3 class="filter-group__title">Prioridad</h3>
 
           <div class="choice-list" aria-label="Prioridad">
-            <label class="choice">
+            <label class="choice filter-bg">
               <input type="checkbox" name="priority" value="high" />
               <span class="choice__mark" aria-hidden="true"></span>
               <span class="choice__text">Alta</span>
             </label>
 
-            <label class="choice">
+            <label class="choice filter-bg">
               <input type="checkbox" name="priority" value="med" />
               <span class="choice__mark" aria-hidden="true"></span>
               <span class="choice__text">Media</span>
             </label>
 
-            <label class="choice">
+            <label class="choice filter-bg">
               <input type="checkbox" name="priority" value="low" />
               <span class="choice__mark" aria-hidden="true"></span>
               <span class="choice__text">Baja</span>
@@ -104,17 +101,16 @@
         <section class="filter-group" aria-label="Filtro por categoría">
           <div class="filter-group__head">
             <h3 class="filter-group__title">Categoría</h3>
-
-            <button type="button" class="category-manage-toggle" id="btnToggleCategoryManage" aria-pressed="false">
-              Editar
-            </button>
           </div>
 
           <div class="category-panel">
-            <div class="choice-list" id="categoryFiltersGroup" aria-label="Categoría"></div>
-            <div id="categoryManagerList" class="category-manager" hidden></div>
+            <div class="choice-list choice-list--categories" id="categoryFiltersGroup" aria-label="Categoría"></div>
           </div>
         </section>
+
+        <button type="button" id="btnClearFilters" class="btn btn--primary btn--clear ml-auto" hidden>
+          Limpiar filtros
+        </button>
       </div>
     </aside>
 

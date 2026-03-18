@@ -33,11 +33,8 @@ const dom = {
   btnSaveNewCategory: document.getElementById('btnSaveNewCategory'),
   btnCancelNewCategory: document.getElementById('btnCancelNewCategory'),
   categoryFiltersGroup: document.getElementById('categoryFiltersGroup'),
-  categoryManagerList: document.getElementById('categoryManagerList'),
-  categoryPanel: document.querySelector('.category-panel'),
   desktopCategoryField: document.getElementById('desktopCategoryField'),
   desktopCategorySelectRow: document.getElementById('desktopCategorySelectRow'),
-  btnToggleCategoryManage: document.getElementById('btnToggleCategoryManage'),
 
   priorityField: document.querySelector('#taskPriority')?.closest('.field'),
   submitTaskBtn: document.querySelector('.task-form button[type="submit"]'),
@@ -76,7 +73,6 @@ let isListLayout = false;
 let editingTaskId = null;
 let categories = [];
 let editingCategoryKey = null;
-let isManagingCategories = false;
 let sortableTasks = null;
 let filtersState = getDefaultFiltersState();
 
@@ -607,18 +603,6 @@ function updateDesktopCategoryFieldMode() {
   if (dom.submitTaskBtn) dom.submitTaskBtn.hidden = isEditing;
 }
 
-function updateCategoryManageMode() {
-  if (!dom.categoryFiltersGroup || !dom.categoryManagerList || !dom.btnToggleCategoryManage) return;
-
-  dom.categoryPanel?.classList.toggle('is-managing', isManagingCategories);
-  dom.categoryFiltersGroup.hidden = isManagingCategories;
-  dom.categoryManagerList.hidden = !isManagingCategories;
-  dom.categoryFiltersGroup.style.display = isManagingCategories ? 'none' : '';
-  dom.categoryManagerList.style.display = isManagingCategories ? 'grid' : 'none';
-  dom.btnToggleCategoryManage.setAttribute('aria-pressed', String(isManagingCategories));
-  dom.btnToggleCategoryManage.textContent = isManagingCategories ? 'Listo' : 'Editar';
-}
-
 function renderCategorySelect(selectElement, selectedValue = '') {
   if (!selectElement) return;
 
@@ -637,30 +621,14 @@ function renderCategorySelect(selectElement, selectedValue = '') {
 function renderCategoryFilters() {
   if (!dom.categoryFiltersGroup) return;
 
-  dom.categoryFiltersGroup.innerHTML = categories
-    .map((label) => {
-      const key = getCategoryKey(label);
-
-      return `
-        <label class="choice">
-          <input type="checkbox" name="cat" value="${key}" />
-          <span class="choice__mark" aria-hidden="true"></span>
-          <span class="choice__text">${label}</span>
-        </label>
-      `;
-    })
-    .join('');
-}
-
-function renderCategoryManager() {
-  if (!dom.categoryManagerList) return;
-
   if (categories.length === 0) {
-    dom.categoryManagerList.innerHTML = '<p class="category-manager__empty">No hay categorías.</p>';
+    dom.categoryFiltersGroup.innerHTML = `
+      <p class="category-manager__empty">No hay categorías.</p>
+    `;
     return;
   }
 
-  dom.categoryManagerList.innerHTML = categories
+  dom.categoryFiltersGroup.innerHTML = categories
     .map((label) => {
       const key = getCategoryKey(label);
       const isEditing = editingCategoryKey === key;
@@ -674,6 +642,7 @@ function renderCategoryManager() {
                 class="input category-row__input"
                 value="${label}"
                 data-category-input="${key}"
+                aria-label="Editar categoría ${label}"
               />
 
               <div class="category-row__actions category-row__actions--edit">
@@ -681,18 +650,27 @@ function renderCategoryManager() {
                   type="button"
                   class="chip category-action category-action--save"
                   data-category-save="${key}"
+                  aria-label="Guardar categoría ${label}"
                 >
                   <i data-lucide="check" aria-hidden="true"></i>
-                  <span>Guardar</span>
                 </button>
 
                 <button
                   type="button"
                   class="chip category-action"
                   data-category-cancel="${key}"
+                  aria-label="Cancelar edición de ${label}"
                 >
                   <i data-lucide="x" aria-hidden="true"></i>
-                  <span>Cancelar</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="chip category-row__btn category-row__btn--danger"
+                  data-category-delete="${key}"
+                  aria-label="Borrar categoría ${label}"
+                >
+                  <i data-lucide="trash-2" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
@@ -701,8 +679,12 @@ function renderCategoryManager() {
       }
 
       return `
-        <div class="category-row" data-category-key="${key}">
-          <span class="category-row__label">${label}</span>
+        <div class="category-row filter-bg" data-category-key="${key}">
+          <label class="choice category-row__filter">
+            <input type="checkbox" name="cat" value="${key}" />
+            <span class="choice__mark" aria-hidden="true"></span>
+            <span class="choice__text">${label}</span>
+          </label>
 
           <div class="category-row__actions">
             <button
@@ -711,16 +693,7 @@ function renderCategoryManager() {
               data-category-edit="${key}"
               aria-label="Editar categoría ${label}"
             >
-              <i data-lucide="pencil" aria-hidden="true"></i>
-            </button>
-
-            <button
-              type="button"
-              class="chip category-row__btn category-row__btn--danger"
-              data-category-delete="${key}"
-              aria-label="Borrar categoría ${label}"
-            >
-              <i data-lucide="trash-2" aria-hidden="true"></i>
+              <i data-lucide="square-pen" aria-hidden="true"></i>
             </button>
           </div>
         </div>
@@ -734,10 +707,8 @@ function refreshCategoriesUI() {
 
   renderCategorySelect(dom.taskCategory, currentDesktopCategory);
   renderCategoryFilters();
-  renderCategoryManager();
   applyFiltersToDOM();
   updateDesktopCategoryFieldMode();
-  updateCategoryManageMode();
   refreshIcons();
 }
 
@@ -1509,16 +1480,6 @@ function bindCategoryEvents() {
     });
   }
 
-  if (dom.btnToggleCategoryManage) {
-    dom.btnToggleCategoryManage.addEventListener('click', () => {
-      isManagingCategories = !isManagingCategories;
-      editingCategoryKey = null;
-      updateCategoryManageMode();
-      renderCategoryManager();
-      refreshIcons();
-    });
-  }
-
   if (dom.btnCancelNewCategory) {
     dom.btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
   }
@@ -1556,36 +1517,40 @@ function bindCategoryEvents() {
     });
   }
 
-  if (!dom.categoryManagerList) return;
+  if (!dom.categoryFiltersGroup) return;
 
-  dom.categoryManagerList.addEventListener('click', (event) => {
+  dom.categoryFiltersGroup.addEventListener('click', (event) => {
     const editBtn = event.target.closest('[data-category-edit]');
     if (editBtn) {
       editingCategoryKey = editBtn.dataset.categoryEdit;
-      renderCategoryManager();
+      refreshCategoriesUI();
 
-      const input = dom.categoryManagerList.querySelector(`[data-category-input="${editingCategoryKey}"]`);
+      const input = dom.categoryFiltersGroup.querySelector(
+        `[data-category-input="${editingCategoryKey}"]`
+      );
+
       if (input) {
         input.focus();
         input.select();
       }
 
-      refreshIcons();
       return;
     }
 
     const cancelBtn = event.target.closest('[data-category-cancel]');
     if (cancelBtn) {
       editingCategoryKey = null;
-      renderCategoryManager();
-      refreshIcons();
+      refreshCategoriesUI();
       return;
     }
 
     const saveBtn = event.target.closest('[data-category-save]');
     if (saveBtn) {
       const key = saveBtn.dataset.categorySave;
-      const input = dom.categoryManagerList.querySelector(`[data-category-input="${key}"]`);
+      const input = dom.categoryFiltersGroup.querySelector(
+        `[data-category-input="${key}"]`
+      );
+
       const result = renameCategory(key, input?.value || '');
 
       if (!result.ok) {
@@ -1606,7 +1571,7 @@ function bindCategoryEvents() {
     }
   });
 
-  dom.categoryManagerList.addEventListener('keydown', (event) => {
+  dom.categoryFiltersGroup.addEventListener('keydown', (event) => {
     const input = event.target.closest('.category-row__input');
     if (!input) return;
 
@@ -1624,8 +1589,7 @@ function bindCategoryEvents() {
     if (event.key === 'Escape') {
       event.preventDefault();
       editingCategoryKey = null;
-      renderCategoryManager();
-      refreshIcons();
+      refreshCategoriesUI();
     }
   });
 }

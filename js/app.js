@@ -180,6 +180,15 @@ function showFieldError(message, input) {
   input?.select?.();
 }
 
+function isDefaultTaskView() {
+  return (
+    filtersState.status === 'all' &&
+    filtersState.priorities.length === 0 &&
+    filtersState.categories.length === 0 &&
+    filtersState.search === ''
+  );
+}
+
 function saveTaskFormPrefs() {
   writeStorage(LS_FORM_PREFS_KEY, {
     category: dom.taskCategory?.value || categories[0] || 'Personal',
@@ -528,29 +537,67 @@ function toggleLayoutMode() {
   commit({ saveLayout: true });
 }
 
-function completeAllTasks() {
-  if (tasks.length === 0) return;
+function completeVisibleTasks() {
+  const visibleTasks = getFilteredTasks();
 
-  const areAllCompleted = tasks.every((task) => task.done);
+  if (visibleTasks.length === 0) return;
 
-  tasks = tasks.map((task) => ({
-    ...task,
-    done: !areAllCompleted
-  }));
+  const pendingVisibleTasks = visibleTasks.filter((task) => !task.done);
+  const doneVisibleTasks = visibleTasks.filter((task) => task.done);
+  const allVisibleCompleted = pendingVisibleTasks.length === 0;
+
+  const affectedTasks = allVisibleCompleted ? doneVisibleTasks : pendingVisibleTasks;
+  const affectedIds = new Set(affectedTasks.map((task) => task.id));
+  const affectedCount = affectedTasks.length;
+
+  if (affectedCount === 0) return;
+
+  const message = allVisibleCompleted
+    ? `¿Seguro que quieres desmarcar ${affectedCount} ${affectedCount === 1 ? 'tarea visible completada' : 'tareas visibles completadas'}?`
+    : `¿Seguro que quieres completar ${affectedCount} ${affectedCount === 1 ? 'tarea visible pendiente' : 'tareas visibles pendientes'}?`;
+
+  const userConfirmed = confirm(message);
+  if (!userConfirmed) return;
+
+  tasks = tasks.map((task) => {
+    if (!affectedIds.has(task.id)) return task;
+
+    return {
+      ...task,
+      done: !allVisibleCompleted
+    };
+  });
 
   commit({ saveTasks: true });
 }
 
-function removeAllTasks() {
-  if (tasks.length === 0) return;
+function removeVisibleTasks() {
+  const visibleTasks = getFilteredTasks();
 
-  const userConfirmed = confirm('¿Seguro que quieres borrar todas las tareas? Esta acción no se puede deshacer.');
+  if (visibleTasks.length === 0) return;
+
+  const visibleIds = new Set(visibleTasks.map((task) => task.id));
+  const visibleCount = visibleTasks.length;
+
+  const message = isDefaultTaskView()
+    ? `¿Seguro que quieres borrar ${visibleCount} ${visibleCount === 1 ? 'tarea' : 'tareas'}? Esta acción no se puede deshacer.`
+    : `¿Seguro que quieres borrar ${visibleCount} ${visibleCount === 1 ? 'tarea visible' : 'tareas visibles'}? Esta acción no se puede deshacer.`;
+
+  const userConfirmed = confirm(message);
   if (!userConfirmed) return;
 
-  tasks = [];
-  editingTaskId = null;
+  tasks = tasks.filter((task) => !visibleIds.has(task.id));
+
+  if (editingTaskId !== null && visibleIds.has(editingTaskId)) {
+    editingTaskId = null;
+  }
+
   saveTasks();
-  resetFiltersState();
+
+  if (tasks.length === 0) {
+    resetFiltersState();
+  }
+
   refreshUI();
 }
 
@@ -1085,6 +1132,11 @@ function renderEmptyLayoutVisibility() {
 }
 
 function renderActionButtons() {
+  const visibleTasks = getFilteredTasks();
+  const visibleDoneCount = visibleTasks.filter((task) => task.done).length;
+  const visiblePendingCount = visibleTasks.length - visibleDoneCount;
+  const allVisibleCompleted = visibleTasks.length > 0 && visiblePendingCount === 0;
+
   if (dom.btnToggleLayout) {
     dom.btnToggleLayout.setAttribute('aria-pressed', String(isListLayout));
 
@@ -1103,14 +1155,51 @@ function renderActionButtons() {
   if (dom.btnCompleteAllTasks) {
     const icon = dom.btnCompleteAllTasks.querySelector('i');
     const text = dom.btnCompleteAllTasks.querySelector('span');
-    const areAllCompleted = tasks.length > 0 && tasks.every((task) => task.done);
+
+    dom.btnCompleteAllTasks.disabled = visibleTasks.length === 0;
 
     if (icon) {
-      icon.setAttribute('data-lucide', areAllCompleted ? 'rotate-ccw' : 'check-check');
+      icon.setAttribute('data-lucide', allVisibleCompleted ? 'rotate-ccw' : 'check-check');
     }
 
     if (text) {
-      text.textContent = areAllCompleted ? 'Desmarcar todas' : 'Completar todas';
+      if (visibleTasks.length === 0) {
+        text.textContent = 'Completar visibles';
+      } else if (allVisibleCompleted) {
+        if (isDefaultTaskView()) {
+          text.textContent = 'Desmarcar todas';
+        } else if (filtersState.status === 'done') {
+          text.textContent = 'Desmarcar completadas';
+        } else {
+          text.textContent = 'Desmarcar visibles';
+        }
+      } else {
+        if (isDefaultTaskView()) {
+          text.textContent = 'Completar todas';
+        } else if (filtersState.status === 'pending') {
+          text.textContent = 'Completar pendientes';
+        } else {
+          text.textContent = 'Completar visibles';
+        }
+      }
+    }
+  }
+
+  if (dom.btnDeleteAllTasks) {
+    const text = dom.btnDeleteAllTasks.querySelector('span');
+
+    dom.btnDeleteAllTasks.disabled = visibleTasks.length === 0;
+
+    if (text) {
+      if (isDefaultTaskView()) {
+        text.textContent = 'Borrar todas';
+      } else if (filtersState.status === 'done' && visibleTasks.length > 0) {
+        text.textContent = 'Borrar completadas';
+      } else if (filtersState.status === 'pending' && visibleTasks.length > 0) {
+        text.textContent = 'Borrar pendientes';
+      } else {
+        text.textContent = 'Borrar visibles';
+      }
     }
   }
 
@@ -1596,8 +1685,8 @@ function bindCategoryEvents() {
 
 function bindTaskActionEvents() {
   dom.btnToggleLayout?.addEventListener('click', toggleLayoutMode);
-  dom.btnCompleteAllTasks?.addEventListener('click', completeAllTasks);
-  dom.btnDeleteAllTasks?.addEventListener('click', removeAllTasks);
+  dom.btnCompleteAllTasks?.addEventListener('click', completeVisibleTasks);
+  dom.btnDeleteAllTasks?.addEventListener('click', removeVisibleTasks);
 }
 
 function bindTaskFormPreferenceEvents() {

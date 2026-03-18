@@ -1,5 +1,3 @@
-
-
 // =====================================================
 // DOM
 // =====================================================
@@ -54,9 +52,10 @@ const LS_KEY = 'taskflow_tasks';
 const LS_CATEGORIES_KEY = 'taskflow_categories';
 const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
+const LS_FORM_PREFS_KEY = 'taskflow_form_prefs';
 
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
-const USE_DEMO_TASKS_ON_FIRST_LOAD = true;
+const USE_DEMO_TASKS_ON_FIRST_LOAD = false;
 
 const demoTasks = [
   { id: 1, title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
@@ -91,6 +90,13 @@ function getDefaultFiltersState() {
     priorities: [],
     categories: [],
     search: ''
+  };
+}
+
+function getDefaultFormPrefs() {
+  return {
+    category: '',
+    priority: 'Media'
   };
 }
 
@@ -176,6 +182,35 @@ function showFieldError(message, input) {
   alert(message);
   input?.focus();
   input?.select?.();
+}
+
+function saveTaskFormPrefs() {
+  writeStorage(LS_FORM_PREFS_KEY, {
+    category: dom.taskCategory?.value || categories[0] || 'Personal',
+    priority: dom.taskPriority?.value || 'Media'
+  });
+}
+
+function loadTaskFormPrefs() {
+  const saved = readStorage(LS_FORM_PREFS_KEY, getDefaultFormPrefs());
+  const savedCategory = String(saved.category || '').trim();
+  const savedPriority = String(saved.priority || '').trim();
+  const allowedPriorities = ['Alta', 'Media', 'Baja'];
+
+  if (dom.taskCategory) {
+    const fallbackCategory = categories[0] || 'Personal';
+    dom.taskCategory.value = categories.includes(savedCategory)
+      ? savedCategory
+      : fallbackCategory;
+  }
+
+  if (dom.taskPriority) {
+    dom.taskPriority.value = allowedPriorities.includes(savedPriority)
+      ? savedPriority
+      : 'Media';
+  }
+
+  saveTaskFormPrefs();
 }
 
 function commit({
@@ -434,6 +469,7 @@ function addTaskFromDesktopForm() {
   }
 
   dom.taskTitle.value = '';
+  saveTaskFormPrefs();
 }
 
 function startTaskEdit(taskId) {
@@ -537,6 +573,20 @@ function openTaskCreator() {
   });
 
   dom.taskTitle?.focus();
+}
+
+function loadDemoTasks() {
+  tasks = demoTasks.map((task) => ({ ...task }));
+  editingTaskId = null;
+  nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
+
+  resetFiltersState({ persist: false });
+  saveTasks();
+  loadCategories();
+  refreshCategoriesUI();
+  loadTaskFormPrefs();
+  saveFiltersState();
+  refreshUI();
 }
 
 // =====================================================
@@ -760,6 +810,7 @@ function renameCategory(categoryKey, rawLabel) {
   }
 
   editingCategoryKey = null;
+  saveTaskFormPrefs();
 
   commit({
     saveCategories: true,
@@ -789,6 +840,7 @@ function removeCategory(categoryKey) {
   }
 
   editingCategoryKey = null;
+  saveTaskFormPrefs();
 
   commit({
     saveCategories: true,
@@ -952,6 +1004,7 @@ function renderNoTasksState() {
       <h3 class="task-empty__title">Todavía no hay tareas</h3>
       <p class="task-empty__text">
         Empieza creando la primera. En cuanto añadas una, tus tarjetas aparecerán por aquí.
+        <a href="#" class="task-empty__demo-link">Usa el demo</a>
       </p>
 
       <button type="button" class="btn btn--primary task-empty__cta">
@@ -1256,6 +1309,13 @@ function bindListEvents() {
       return;
     }
 
+    const demoLink = event.target.closest('.task-empty__demo-link');
+    if (demoLink) {
+      event.preventDefault();
+      loadDemoTasks();
+      return;
+    }
+
     const clickedButton = event.target.closest('button');
     const clickedInput = event.target.closest('.task-card__input');
     const clickedCard = event.target.closest('.task-card');
@@ -1476,6 +1536,7 @@ function bindCategoryEvents() {
         dom.taskCategory.value = result.category;
       }
 
+      saveTaskFormPrefs();
       closeNewCategoryEditor();
       refreshUI();
     });
@@ -1575,6 +1636,11 @@ function bindTaskActionEvents() {
   dom.btnDeleteAllTasks?.addEventListener('click', removeAllTasks);
 }
 
+function bindTaskFormPreferenceEvents() {
+  dom.taskCategory?.addEventListener('change', saveTaskFormPrefs);
+  dom.taskPriority?.addEventListener('change', saveTaskFormPrefs);
+}
+
 // =====================================================
 // INIT
 // =====================================================
@@ -1583,6 +1649,7 @@ function init() {
   loadTasks();
   loadCategories();
   refreshCategoriesUI();
+  loadTaskFormPrefs();
   loadFiltersState();
 
   if (tasks.length === 0) {
@@ -1598,6 +1665,7 @@ function init() {
   bindFilterEvents();
   bindCategoryEvents();
   bindTaskActionEvents();
+  bindTaskFormPreferenceEvents();
 
   refreshUI();
   initTaskSorting();
@@ -1615,6 +1683,7 @@ window.TaskFlowApp = {
   addTaskFromData,
   addCategory,
   openTaskCreator,
+  loadDemoTasks,
   getCategories() {
     return [...categories];
   },

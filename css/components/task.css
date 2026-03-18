@@ -324,6 +324,11 @@ body.has-no-tasks .tasks {
   margin-top: 0.25rem;
 }
 
+.task-empty__demo-link {
+  color: var(--ui-ink);
+  text-decoration: underline;
+}
+
 .task-empty__visual {
   position: relative;
   width: min(100%, 520px);

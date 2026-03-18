@@ -99,6 +99,10 @@
     display: none;
   }
 
+  .task-empty__cta {
+    display: none;
+  }
+
 }
 
 @media (max-width: 623px) {

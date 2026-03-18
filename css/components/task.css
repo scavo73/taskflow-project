@@ -175,7 +175,6 @@
   justify-content: center;
   display: flex;
   flex-direction: column;
-  height: 80vh;
 }
 
 .task-empty {
@@ -286,6 +285,7 @@ body.has-no-tasks .tasks {
 
 .task-list__empty--first-task {
   grid-column: 1 / -1;
+  height: 85vh;
 }
 
 .task-empty--first-task {

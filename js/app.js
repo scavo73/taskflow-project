@@ -1476,18 +1476,65 @@ function bindDesktopForm() {
 function bindListEvents() {
   if (!dom.taskList) return;
 
+  function handleEmptyStateClick(event) {
+    event.preventDefault();
+    openTaskCreator();
+  }
+
+  function handleDemoLinkClick(event) {
+    event.preventDefault();
+    loadDemoTasks();
+  }
+
+  function handleCardClick(event, card) {
+    const checkbox = card.parentElement.querySelector('.task-item__toggle');
+    if (!checkbox) return;
+
+    checkbox.checked = !checkbox.checked;
+    const taskId = Number(checkbox.id.replace('task-', ''));
+    if (taskId) toggleTask(taskId, checkbox.checked);
+  }
+
+  function handleEditTask(event, editBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    const taskId = Number(editBtn.dataset.taskId);
+    if (taskId) startTaskEdit(taskId);
+  }
+
+  function handleSaveTask(event, saveBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    const taskId = Number(saveBtn.dataset.taskId);
+    const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
+    if (!taskId || !input) return;
+    const result = updateTaskTitle(taskId, input.value);
+    if (!result.ok) showFieldError('El título no puede estar vacío.', input);
+  }
+
+  function handleCancelTask(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    cancelTaskEdit();
+  }
+
+  function handleDeleteTask(event, deleteBtn) {
+    event.preventDefault();
+    event.stopPropagation();
+    const taskId = Number(deleteBtn.dataset.taskId);
+    if (taskId) removeTask(taskId);
+  }
+
   dom.taskList.addEventListener('click', (event) => {
     const emptyStateBtn = event.target.closest('.task-empty__cta');
     if (emptyStateBtn) {
-      event.preventDefault();
-      openTaskCreator();
+      handleEmptyStateClick(event);
       return;
     }
 
     const demoLink = event.target.closest('.task-empty__demo-link');
     if (demoLink) {
-      event.preventDefault();
-      loadDemoTasks();
+      handleDemoLinkClick(event);
       return;
     }
 
@@ -1496,68 +1543,31 @@ function bindListEvents() {
     const clickedCard = event.target.closest('.task-card');
 
     if (clickedCard && !clickedButton && !clickedInput) {
-      const checkbox = clickedCard.parentElement.querySelector('.task-item__toggle');
-
-      if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-
-        const taskId = Number(checkbox.id.replace('task-', ''));
-        if (taskId) {
-          toggleTask(taskId, checkbox.checked);
-        }
-      }
-
+      handleCardClick(event, clickedCard);
       return;
     }
 
     const editBtn = event.target.closest('.task-card__edit');
     if (editBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(editBtn.dataset.taskId);
-      if (taskId) {
-        startTaskEdit(taskId);
-      }
+      handleEditTask(event, editBtn);
       return;
     }
 
     const saveBtn = event.target.closest('.task-card__save');
     if (saveBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(saveBtn.dataset.taskId);
-      const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
-
-      if (!taskId || !input) return;
-
-      const result = updateTaskTitle(taskId, input.value);
-
-      if (!result.ok) {
-        showFieldError('El título no puede estar vacío.', input);
-      }
-
+      handleSaveTask(event, saveBtn);
       return;
     }
 
     const cancelBtn = event.target.closest('.task-card__cancel');
     if (cancelBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-      cancelTaskEdit();
+      handleCancelTask(event);
       return;
     }
 
     const deleteBtn = event.target.closest('.task-card__del');
     if (deleteBtn) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const taskId = Number(deleteBtn.dataset.taskId);
-      if (taskId) {
-        removeTask(taskId);
-      }
+      handleDeleteTask(event, deleteBtn);
     }
   });
 
@@ -1570,12 +1580,9 @@ function bindListEvents() {
 
     if (event.key === 'Enter') {
       event.preventDefault();
-
       const result = updateTaskTitle(taskId, input.value);
-
-      if (!result.ok) {
-        showFieldError('El título no puede estar vacío.', input);
-      }
+      if (!result.ok) showFieldError('El título no puede estar vacío.', input);
+      return;
     }
 
     if (event.key === 'Escape') {

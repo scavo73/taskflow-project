@@ -6,6 +6,8 @@ En este archivo explico cómo uso Cursor en mi flujo de trabajo y en qué partes
 
 ---
 
+#Primer contacto con Cursor
+
 ## Atajos que he usado
 
 | Acción | Atajo |
@@ -101,3 +103,88 @@ const input = dom.categoryFiltersGroup.querySelector(
 ```js
 const input = getCategoryInputEl(dom.categoryFiltersGroup, editingCategoryKey);
 ```
+
+# Refactor TaskFlow usando IA
+
+Después de revisar y detectar partes mejorables con el agente de Cursor, elegí las **5 funciones** que presentaré en formato antes/después. A continuación, los prompts que usé para recoger información y filtrar.
+
+---
+
+## Fase 1 — Análisis del proyecto
+
+```
+Revisa todo el proyecto TaskFlow sin hacer cambios todavía.
+Quiero un análisis técnico del código:
+1. Funciones largas o repetitivas
+2. Nombres de variables poco claros
+3. Posibles módulos o archivos a separar
+4. Validaciones que faltan en el formulario
+5. Funciones candidatas para refactorizar sin cambiar comportamiento
+
+Devuélveme una lista priorizada de 8-12 mejoras con nombre de archivo y función.
+No edites nada aún.
+```
+
+---
+
+## Fase 2 — Selección de funciones
+
+```
+De la lista anterior, selecciona las 5 funciones con mejor relación impacto/riesgo para refactorizar primero.
+Prioriza funciones largas, repetitivas o con demasiadas responsabilidades.
+No cambies comportamiento.
+```
+
+### Funciones seleccionadas
+
+#### 1. `js/app.js` — `bindListEvents`
+
+**Impacto:** Alto. Concentra demasiadas responsabilidades y ramas: empty state, demo, toggle, edit/save/cancel, delete, keydown/change.  
+**Riesgo:** Bajo, si solo se extraen los manejadores internos sin tocar el flujo ni los selectores.
+
+---
+
+#### 2. `js/app.js` — `bindCategoryEvents`
+
+**Impacto:** Alto. Función muy larga con lógica mezclada: editor nuevo, edición/borrado en la lista, listeners de click y keydown.  
+**Riesgo:** Bajo-medio, si el refactor se limita a dividir por casos y mantiene exactamente el mismo uso de `editingCategoryKey`, `dataset` y mensajes.
+
+---
+
+#### 3. `js/app.js` — `renderTask`
+
+**Impacto:** Alto. Función grande que construye un `innerHTML` complejo y luego asigna partes (title, input, cat, prio).  
+**Riesgo:** Medio. Cualquier extracción (por ejemplo, un builder de template) debe mantener la estructura idéntica y las mismas condiciones (`isEditing`, `data-task-id`, etiquetas y selectores).
+
+---
+
+#### 4. `js/filters-drawer.js` — `initFiltersDrawer`
+
+**Impacto:** Alto. Mezcla accesibilidad/UI, snapshot e integración con `TaskFlowApp` en un solo bloque.  
+**Riesgo:** Medio. Al dividirla en secciones (crear UI, snapshot, sync/apply, eventos) hay que preservar el orden de ejecución y el estado: `firstSnapshot`, `lastActive`, clase `is-open`, etc.
+
+---
+
+#### 5. `js/app.js` — `completeVisibleTasks`
+
+**Impacto:** Alto. Combina cálculo de tareas visibles, confirmación y actualización masiva (`tasks = tasks.map(...)`).  
+**Riesgo:** Bajo, si el refactor extrae helpers para "contar visibles / construir mensaje / obtener ids afectados" manteniendo exactamente el mismo criterio de selección y texto.
+
+---
+
+## Fase 3 — Refactorización con inline edit
+
+Para cada función, se usó el siguiente prompt con **edición inline** (`Ctrl + K`):
+
+```
+Refactoriza esta función sin cambiar su comportamiento.
+Objetivos:
+- Nombres más claros
+- Menos anidación
+- Pasos internos más legibles
+- Extraer helpers pequeños si aporta claridad
+- Mantener compatibilidad con el resto del archivo
+
+Devuélveme el código listo para revisar.
+```
+

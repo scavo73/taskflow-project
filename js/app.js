@@ -51,6 +51,7 @@ const LS_FILTERS_STATE_KEY = 'taskflow_filters_state';
 const LS_LAYOUT_KEY = 'taskflow_layout_mode';
 const LS_FORM_PREFS_KEY = 'taskflow_form_prefs';
 
+
 const DEFAULT_CATEGORIES = ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 const USE_DEMO_TASKS_ON_FIRST_LOAD = false;
 
@@ -67,6 +68,7 @@ const demoTasks = [
 // STATE
 // =====================================================
 
+
 let tasks = [];
 let nextId = 1;
 let isListLayout = false;
@@ -80,6 +82,7 @@ let filtersState = getDefaultFiltersState();
 // HELPERS
 // =====================================================
 
+// gets the default filters state
 function getDefaultFiltersState() {
   return {
     status: 'all',
@@ -89,6 +92,7 @@ function getDefaultFiltersState() {
   };
 }
 
+// gets the default form preferences
 function getDefaultFormPrefs() {
   return {
     category: '',
@@ -96,6 +100,7 @@ function getDefaultFormPrefs() {
   };
 }
 
+// reads a value from localStorage
 function readStorage(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -105,10 +110,12 @@ function readStorage(key, fallback) {
   }
 }
 
+// writes a value to localStorage
 function writeStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+// normalizes text
 function normalizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -117,6 +124,7 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+// normalizes priority
 function normalizePriority(value) {
   const v = String(value || '').toLowerCase().trim();
 
@@ -127,6 +135,27 @@ function normalizePriority(value) {
   return 'med';
 }
 
+// Escapes untrusted user-provided data before interpolating into HTML templates.
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#39;';
+      default:
+        return ch;
+    }
+  });
+}
+
+// converts a priority value to a label
 function setPriorityLabel(value) {
   const normalized = normalizePriority(value);
   if (normalized === 'high') return 'Alta';
@@ -146,6 +175,16 @@ function getCategoryLabel(categoryKey) {
   return categories.find((label) => getCategoryKey(label) === categoryKey) || categoryKey;
 }
 
+// returns the category input element for a given category key
+function getCategoryInputEl(container, categoryKey) {
+  return (
+    [...container.querySelectorAll('[data-category-input]')].find(
+      (el) => el.dataset.categoryInput === String(categoryKey)
+    ) || null
+  );
+}
+
+// checks if a category exists
 function categoryExists(label, excludeKey = '') {
   const nextKey = getCategoryKey(label);
 
@@ -156,20 +195,24 @@ function categoryExists(label, excludeKey = '') {
   });
 }
 
+// gets the status links
 function getStatusLinks() {
   return [...document.querySelectorAll('[data-status-nav]')];
 }
 
+// gets the active status from the DOM
 function getStatusFromDOM() {
   return document.querySelector('[data-status-nav].is-active')?.dataset.statusValue || 'all';
 }
 
+// refreshes the icons
 function refreshIcons() {
   if (window.lucide) {
     window.lucide.createIcons();
   }
 }
-
+  
+// syncs the global tasks
 function syncGlobalTasks() {
   window.tasks = tasks;
 }
@@ -180,6 +223,7 @@ function showFieldError(message, input) {
   input?.select?.();
 }
 
+// checks if the default task view is active, meaning no filters are applied
 function isDefaultTaskView() {
   return (
     filtersState.status === 'all' &&
@@ -189,6 +233,7 @@ function isDefaultTaskView() {
   );
 }
 
+// saves the task form preferences
 function saveTaskFormPrefs() {
   writeStorage(LS_FORM_PREFS_KEY, {
     category: dom.taskCategory?.value || categories[0] || 'Personal',
@@ -196,6 +241,7 @@ function saveTaskFormPrefs() {
   });
 }
 
+// loads the task form preferences, if no preferences are found, uses the default preferences
 function loadTaskFormPrefs() {
   const saved = readStorage(LS_FORM_PREFS_KEY, getDefaultFormPrefs());
   const savedCategory = String(saved.category || '').trim();
@@ -218,6 +264,8 @@ function loadTaskFormPrefs() {
   saveTaskFormPrefs();
 }
 
+// commits the changes to the storage
+// saves the tasks, categories, filters, layout, renders the categories and refreshes the UI
 function commit({
   saveTasks: shouldSaveTasks = false,
   saveCategories: shouldSaveCategories = false,
@@ -238,11 +286,13 @@ function commit({
 // STORAGE
 // =====================================================
 
+// saves the tasks to the storage
 function saveTasks() {
   writeStorage(LS_KEY, tasks);
   syncGlobalTasks();
 }
 
+// loads the tasks from the storage
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
 
@@ -259,10 +309,12 @@ function loadTasks() {
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
 }
 
+// saves the categories to the storage
 function saveCategories() {
   writeStorage(LS_CATEGORIES_KEY, categories);
 }
 
+// loads the categories from the storage
 function loadCategories() {
   const savedCategories = readStorage(LS_CATEGORIES_KEY, []);
   const merged = [
@@ -316,6 +368,9 @@ function loadFiltersState() {
 // FILTER STATE <-> DOM
 // =====================================================
 
+// resets the filters state
+// saves the filters state to the storage
+// applies the filters to the DOM
 function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
   const nextStatus = preserveStatus ? filtersState.status : 'all';
 
@@ -329,6 +384,7 @@ function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
   applyFiltersToDOM();
 }
 
+// gets the filters from the DOM
 function getFiltersFromDOM() {
   return {
     status: getStatusFromDOM(),
@@ -342,6 +398,7 @@ function getFiltersFromDOM() {
   };
 }
 
+// applies the filters to the DOM
 function applyFiltersToDOM() {
   getStatusLinks().forEach((link) => {
     const isActive = link.dataset.statusValue === filtersState.status;
@@ -367,6 +424,7 @@ function applyFiltersToDOM() {
   }
 }
 
+// syncs the filters state
 function syncFiltersState() {
   filtersState = getFiltersFromDOM();
   saveFiltersState();
@@ -376,6 +434,7 @@ function syncFiltersState() {
 // FILTER LOGIC
 // =====================================================
 
+// checks if there are active filters
 function hasActiveFilters() {
   return (
     filtersState.priorities.length > 0 ||
@@ -384,15 +443,18 @@ function hasActiveFilters() {
   );
 }
 
+// checks if there is an active task view
 function hasActiveTaskView() {
   return filtersState.status !== 'all' || hasActiveFilters();
 }
 
+// clears all filters
 function clearAllFilters() {
   resetFiltersState({ preserveStatus: true });
   refreshUI();
 }
 
+// checks if a task matches the filters
 function taskMatchesFilters(task, filters) {
   const taskCategoryKey = normalizeText(task.category);
   const taskPriorityKey = normalizePriority(task.priority);
@@ -418,6 +480,7 @@ function taskMatchesFilters(task, filters) {
   return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
 }
 
+// gets the filtered tasks
 function getFilteredTasks() {
   return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }
@@ -426,6 +489,7 @@ function getFilteredTasks() {
 // TASKS
 // =====================================================
 
+// creates a task data
 function createTaskData({ title, category, priority }) {
   return {
     id: nextId++,
@@ -436,10 +500,12 @@ function createTaskData({ title, category, priority }) {
   };
 }
 
+// gets a task by its ID
 function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
 
+// adds a task from data
 function addTaskFromData({ title, category, priority }) {
   const cleanTitle = String(title || '').trim();
 
@@ -459,6 +525,7 @@ function addTaskFromData({ title, category, priority }) {
   return { ok: true, task };
 }
 
+// adds a task from the desktop form
 function addTaskFromDesktopForm() {
   if (!dom.taskTitle) return;
 
@@ -477,18 +544,21 @@ function addTaskFromDesktopForm() {
   saveTaskFormPrefs();
 }
 
+// starts a task edit
 function startTaskEdit(taskId) {
   if (!getTaskById(taskId)) return;
   editingTaskId = taskId;
   refreshUI();
 }
 
+// cancels a task edit
 function cancelTaskEdit() {
   if (editingTaskId === null) return;
   editingTaskId = null;
   refreshUI();
 }
 
+// updates a task title
 function updateTaskTitle(taskId, rawTitle) {
   const task = getTaskById(taskId);
   if (!task) {
@@ -508,6 +578,7 @@ function updateTaskTitle(taskId, rawTitle) {
   return { ok: true, task };
 }
 
+// removes a task
 function removeTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
 
@@ -524,6 +595,7 @@ function removeTask(taskId) {
   refreshUI();
 }
 
+// toggles a task
 function toggleTask(taskId, isDone) {
   const task = getTaskById(taskId);
   if (!task) return;
@@ -532,11 +604,13 @@ function toggleTask(taskId, isDone) {
   commit({ saveTasks: true });
 }
 
+// toggles the layout mode
 function toggleLayoutMode() {
   isListLayout = !isListLayout;
   commit({ saveLayout: true });
 }
 
+// completes visible tasks
 function completeVisibleTasks() {
   const visibleTasks = getFilteredTasks();
 
@@ -571,6 +645,7 @@ function completeVisibleTasks() {
   commit({ saveTasks: true });
 }
 
+// removes visible tasks
 function removeVisibleTasks() {
   const visibleTasks = getFilteredTasks();
 
@@ -601,6 +676,7 @@ function removeVisibleTasks() {
   refreshUI();
 }
 
+// opens the task creator
 function openTaskCreator() {
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const mobileBtn = document.querySelector('.mobile-add-btn');
@@ -618,6 +694,7 @@ function openTaskCreator() {
   dom.taskTitle?.focus();
 }
 
+// loads demo tasks
 function loadDemoTasks() {
   tasks = demoTasks.map((task) => ({ ...task }));
   editingTaskId = null;
@@ -636,6 +713,7 @@ function loadDemoTasks() {
 // CATEGORIES
 // =====================================================
 
+// updates the desktop category field mode
 function updateDesktopCategoryFieldMode() {
   if (!dom.desktopCategoryField || !dom.desktopCategorySelectRow || !dom.newCategoryEditor || !dom.btnNewCategory) return;
 
@@ -650,6 +728,7 @@ function updateDesktopCategoryFieldMode() {
   if (dom.submitTaskBtn) dom.submitTaskBtn.hidden = isEditing;
 }
 
+// renders a category select
 function renderCategorySelect(selectElement, selectedValue = '') {
   if (!selectElement) return;
 
@@ -658,13 +737,21 @@ function renderCategorySelect(selectElement, selectedValue = '') {
     ? selectedValue
     : (categories.includes(selectElement.value) ? selectElement.value : fallback);
 
-  selectElement.innerHTML = categories
-    .map((label) => `<option>${label}</option>`)
-    .join('');
+  // Avoid `innerHTML` for option rendering; category labels are user-provided and persisted.
+  selectElement.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  categories.forEach((label) => {
+    const option = document.createElement('option');
+    option.textContent = label;
+    option.value = label;
+    frag.appendChild(option);
+  });
+  selectElement.appendChild(frag);
 
   selectElement.value = nextValue;
 }
 
+// renders the category filters
 function renderCategoryFilters() {
   if (!dom.categoryFiltersGroup) return;
 
@@ -679,25 +766,27 @@ function renderCategoryFilters() {
     .map((label) => {
       const key = getCategoryKey(label);
       const isEditing = editingCategoryKey === key;
+      const escapedLabel = escapeHtml(label);
+      const escapedKey = escapeHtml(key);
 
       if (isEditing) {
         return `
-          <div class="category-row is-editing" data-category-key="${key}">
+          <div class="category-row is-editing" data-category-key="${escapedKey}">
             <div class="category-row__edit">
               <input
                 type="text"
                 class="input category-row__input"
-                value="${label}"
-                data-category-input="${key}"
-                aria-label="Editar categoría ${label}"
+                value="${escapedLabel}"
+                data-category-input="${escapedKey}"
+                aria-label="Editar categoría ${escapedLabel}"
               />
 
               <div class="category-row__actions category-row__actions--edit">
                 <button
                   type="button"
                   class="chip category-action category-action--save"
-                  data-category-save="${key}"
-                  aria-label="Guardar categoría ${label}"
+                  data-category-save="${escapedKey}"
+                  aria-label="Guardar categoría ${escapedLabel}"
                 >
                   <i data-lucide="check" aria-hidden="true"></i>
                 </button>
@@ -705,8 +794,8 @@ function renderCategoryFilters() {
                 <button
                   type="button"
                   class="chip category-action"
-                  data-category-cancel="${key}"
-                  aria-label="Cancelar edición de ${label}"
+                  data-category-cancel="${escapedKey}"
+                  aria-label="Cancelar edición de ${escapedLabel}"
                 >
                   <i data-lucide="x" aria-hidden="true"></i>
                 </button>
@@ -714,8 +803,8 @@ function renderCategoryFilters() {
                 <button
                   type="button"
                   class="chip category-row__btn category-row__btn--danger"
-                  data-category-delete="${key}"
-                  aria-label="Borrar categoría ${label}"
+                  data-category-delete="${escapedKey}"
+                  aria-label="Borrar categoría ${escapedLabel}"
                 >
                   <i data-lucide="trash-2" aria-hidden="true"></i>
                 </button>
@@ -726,19 +815,19 @@ function renderCategoryFilters() {
       }
 
       return `
-        <div class="category-row filter-bg" data-category-key="${key}">
+        <div class="category-row filter-bg" data-category-key="${escapedKey}">
           <label class="choice category-row__filter">
-            <input type="checkbox" name="cat" value="${key}" />
+            <input type="checkbox" name="cat" value="${escapedKey}" />
             <span class="choice__mark" aria-hidden="true"></span>
-            <span class="choice__text">${label}</span>
+            <span class="choice__text">${escapedLabel}</span>
           </label>
 
           <div class="category-row__actions">
             <button
               type="button"
               class="chip category-row__btn"
-              data-category-edit="${key}"
-              aria-label="Editar categoría ${label}"
+              data-category-edit="${escapedKey}"
+              aria-label="Editar categoría ${escapedLabel}"
             >
               <i data-lucide="square-pen" aria-hidden="true"></i>
             </button>
@@ -749,9 +838,9 @@ function renderCategoryFilters() {
     .join('');
 }
 
+// refreshes the categories UI when editing or creating a category
 function refreshCategoriesUI() {
   const currentDesktopCategory = dom.taskCategory ? dom.taskCategory.value : '';
-
   renderCategorySelect(dom.taskCategory, currentDesktopCategory);
   renderCategoryFilters();
   applyFiltersToDOM();
@@ -759,6 +848,7 @@ function refreshCategoriesUI() {
   refreshIcons();
 }
 
+// opens the new category editor
 function openNewCategoryEditor() {
   if (!dom.newCategoryEditor || !dom.newCategoryInput) return;
 
@@ -768,6 +858,7 @@ function openNewCategoryEditor() {
   dom.newCategoryInput.focus();
 }
 
+// closes the new category editor
 function closeNewCategoryEditor() {
   if (!dom.newCategoryEditor || !dom.newCategoryInput) return;
 
@@ -776,6 +867,7 @@ function closeNewCategoryEditor() {
   updateDesktopCategoryFieldMode();
 }
 
+// adds a category
 function addCategory(rawLabel) {
   const cleanLabel = String(rawLabel || '').trim();
 
@@ -793,6 +885,7 @@ function addCategory(rawLabel) {
   return { ok: true, category: cleanLabel };
 }
 
+// renames a category
 function renameCategory(categoryKey, rawLabel) {
   const cleanLabel = String(rawLabel || '').trim();
 
@@ -840,6 +933,7 @@ function renameCategory(categoryKey, rawLabel) {
   return { ok: true, category: cleanLabel };
 }
 
+// removes a category
 function removeCategory(categoryKey) {
   if (categories.length <= 1) {
     return { ok: false, error: 'last-category' };
@@ -869,6 +963,7 @@ function removeCategory(categoryKey) {
   return { ok: true };
 }
 
+// gets the category error message
 function getCategoryErrorMessage(error) {
   if (error === 'duplicate') return 'Esa categoría ya existe.';
   if (error === 'empty') return 'Escribe un nombre de categoría válido.';
@@ -881,6 +976,7 @@ function getCategoryErrorMessage(error) {
 // RENDER TASKS + EMPTY STATES
 // =====================================================
 
+// renders a task
 function renderTask(task) {
   const li = document.createElement('li');
   li.className = 'task-list__item';
@@ -889,6 +985,7 @@ function renderTask(task) {
   const normalizedPriority = normalizePriority(task.priority);
   const isEditing = editingTaskId === task.id;
   const mainTag = isEditing ? 'div' : 'label';
+  const escapedTaskTitle = escapeHtml(task.title);
 
   li.innerHTML = `
     <div class="task-item">
@@ -933,7 +1030,7 @@ function renderTask(task) {
                 <button
                   class="chip task-card__drag-handle"
                   type="button"
-                  aria-label="Reordenar tarea ${task.title}"
+                  aria-label="Reordenar tarea ${escapedTaskTitle}"
                   title="Arrastrar para reordenar"
                 >
                   <i data-lucide="grip-vertical" aria-hidden="true"></i>
@@ -975,7 +1072,7 @@ function renderTask(task) {
                   class="chip task-card__del"
                   type="button"
                   data-task-id="${task.id}"
-                  aria-label="Borrar tarea ${task.title}"
+                  aria-label="Borrar tarea ${escapedTaskTitle}"
                 >
                   <i data-lucide="trash-2" aria-hidden="true"></i>
                 </button>
@@ -1000,6 +1097,7 @@ function renderTask(task) {
   return li;
 }
 
+// renders the empty state
 function renderEmptyState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty';
@@ -1012,6 +1110,7 @@ function renderEmptyState() {
   return li;
 }
 
+// renders the no tasks state
 function renderNoTasksState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty task-list__empty--first-task';
@@ -1052,17 +1151,22 @@ function renderNoTasksState() {
 // RENDER FILTERS + ACTIONS + STATS
 // =====================================================
 
+// creates a filter chip
 function createFilterChip({ label, ariaLabel, dataName, dataValue }) {
   const li = document.createElement('li');
+
+  const escapedLabel = escapeHtml(label);
+  const escapedAriaLabel = escapeHtml(ariaLabel);
+  const escapedDataValue = escapeHtml(dataValue);
 
   li.innerHTML = `
     <button
       type="button"
       class="chip filter-chip remove-filter"
-      ${dataName}="${dataValue}"
-      aria-label="${ariaLabel}"
+      ${dataName}="${escapedDataValue}"
+      aria-label="${escapedAriaLabel}"
     >
-      <span>${label}</span>
+      <span>${escapedLabel}</span>
       <i data-lucide="x" aria-hidden="true"></i>
     </button>
   `;
@@ -1070,6 +1174,7 @@ function createFilterChip({ label, ariaLabel, dataName, dataValue }) {
   return li;
 }
 
+// renders the selected filters
 function renderSelectedFilters() {
   if (!dom.selectedFiltersList) return;
 
@@ -1116,11 +1221,13 @@ function renderSelectedFilters() {
   }
 }
 
+// renders the clear filters button
 function renderClearFiltersButton() {
   if (!dom.btnClearFilters) return;
   dom.btnClearFilters.hidden = !hasActiveFilters();
 }
 
+// renders the empty layout visibility
 function renderEmptyLayoutVisibility() {
   const hasTasks = tasks.length > 0;
 
@@ -1131,6 +1238,7 @@ function renderEmptyLayoutVisibility() {
   document.body.classList.toggle('has-no-tasks', !hasTasks);
 }
 
+// renders the action buttons
 function renderActionButtons() {
   const visibleTasks = getFilteredTasks();
   const visibleDoneCount = visibleTasks.filter((task) => task.done).length;
@@ -1208,6 +1316,7 @@ function renderActionButtons() {
   }
 }
 
+// renders the tasks list
 function renderTasksList() {
   if (!dom.taskList) return;
 
@@ -1244,6 +1353,7 @@ function renderTasksList() {
   }
 }
 
+// renders the stats
 function renderStats() {
   const total = tasks.length;
   const done = tasks.filter((task) => task.done).length;
@@ -1275,6 +1385,7 @@ function renderStats() {
 // DRAG & DROP
 // =====================================================
 
+// reorders tasks from visible IDs
 function reorderTasksFromVisibleIds(visibleIds) {
   if (!Array.isArray(visibleIds) || visibleIds.length === 0) return;
 
@@ -1300,6 +1411,7 @@ function reorderTasksFromVisibleIds(visibleIds) {
   commit({ saveTasks: true });
 }
 
+// initializes task sorting
 function initTaskSorting() {
   if (!dom.taskList || typeof window.Sortable === 'undefined') return;
 
@@ -1333,6 +1445,7 @@ function initTaskSorting() {
 // UI ORCHESTRATION
 // =====================================================
 
+// refreshes the UI
 function refreshUI() {
   renderEmptyLayoutVisibility();
   renderTasksList();
@@ -1349,6 +1462,7 @@ function refreshUI() {
 // EVENTS
 // =====================================================
 
+// binds the desktop form events
 function bindDesktopForm() {
   if (!dom.desktopForm) return;
 
@@ -1358,6 +1472,7 @@ function bindDesktopForm() {
   });
 }
 
+// binds the list events
 function bindListEvents() {
   if (!dom.taskList) return;
 
@@ -1480,6 +1595,7 @@ function bindListEvents() {
   });
 }
 
+// binds the search events
 function bindSearchEvents() {
   if (!dom.taskSearch) return;
 
@@ -1492,7 +1608,8 @@ function bindSearchEvents() {
   dom.taskSearch.addEventListener('search', handleSearch);
 }
 
-function bindStatusNavEvents() {
+// binds the status nav events
+    function bindStatusNavEvents() {
   getStatusLinks().forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
@@ -1509,6 +1626,7 @@ function bindStatusNavEvents() {
   });
 }
 
+// binds the filter events
 function bindFilterEvents() {
   if (dom.filterPanel) {
     dom.filterPanel.addEventListener('change', (event) => {
@@ -1556,6 +1674,7 @@ function bindFilterEvents() {
   });
 }
 
+// binds the category events
 function bindCategoryEvents() {
   if (dom.btnNewCategory) {
     dom.btnNewCategory.addEventListener('click', () => {
@@ -1614,9 +1733,7 @@ function bindCategoryEvents() {
       editingCategoryKey = editBtn.dataset.categoryEdit;
       refreshCategoriesUI();
 
-      const input = dom.categoryFiltersGroup.querySelector(
-        `[data-category-input="${editingCategoryKey}"]`
-      );
+      const input = getCategoryInputEl(dom.categoryFiltersGroup, editingCategoryKey);
 
       if (input) {
         input.focus();
@@ -1636,9 +1753,7 @@ function bindCategoryEvents() {
     const saveBtn = event.target.closest('[data-category-save]');
     if (saveBtn) {
       const key = saveBtn.dataset.categorySave;
-      const input = dom.categoryFiltersGroup.querySelector(
-        `[data-category-input="${key}"]`
-      );
+      const input = getCategoryInputEl(dom.categoryFiltersGroup, key);
 
       const result = renameCategory(key, input?.value || '');
 
@@ -1683,12 +1798,14 @@ function bindCategoryEvents() {
   });
 }
 
+// binds the task action events
 function bindTaskActionEvents() {
   dom.btnToggleLayout?.addEventListener('click', toggleLayoutMode);
   dom.btnCompleteAllTasks?.addEventListener('click', completeVisibleTasks);
   dom.btnDeleteAllTasks?.addEventListener('click', removeVisibleTasks);
 }
 
+// binds the task form preference events
 function bindTaskFormPreferenceEvents() {
   dom.taskCategory?.addEventListener('change', saveTaskFormPrefs);
   dom.taskPriority?.addEventListener('change', saveTaskFormPrefs);
@@ -1698,6 +1815,7 @@ function bindTaskFormPreferenceEvents() {
 // INIT
 // =====================================================
 
+// initializes the app
 function init() {
   loadTasks();
   loadCategories();
@@ -1732,20 +1850,28 @@ function init() {
 // PUBLIC API
 // =====================================================
 
+// public API
 window.TaskFlowApp = {
+  // adds a task from data
   addTaskFromData,
+  // adds a category
   addCategory,
+  // opens the task creator
   openTaskCreator,
+  // loads demo tasks
   loadDemoTasks,
+  // gets the categories
   getCategories() {
     return [...categories];
   },
+  // gets the desktop defaults
   getDesktopDefaults() {
     return {
       category: dom.taskCategory ? dom.taskCategory.value : categories[0] || 'Personal',
       priority: dom.taskPriority ? dom.taskPriority.value : 'Media'
     };
   },
+  // gets the filtered count by state
   getFilteredCountByState({
     status = 'all',
     priorities = [],
@@ -1761,7 +1887,9 @@ window.TaskFlowApp = {
 
     return tasks.filter((task) => taskMatchesFilters(task, tempFilters)).length;
   },
+  // refreshes the UI
   refreshUI,
+  // refreshes the categories UI
   refreshCategoriesUI
 };
 

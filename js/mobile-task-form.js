@@ -24,9 +24,16 @@
         ? api.getCategories()
         : ['Trabajo', 'Estudio', 'Personal', 'Salud'];
 
-      mobileCategory.innerHTML = categories
-        .map((label) => `<option>${label}</option>`)
-        .join('');
+      // Avoid `innerHTML` for option rendering; category labels are user-provided.
+      mobileCategory.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      categories.forEach((label) => {
+        const option = document.createElement('option');
+        option.textContent = label;
+        option.value = label;
+        frag.appendChild(option);
+      });
+      mobileCategory.appendChild(frag);
 
       const fallback = categories[0] || '';
       mobileCategory.value = categories.includes(selectedValue) ? selectedValue : fallback;

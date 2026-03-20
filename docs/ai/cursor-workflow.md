@@ -188,3 +188,70 @@ Objetivos:
 Devuélveme el código listo para revisar.
 ```
 
+# Fase 4 — Estructurar los archivos
+
+## Prompt usado
+
+```
+Propón una reorganización mínima y realista del proyecto TaskFlow.
+No quiero una arquitectura exagerada.
+Sugiere cómo separar el código actual en módulos sencillos, por ejemplo:
+- state
+- storage
+- render
+- filters
+- form
+- events
+
+Indica qué moverías primero y con bajo riesgo.
+```
+
+---
+
+## Objetivo
+
+Dividir `app.js` por responsabilidades para que deje de ser un bloque gigante. La estructura propuesta separa estado, almacenamiento, filtros, render, formularios y eventos en módulos distintos dentro de `js/modules/`.
+
+---
+
+## Estrategia de modularización
+
+La forma más segura de hacerlo **no es crear archivos nuevos de golpe**, sino modularizar primero dentro del propio `app.js` usando bloques con el patrón IIFE:
+
+```js
+const storage = (() => { ... })();
+const filters = (() => { ... })();
+const render  = (() => { ... })();
+```
+
+Esto reduce el riesgo y evita romper los `<script>` del HTML durante la transición.
+
+---
+
+## Orden de migración recomendado
+
+| Prioridad | Módulo | Motivo |
+|-----------|--------|--------|
+| 1 | `storage` | Apenas depende del DOM; fácil de aislar |
+| 2 | `helpers` | Funciones puras sin efectos secundarios |
+| 3 | `filters` | Lógica bastante agrupada y acotada |
+| 4 | `render` | Más grande, pero mecánico y predecible |
+| 5 | `events` | El más delicado; se mueve al final |
+
+---
+
+## Contrato entre módulos
+
+| Módulo | Responsabilidad |
+|--------|----------------|
+| `state` | Mantiene y expone el estado compartido |
+| `storage` | Persiste y recupera datos |
+| `filters` | Filtra tareas y sincroniza con el DOM |
+| `render` | Pinta la UI a partir del estado |
+| `events` | Conecta listeners con acciones |
+
+---
+
+## Commit final
+
+Tras la reorganización, se le pedirá a Cursor que ejecute `git add .` y `git commit`, y que explique brevemente todo lo que ha cambiado.

@@ -9,7 +9,8 @@
 function saveTaskFormPrefs() {
   writeStorage(LS_FORM_PREFS_KEY, {
     category: dom.taskCategory?.value || categories[0] || 'Personal',
-    priority: dom.taskPriority?.value || 'Media'
+    priority: dom.taskPriority?.value || 'Media',
+    titleDraft: String(dom.taskTitle?.value ?? '').slice(0, 1000)
   });
 }
 
@@ -21,6 +22,7 @@ function loadTaskFormPrefs() {
   const saved = readStorage(LS_FORM_PREFS_KEY, getDefaultFormPrefs());
   const savedCategory = String(saved.category || '').trim();
   const savedPriority = String(saved.priority || '').trim();
+  const savedTitleDraft = String(saved.titleDraft ?? '').slice(0, 1000);
   const allowedPriorities = ['Alta', 'Media', 'Baja'];
 
   if (dom.taskCategory) {
@@ -34,6 +36,10 @@ function loadTaskFormPrefs() {
     dom.taskPriority.value = allowedPriorities.includes(savedPriority)
       ? savedPriority
       : 'Media';
+  }
+
+  if (dom.taskTitle) {
+    dom.taskTitle.value = savedTitleDraft;
   }
 
   saveTaskFormPrefs();

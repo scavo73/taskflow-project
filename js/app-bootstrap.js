@@ -72,7 +72,8 @@ const demoTasks = [
 function getDefaultFormPrefs() {
   return {
     category: '',
-    priority: 'Media'
+    priority: 'Media',
+    titleDraft: ''
   };
 }
 

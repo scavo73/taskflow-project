@@ -362,7 +362,7 @@ MCP es útil porque permite que el agente consulte archivos, servicios o reposit
 
 ## Experimentar con promts,
 
-Promt con rol:
+###Promt con rol:
 
 Actúa como desarrollador frontend senior especializado en Tailwind CSS. Analiza y migra los estilos del proyecto TaskFlow a Tailwind CSS de forma progresiva, manteniendo el layout, la funcionalidad y la estética actual del proyecto.
 
@@ -384,3 +384,24 @@ Después:
 - Propón una migración por fases.
 - Aplica los cambios de forma limpia, escalable y bien justificada.
 - Muestra los archivos modificados y el código final.
+
+###Promt few-shot
+
+Analiza el proyecto y localiza dónde se gestionan las persistencias actuales. Busca el flujo completo del input del título de nueva tarea: dónde se lee `value`, dónde se guarda en estado y dónde se persiste.
+
+No inventes un `storage.json` si no existe. Reutiliza el sistema real del proyecto, ya sea `localStorage`, `storage.js`, `readStorage/writeStorage` o funciones `save*/load*`.
+
+Después añade persistencia al borrador del input del título para que, si el usuario recarga la página sin enviar la tarea, el texto siga ahí.
+
+Quiero esta salida:
+1. archivos encontrados
+2. funciones implicadas
+3. flujo actual
+4. cambio mínimo propuesto
+5. código final exacto
+
+Ejemplos:
+- Si encuentras `taskTitle.value` dentro de `addTaskFromDesktopForm()`, explica esa cadena.
+- Si encuentras `saveTasks()` y `loadTasks()`, reutiliza ese patrón.
+- Si existe una clave `LS_*`, añade una nueva clave coherente para el draft del título.
+

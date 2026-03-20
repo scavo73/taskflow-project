@@ -408,5 +408,6 @@ function bindTaskActionEvents() {
 function bindTaskFormPreferenceEvents() {
   dom.taskCategory?.addEventListener('change', saveTaskFormPrefs);
   dom.taskPriority?.addEventListener('change', saveTaskFormPrefs);
+  dom.taskTitle?.addEventListener('input', saveTaskFormPrefs);
 }
 

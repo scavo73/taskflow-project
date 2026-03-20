@@ -112,4 +112,505 @@
   .sec-head__title-desktop {
     @apply text-lg;
   }
+
+  /* —— Fase 2: nav —— */
+  .nav {
+    @apply flex flex-wrap items-center gap-4;
+  }
+
+  .nav__link {
+    @apply relative inline-flex min-h-[42px] items-center justify-center gap-2 rounded-lg py-3 px-5;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--ease), color var(--ease), box-shadow var(--ease);
+  }
+
+  .nav__link:hover {
+    @apply -translate-y-px;
+  }
+
+  .nav__link.is-active {
+    color: var(--accent);
+  }
+
+  .nav__text {
+    @apply leading-none;
+  }
+
+  .count-pill {
+    @apply inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-[0.35rem] text-[0.72rem] font-bold;
+    background: var(--surface-2);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .nav__link .count-pill {
+    @apply absolute -top-2 -right-2.5;
+  }
+
+  /* —— Fase 2: chip + acciones de tarea —— */
+  .chip {
+    @apply inline-flex min-h-10 items-center justify-center gap-[0.45rem] rounded-[0.8rem] px-[0.8rem] py-[0.55rem];
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--ease), box-shadow var(--ease);
+  }
+
+  .chip:hover {
+    @apply -translate-y-px;
+  }
+
+  .chip:active {
+    box-shadow: var(--shadow-inset);
+  }
+
+  .chip svg {
+    @apply size-[15px] shrink-0;
+  }
+
+  .filter-chip {
+    @apply cursor-pointer;
+  }
+
+  .filter-chip--clear {
+    @apply font-bold;
+  }
+
+  .action-btn {
+    @apply cursor-pointer;
+  }
+
+  .action-btn--danger {
+    color: var(--danger);
+  }
+
+  .task-actions {
+    @apply flex justify-end gap-3 rounded-[10px] p-2;
+    background: var(--surface);
+    box-shadow: var(--shadow-inset-i);
+  }
+
+  /* —— Fase 2: botones —— */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-[0.8rem] py-[0.55rem];
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--ease), box-shadow var(--ease), background-color var(--ease);
+  }
+
+  .btn:hover {
+    @apply -translate-y-px;
+  }
+
+  .btn:active {
+    @apply translate-y-0;
+    box-shadow: var(--shadow-inset);
+  }
+
+  .btn--primary {
+    @apply w-full font-bold;
+  }
+
+  .btn--clear {
+    @apply mt-auto;
+  }
+
+  .btn--clear[hidden] {
+    @apply hidden;
+  }
+
+  /* —— Fase 3: formulario —— */
+  .form-flex {
+    @apply flex w-full items-end gap-4;
+  }
+
+  .field {
+    @apply flex min-w-0 flex-col gap-[0.7rem];
+  }
+
+  .field--title {
+    @apply flex-1;
+  }
+
+  .form-row {
+    @apply flex items-end gap-4;
+  }
+
+  .field--category,
+  .field--priority {
+    @apply min-w-[9rem];
+  }
+
+  .form-actions {
+    @apply flex flex-1 items-end;
+  }
+
+  .form-actions .btn {
+    @apply whitespace-nowrap;
+  }
+
+  .label {
+    @apply text-sm font-bold;
+  }
+
+  .input,
+  .select {
+    @apply w-full rounded-[10px] border-0 outline-none;
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .input {
+    @apply px-[0.8rem] py-[0.55rem];
+    box-shadow: var(--shadow-inset-i);
+  }
+
+  .select {
+    @apply appearance-none py-[0.55rem] pl-[0.8rem] pr-[2.75rem];
+    box-shadow: var(--shadow-sm);
+  }
+
+  .input:focus,
+  .select:focus {
+    box-shadow: var(--shadow-inset);
+  }
+
+  /* —— Fase 3: filtros (panel lateral) —— */
+  .filter-panel {
+    @apply sticky flex flex-col gap-5;
+    top: calc(var(--topbar-h) + var(--space-5));
+  }
+
+  .panel__head {
+    @apply mb-0;
+  }
+
+  .filter-group {
+    @apply grid gap-3;
+  }
+
+  .filter-group__title {
+    @apply text-[0.9rem];
+  }
+
+  .choice-list {
+    @apply grid gap-[0.85rem];
+  }
+
+  .filter-bg {
+    @apply gap-[0.8rem] rounded-2xl px-[13.12px] pt-[0.82rem] pb-[0.95rem];
+    background: var(--surface-2);
+    box-shadow: var(--shadow-inset-soft);
+  }
+
+  .choice {
+    @apply relative inline-flex w-full cursor-pointer select-none items-center gap-[0.8rem];
+  }
+
+  .choice input {
+    @apply pointer-events-none absolute opacity-0;
+  }
+
+  .choice__mark {
+    @apply relative h-[1.1rem] w-[1.1rem] shrink-0 rounded-full;
+    flex-basis: 1.1rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+    transition: transform var(--ease), box-shadow var(--ease);
+  }
+
+  .choice__mark::after {
+    content: "";
+    @apply absolute inset-0 m-auto opacity-0;
+    width: 0.26rem;
+    height: 0.5rem;
+    border: solid var(--choice-check);
+    border-width: 0 0.14rem 0.14rem 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+    transition: opacity var(--ease);
+  }
+
+  .choice__text {
+    color: var(--muted);
+    transition: color var(--ease), transform var(--ease);
+  }
+
+  .choice:hover .choice__mark {
+    @apply scale-[1.04];
+  }
+
+  .choice input:checked~.choice__mark {
+    box-shadow: var(--shadow-inset);
+  }
+
+  .choice input:checked~.choice__mark::after {
+    @apply opacity-100;
+  }
+
+  .choice input:checked~.choice__text {
+    color: var(--text);
+    @apply translate-x-px;
+  }
+
+  .choice input:focus-visible~.choice__mark {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  .active-filters ul {
+    @apply flex flex-wrap gap-2;
+  }
+
+  /* —— Fase 3: categorías (formulario + panel) —— */
+  .field__head {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .field__head .label {
+    @apply mb-0;
+  }
+
+  .filter-group__head {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .filter-group__head .filter-group__title {
+    @apply mb-0;
+  }
+
+  .category-panel {
+    @apply grid gap-[0.8rem];
+  }
+
+  .choice-list--categories {
+    @apply grid gap-[0.7rem];
+  }
+
+  .category-field {
+    @apply grid gap-3;
+  }
+
+  .category-field__row {
+    @apply block;
+  }
+
+  .category-field__select {
+    @apply w-full;
+  }
+
+  .category-field__trigger {
+    @apply shrink-0 grow-0 basis-auto justify-center whitespace-nowrap;
+  }
+
+  .category-field__trigger--inline {
+    @apply text-[0.82rem];
+  }
+
+  .category-field__trigger.is-active {
+    box-shadow: var(--shadow-inset-soft);
+  }
+
+  .category-field__edit {
+    @apply flex gap-3 pt-[0.1rem];
+  }
+
+  .category-field__edit[hidden] {
+    @apply hidden;
+  }
+
+  .category-field__input,
+  .category-row__input {
+    @apply w-full;
+  }
+
+  .category-field__actions,
+  .category-row__actions--edit {
+    @apply flex items-center justify-end gap-[0.6rem];
+  }
+
+  .category-action {
+    @apply inline-flex min-h-10 items-center justify-center gap-[0.45rem] px-[0.95rem];
+  }
+
+  .category-action svg,
+  .category-row__btn svg {
+    @apply size-[15px];
+  }
+
+  .category-action--save {
+    @apply font-semibold;
+  }
+
+  .category-manager__empty {
+    @apply m-0 rounded-[18px] p-[0.9rem] text-[0.85rem] opacity-75;
+    background: var(--surface-2);
+    box-shadow: var(--shadow-inset-soft);
+  }
+
+  .category-row {
+    @apply flex items-center justify-between;
+  }
+
+  .category-row__filter {
+    @apply min-w-0 flex-1;
+  }
+
+  .category-row__filter .choice__text {
+    overflow-wrap: anywhere;
+  }
+
+  .category-row__edit {
+    @apply grid w-full gap-3;
+  }
+
+  .category-row__actions {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  .category-row__btn--danger {
+    color: var(--danger);
+  }
+
+  /* —— Fase 3: lista / tarjetas de tarea —— */
+  .task-grid {
+    @apply mb-10 mt-10 grid gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--task-min)), 1fr));
+  }
+
+  .task-grid.is-list {
+    @apply grid-cols-1;
+  }
+
+  .task-list {
+    @apply contents;
+  }
+
+  .task-list__item {
+    @apply min-w-0;
+  }
+
+  .task-item {
+    @apply relative h-full;
+  }
+
+  .task-item__toggle {
+    @apply absolute m-[-1px] h-px w-px overflow-hidden border-0 p-0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .task-card {
+    @apply flex h-full min-h-[160px] cursor-pointer flex-col justify-between gap-4 rounded-[var(--radius-lg)] p-4;
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--ease), box-shadow var(--ease), opacity var(--ease);
+  }
+
+  .task-card:hover {
+    @apply -translate-y-px;
+  }
+
+  .task-item__toggle:focus-visible+.task-card {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  .task-item__toggle:checked+.task-card {
+    box-shadow: var(--shadow-inset);
+  }
+
+  .task-item__toggle:checked+.task-card .task-card__title,
+  .task-item__toggle:checked+.task-card .task-card__cat,
+  .task-item__toggle:checked+.task-card .prio {
+    @apply opacity-[0.68];
+  }
+
+  .task-item__toggle:checked+.task-card .task-card__title {
+    @apply line-through;
+  }
+
+  .task-card__main {
+    @apply flex min-w-0 flex-1 flex-col justify-between gap-4;
+  }
+
+  .task-card__top,
+  .task-card__bottom {
+    @apply flex items-start justify-between gap-4;
+  }
+
+  .task-card__bottom {
+    @apply items-center;
+  }
+
+  .task-card__title {
+    @apply line-clamp-2 text-base font-semibold leading-[1.35] break-words;
+  }
+
+  .task-card__input {
+    @apply min-w-0 w-full border-0 rounded-[14px] px-3 py-[0.55rem] font-[inherit] text-[inherit] outline-none;
+    background: var(--surface-2);
+    box-shadow: var(--shadow-inset);
+  }
+
+  .task-card__input:focus {
+    outline: 2px solid var(--focus-ring-soft);
+    outline-offset: 2px;
+  }
+
+  .task-card__cat {
+    @apply mr-auto inline-flex min-h-[30px] items-center rounded-[0.55rem] px-[0.7rem] py-[0.35rem] text-xs;
+    box-shadow: var(--shadow-inset-soft);
+  }
+
+  .task-card__footer {
+    @apply flex items-center gap-3;
+  }
+
+  .task-card__actions {
+    @apply flex items-center justify-end gap-2;
+  }
+
+  .task-card__edit,
+  .task-card__save,
+  .task-card__cancel,
+  .task-card__del {
+    @apply cursor-pointer;
+  }
+
+  .task-card__del {
+    color: var(--danger);
+  }
+
+  .task-grid--empty {
+    @apply grid-cols-1;
+  }
+
+  .task-list__empty {
+    @apply flex flex-col justify-center;
+  }
+
+  .task-empty {
+    @apply grid min-h-[134px] place-items-center gap-4;
+  }
+
+  .task-empty__title {
+    @apply m-0 text-center text-base font-bold uppercase tracking-[0.08em];
+  }
+
+  .task-empty__eyebrow {
+    @apply m-0 text-[0.78rem] font-extrabold uppercase tracking-[0.14em] opacity-[0.72];
+  }
+
+  .task-empty__text {
+    @apply m-0 max-w-[42ch] opacity-[0.72];
+  }
+
+  .task-empty__cta {
+    @apply mt-1;
+  }
+
+  .task-empty__demo-link {
+    @apply underline;
+    color: var(--ui-ink);
+  }
 }

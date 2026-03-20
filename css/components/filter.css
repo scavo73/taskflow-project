@@ -1,124 +1,15 @@
-.filter-panel {
-  position: sticky;
-  top: calc(var(--topbar-h) + var(--space-5));
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-}
-
-.panel__head {
-  margin-bottom: 0;
-}
-
-.filter-group {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.filter-group__title {
-  font-size: 0.9rem;
-}
-
-.choice-list {
-  display: grid;
-  gap: 0.85rem;
-}
-
-.filter-bg {
-  gap: 0.8rem;
-  padding: 0.82rem 13.12px 0.95rem;
-  border-radius: 16px;
-  background: var(--surface-2);
-  box-shadow: var(--shadow-inset-soft);
-}
-
-.choice {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  width: fit-content;
-  width: 100%;
-  cursor: pointer;
-  user-select: none;
-}
-
-.choice input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.choice__mark {
-  position: relative;
-  flex: 0 0 1.1rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: var(--radius-xl);
-  background: var(--surface);
-  box-shadow: var(--shadow-xs);
-  transition: transform var(--ease), box-shadow var(--ease);
-}
-
-.choice__mark::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 0.26rem;
-  height: 0.5rem;
-  border: solid var(--choice-check);
-  border-width: 0 0.14rem 0.14rem 0;
-  transform: rotate(45deg) translate(-1px, -1px);
-  opacity: 0;
-  transition: opacity var(--ease);
-}
-
-.choice__text {
-  color: var(--muted);
-  transition: color var(--ease), transform var(--ease);
-}
-
-.choice:hover .choice__mark {
-  transform: scale(1.04);
-}
-
-.choice input:checked~.choice__mark {
-  box-shadow: var(--shadow-inset);
-}
-
-.choice input:checked~.choice__mark::after {
-  opacity: 1;
-}
-
-.choice input:checked~.choice__text {
-  color: var(--text);
-  transform: translateX(1px);
-}
-
-.choice input:focus-visible~.choice__mark {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 3px;
-}
-
-.active-filters ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+/* Panel de filtros y .choice → tailwind.css */
 
 .active-filters:has(#selectedFiltersList:empty) {
   display: none;
 }
 
-/* hidden on desktop */
 .filters-handle,
 .filters-head,
 .filters-footer {
   display: none;
 }
 
-/* mobile only */
 @media (max-width: 768px) {
   .filters-handle {
     display: block;

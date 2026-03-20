@@ -1,25 +1,40 @@
+/*
+  Breakpoints: 1200px (lg), 992px, 768px (md), 623px, 360px
+  Orden: desktop-first (max-width) de mayor a menor
+*/
+
+/* lg: formulario en columna, app gap */
 @media (max-width: 1200px) {
   .app {
     gap: var(--space-8);
   }
+
+  .form-flex {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
 }
 
-@media (max-width: 992px) {
+@media (min-width: 1200px) {
+  .box {
+    gap: unset;
+  }
+}
 
+/* 992px: ocultar textos de botones de acción */
+@media (max-width: 992px) {
   #btnToggleLayout span,
   #btnCompleteAllTasks span,
   #btnDeleteAllTasks span {
     display: none;
   }
-
-  /* .chip {
-    padding: 0.6rem 0.8rem;
-  } */
 }
 
+/* md: layout móvil principal */
 @media (max-width: 768px) {
   .app {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .nav {
@@ -28,6 +43,15 @@
 
   .topbar__inner {
     padding: var(--space-2);
+  }
+
+  .theme-switch__label {
+    display: none;
+  }
+
+  .theme-switch {
+    min-width: auto;
+    padding-inline: 0.75rem;
   }
 
   .tasks {
@@ -43,7 +67,7 @@
   }
 
   .form-row {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .task-grid {
@@ -66,30 +90,8 @@
   }
 }
 
-@media (max-width: 360px) {
-  .app {
-    gap: 0.75rem;
-    padding: 1.325rem 1rem;
-  }
-
-  .task-card__title {
-    font-size: 0.95rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .theme-switch__label {
-    display: none;
-  }
-
-  .theme-switch {
-    min-width: auto;
-    padding-inline: 0.75rem;
-  }
-}
-
+/* md+: tema switch más grande, ocultar filtros activos en sidebar */
 @media (min-width: 768px) {
-
   .theme-switch__track {
     width: 56px;
     height: 32px;
@@ -118,25 +120,23 @@
   .task-list__empty--first-task {
     height: 60vh;
   }
-
 }
 
+/* 623px: ocultar botón de alternar layout */
 @media (max-width: 623px) {
   #btnToggleLayout {
     display: none;
   }
 }
 
-@media (max-width: 1200px) {
-  .form-flex {
-    flex-direction: column;
-    align-items: normal;
-    gap: 1rem;
+/* 360px: pantallas muy estrechas */
+@media (max-width: 360px) {
+  .app {
+    gap: 0.75rem;
+    padding: 1.325rem 1rem;
   }
-}
 
-@media (min-width: 1200px) {
-  .box {
-    gap: unset;
+  .task-card__title {
+    font-size: 0.95rem;
   }
 }

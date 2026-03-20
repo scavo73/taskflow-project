@@ -1,69 +1,6 @@
-.form-flex {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-4);
-  width: 100%;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  min-width: 0;
-}
-
-.field--title {
-  flex: 1;
-}
-
-.form-row {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-4);
-}
-
-.field--category {
-  min-width: 9rem;
-}
-
-.field--priority {
-  min-width: 9rem;
-}
-
-.form-actions {
-  display: flex;
-  align-items: flex-end;
-  flex: 1;
-}
-
-.form-actions .btn {
-  white-space: nowrap;
-}
-
-.label {
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.input,
-.select {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: var(--text);
-  background: var(--surface);
-  border-radius: 10px;
-}
-
-.input {
-  padding: 0.55rem 0.8rem;
-  box-shadow: var(--shadow-inset-i);
-}
+/* Campos base (.input, .select, :focus) → tailwind.css */
 
 .select {
-  appearance: none;
-  padding: 0.55rem 2.75rem 0.55rem 0.8rem;
-  box-shadow: var(--shadow-sm);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.9rem center;
@@ -72,9 +9,4 @@
 
 html.dark .select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-}
-
-.input:focus,
-.select:focus {
-  box-shadow: var(--shadow-inset);
 }

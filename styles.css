@@ -5,9 +5,6 @@
 @import url("./css/layout/topbar.css");
 @import url("./css/layout/app.css");
 
-@import url("./css/components/box.css");
-@import url("./css/components/nav.css");
-@import url("./css/components/section.css");
 @import url("./css/components/form.css");
 @import url("./css/components/button.css");
 @import url("./css/components/filter.css");

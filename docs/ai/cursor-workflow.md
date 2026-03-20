@@ -188,9 +188,9 @@ Objetivos:
 Devuélveme el código listo para revisar.
 ```
 
-# Fase 4 — Estructurar los archivos
+## Fase 4 — Estructurar los archivos
 
-## Prompt usado
+### Prompt usado
 
 ```
 Propón una reorganización mínima y realista del proyecto TaskFlow.
@@ -255,3 +255,17 @@ Esto reduce el riesgo y evita romper los `<script>` del HTML durante la transici
 ## Commit final
 
 Tras la reorganización, se le pedirá a Cursor que ejecute `git add .` y `git commit`, y que explique brevemente todo lo que ha cambiado.
+
+## Fase 5 — Añadir JSDoc en funciones que realmente lo necesiten
+
+### Prompt usado
+
+Añade comentarios JSDoc a estas funciones.
+Prioriza funciones públicas o importantes del flujo:
+- creación de tarea
+- validación
+- persistencia
+- filtrado
+- render principal
+
+Quiero comentarios breves y útiles, no relleno.

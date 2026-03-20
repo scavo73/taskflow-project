@@ -978,6 +978,78 @@ function getCategoryErrorMessage(error) {
 
 // renders a task
 function renderTask(task) {
+  // Helpers para construir trozos de HTML
+  function getTaskHeaderHTML() {
+    if (isEditing) {
+      return `
+        <input
+          class="task-card__input"
+          type="text"
+          data-task-id="${task.id}"
+          aria-label="Editar título"
+        />
+      `;
+    }
+    return `<h3 class="task-card__title"></h3>`;
+  }
+
+  function getDragHandleHTML() {
+    if (isEditing) return '';
+    return `
+      <button
+        class="chip task-card__drag-handle"
+        type="button"
+        aria-label="Reordenar tarea ${escapedTaskTitle}"
+        title="Arrastrar para reordenar"
+      >
+        <i data-lucide="grip-vertical" aria-hidden="true"></i>
+      </button>
+    `;
+  }
+
+  function getEditButtonsHTML() {
+    if (!isEditing) {
+      return `
+        <button
+          class="chip task-card__edit"
+          type="button"
+          data-task-id="${task.id}"
+          aria-label="Editar tarea"
+        >
+          <i data-lucide="pencil" aria-hidden="true"></i>
+        </button>
+
+        <button
+          class="chip task-card__del"
+          type="button"
+          data-task-id="${task.id}"
+          aria-label="Borrar tarea ${escapedTaskTitle}"
+        >
+          <i data-lucide="trash-2" aria-hidden="true"></i>
+        </button>
+      `;
+    }
+    return `
+      <button
+        class="chip task-card__save"
+        type="button"
+        data-task-id="${task.id}"
+        aria-label="Guardar título"
+      >
+        <i data-lucide="check" aria-hidden="true"></i>
+      </button>
+      <button
+        class="chip task-card__cancel"
+        type="button"
+        data-task-id="${task.id}"
+        aria-label="Cancelar edición"
+      >
+        <i data-lucide="x" aria-hidden="true"></i>
+      </button>
+    `;
+  }
+
+  // Variables descriptivas
   const li = document.createElement('li');
   li.className = 'task-list__item';
   li.dataset.taskId = String(task.id);
@@ -987,6 +1059,7 @@ function renderTask(task) {
   const mainTag = isEditing ? 'div' : 'label';
   const escapedTaskTitle = escapeHtml(task.title);
 
+  // Renderizado HTML principal
   li.innerHTML = `
     <div class="task-item">
       <input
@@ -995,104 +1068,47 @@ function renderTask(task) {
         id="task-${task.id}"
         ${task.done ? 'checked' : ''}
       />
-
       <div class="task-card">
         <${mainTag}
           class="task-card__main"
           ${!isEditing ? `for="task-${task.id}"` : ''}
         >
           <div class="task-card__top">
-            ${isEditing
-      ? `
-                <input
-                  class="task-card__input"
-                  type="text"
-                  data-task-id="${task.id}"
-                  aria-label="Editar título"
-                />
-              `
-      : `
-                <h3 class="task-card__title"></h3>
-              `
-    }
-
+            ${getTaskHeaderHTML()}
             <span class="prio prio--${normalizedPriority}"></span>
           </div>
         </${mainTag}>
-
         <div class="task-card__footer">
           <span class="task-card__cat"></span>
-
           <div class="task-card__actions">
-            ${isEditing
-      ? ''
-      : `
-                <button
-                  class="chip task-card__drag-handle"
-                  type="button"
-                  aria-label="Reordenar tarea ${escapedTaskTitle}"
-                  title="Arrastrar para reordenar"
-                >
-                  <i data-lucide="grip-vertical" aria-hidden="true"></i>
-                </button>
-              `
-    }
-
-            ${isEditing
-      ? `
-                <button
-                  class="chip task-card__save"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Guardar título"
-                >
-                  <i data-lucide="check" aria-hidden="true"></i>
-                </button>
-
-                <button
-                  class="chip task-card__cancel"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Cancelar edición"
-                >
-                  <i data-lucide="x" aria-hidden="true"></i>
-                </button>
-              `
-      : `
-                <button
-                  class="chip task-card__edit"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Editar tarea"
-                >
-                  <i data-lucide="pencil" aria-hidden="true"></i>
-                </button>
-
-                <button
-                  class="chip task-card__del"
-                  type="button"
-                  data-task-id="${task.id}"
-                  aria-label="Borrar tarea ${escapedTaskTitle}"
-                >
-                  <i data-lucide="trash-2" aria-hidden="true"></i>
-                </button>
-              `
-    }
+            ${getDragHandleHTML()}
+            ${getEditButtonsHTML()}
           </div>
         </div>
       </div>
     </div>
   `;
 
-  const titleEl = li.querySelector('.task-card__title');
-  const inputEl = li.querySelector('.task-card__input');
-  const catEl = li.querySelector('.task-card__cat');
-  const prioEl = li.querySelector('.prio');
+  // Seteo de valores dinámicos
+  const titleElement = li.querySelector('.task-card__title');
+  if (titleElement) {
+    titleElement.textContent = task.title;
+  }
 
-  if (titleEl) titleEl.textContent = task.title;
-  if (inputEl) inputEl.value = task.title;
-  if (catEl) catEl.textContent = task.category || categories[0] || 'Personal';
-  if (prioEl) prioEl.textContent = setPriorityLabel(task.priority);
+  const inputElement = li.querySelector('.task-card__input');
+  if (inputElement) {
+    inputElement.value = task.title;
+  }
+
+  const categoryElement = li.querySelector('.task-card__cat');
+  if (categoryElement) {
+    categoryElement.textContent = task.category || categories[0] || 'Personal';
+  }
+
+  const prioElement = li.querySelector('.prio');
+  if (prioElement) {
+    prioElement.textContent = setPriorityLabel(task.priority);
+  }
 
   return li;
 }

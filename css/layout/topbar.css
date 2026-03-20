@@ -1,41 +1,4 @@
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 60;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
-}
-
-.topbar__inner {
-  width: 100%;
-  min-height: var(--topbar-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
-  padding: var(--space-4) var(--space-5);
-}
-
-.topbar__left,
-.topbar__right {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-.topbar__left {
-  min-width: 0;
-}
-
-/* .brand {
-  display: inline-flex;
-  align-items: center;
-  min-height: 46px;
-  padding: 0.8rem 1rem;
-  border-radius: 0.8rem;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-} */
+/* Layout .topbar → css/tw-components.css (@layer components) */
 
 .brand__logo {
   font-weight: 800;

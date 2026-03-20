@@ -1,6 +1,115 @@
 @import "tailwindcss";
+
 @custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Breakpoints: lg = 1200px (responsive.css). sm/md = predeterminados Tailwind (640 / 768).
+*/
+@theme {
+  --breakpoint-lg: 75rem;
+
+  --color-tf-bg: var(--bg);
+  --color-tf-surface: var(--surface);
+  --color-tf-surface-2: var(--surface-2);
+  --color-tf-text: var(--text);
+  --color-tf-muted: var(--muted);
+  --color-tf-accent: var(--accent);
+  --color-tf-danger: var(--danger);
+}
 
 @source "./index.html";
 @source "./js/**/*.js";
 @source not "./dist";
+
+/*
+  Componentes con @apply (mismo pipeline PostCSS que Tailwind).
+  Sombras y colores neumórficos: var(--*) en css/core/vars.css (cargado vía styles.css).
+*/
+@layer components {
+  .topbar {
+    @apply sticky top-0 z-[60] border-b;
+    background: var(--bg);
+    border-color: var(--line);
+  }
+
+  .topbar__inner {
+    @apply flex w-full min-h-[var(--topbar-h)] items-center justify-between gap-5 px-5 py-4;
+  }
+
+  .topbar__left,
+  .topbar__right {
+    @apply flex items-center gap-4;
+  }
+
+  .topbar__left {
+    @apply min-w-0;
+  }
+
+  .app {
+    @apply mx-auto flex gap-10 px-5 py-6;
+  }
+
+  .sidebar {
+    @apply w-full max-w-[230px] shrink-0 grow-0 basis-[230px];
+  }
+
+  .tasks {
+    @apply flex min-w-0 flex-1 flex-col gap-8;
+  }
+
+  .stats {
+    @apply flex flex-col gap-4;
+  }
+
+  .section-search {
+    @apply flex flex-1 items-center gap-3;
+  }
+
+  .search {
+    @apply flex min-w-0 flex-1 items-center gap-[0.65rem] rounded-[10px] p-2;
+    background: var(--surface);
+    box-shadow: var(--shadow-inset-i);
+  }
+
+  .search__input {
+    @apply min-w-0 w-full border-0 bg-transparent outline-none;
+  }
+
+  .search__input::placeholder {
+    color: var(--muted);
+  }
+
+  .bottom-nav__inner {
+    @apply flex justify-between;
+  }
+
+  .bottom-nav__link {
+    @apply relative flex min-h-14 items-center justify-center rounded-xl px-1 py-[0.35rem];
+    color: var(--muted);
+  }
+
+  .bottom-nav__link.is-active {
+    color: var(--accent);
+  }
+
+  .bottom-nav__text {
+    @apply text-[0.8rem] font-semibold;
+  }
+
+  .box {
+    @apply flex flex-col gap-4;
+  }
+
+  .sec-head {
+    @apply flex items-center gap-2 font-bold tracking-[0.01em];
+  }
+
+  .sec-head__icon {
+    @apply inline-flex items-center justify-center;
+  }
+
+  .sec-head__title,
+  .sec-head__title-desktop {
+    @apply text-lg;
+  }
+}

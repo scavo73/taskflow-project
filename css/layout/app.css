@@ -1,23 +1,4 @@
-.app {
-  display: flex;
-  gap: var(--space-8);
-  padding: var(--space-6) var(--space-5);
-}
-
-.sidebar {
-  flex: 0 0 230px;
-  max-width: 230px;
-  width: 100%;
-}
-
-.tasks {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  gap: 2rem;
-  flex-direction: column;
-}
-
+/* Layout principal (.app, .sidebar, .tasks) → css/tw-components.css */
 
 .task-card__drag-handle {
   cursor: grab;

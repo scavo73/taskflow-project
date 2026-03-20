@@ -1,34 +1,11 @@
+/* .bottom-nav__inner / __link → css/tw-components.css */
+
 .bottom-nav {
   display: none;
-}
-
-.bottom-nav__inner {
-  display: flex;
-  justify-content: space-between;
-}
-
-.bottom-nav__link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 56px;
-  padding: 0.35rem 0.25rem;
-  border-radius: 12px;
-  color: var(--muted);
-}
-
-.bottom-nav__link.is-active {
-  color: var(--accent);
 }
 
 .bottom-nav__link .count-pill {
   position: absolute;
   top: 6px;
   right: calc(50% - 46px);
-}
-
-.bottom-nav__text {
-  font-size: 0.8rem;
-  font-weight: 600;
 }

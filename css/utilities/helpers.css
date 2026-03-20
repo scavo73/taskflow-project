@@ -2,9 +2,7 @@
   display: none !important;
 }
 
-.ml-auto {
-  margin-left: auto;
-}
+/* .ml-auto: utilidad nativa de Tailwind (evitar duplicar) */
 
 .mr-auto {
   margin-right: auto;

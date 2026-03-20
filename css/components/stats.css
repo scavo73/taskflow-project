@@ -1,8 +1,4 @@
-.stats {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+/* .stats base → css/tw-components.css */
 
 .stats> :nth-child(n + 3) {
   margin-top: var(--space-6);
@@ -24,35 +20,4 @@
   border-radius: inherit;
   background: var(--ui-ink);
   transition: width 0.8s ease-in-out;
-}
-
-.section-search {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.search {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  min-width: 0;
-  padding: 0.5rem;
-  border-radius: 10px;
-  background: var(--surface);
-  box-shadow: var(--shadow-inset-i);
-}
-
-.search__input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-}
-
-.search__input::placeholder {
-  color: var(--muted);
 }

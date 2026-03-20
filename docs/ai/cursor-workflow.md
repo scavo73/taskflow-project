@@ -357,3 +357,30 @@ repetidas o clases mejorables.
 ## Conclusión
 
 MCP es útil porque permite que el agente consulte archivos, servicios o repositorios de forma más precisa y reutilizable. Esto mejora tareas como análisis de código, documentación, automatización y soporte al desarrollo.
+
+# Prompt engineering aplicado al desarrollo
+
+## Experimentar con promts,
+
+Promt con rol:
+
+Actúa como desarrollador frontend senior especializado en Tailwind CSS. Analiza y migra los estilos del proyecto TaskFlow a Tailwind CSS de forma progresiva, manteniendo el layout, la funcionalidad y la estética actual del proyecto.
+
+Condiciones:
+- No cambies la lógica JavaScript.
+- No modifiques la estructura HTML salvo que sea estrictamente necesario y lo justifiques.
+- Respeta los breakpoints actuales (`sm`, `md`, `lg`).
+- Mantén el estilo visual existente, incluido el neumorfismo y el soporte de modo claro/oscuro.
+- No ensucies el HTML con demasiadas utilidades si es mejor usar `@layer components`, `@apply` o clases semánticas reutilizables.
+- Si alguna parte no merece migrarse a Tailwind, conserva el CSS original y explica por qué.
+- Puedes sugerir librerías solo si realmente mejoran la solución.
+
+Antes de tocar nada:
+1. Revisa todos los archivos responsables del estilo del proyecto.
+2. Explícame cuál es el enfoque de migración más viable.
+3. Dime qué conviene migrar a Tailwind, qué conviene mantener en CSS y por qué.
+
+Después:
+- Propón una migración por fases.
+- Aplica los cambios de forma limpia, escalable y bien justificada.
+- Muestra los archivos modificados y el código final.

@@ -269,3 +269,91 @@ Prioriza funciones públicas o importantes del flujo:
 - render principal
 
 Quiero comentarios breves y útiles, no relleno.
+
+# Conectar servidores MCP
+
+MCP es un protocolo abierto que permite conectar asistentes de IA con herramientas y fuentes de datos externas de manera estandarizada. En lugar de depender solo del prompt, la IA puede leer archivos, consultar servicios o ejecutar acciones a través de servidores MCP. Cursor soporta este protocolo para ampliar lo que el agente puede hacer.
+
+---
+
+## Instalación paso a paso
+
+1. Abrí el proyecto TaskFlow en Cursor.
+2. Investigué qué es MCP y confirmé que Cursor permite usar servidores MCP mediante configuración desde Settings.
+3. Elegí instalar el servidor `filesystem`, porque es uno de los servidores de referencia del ecosistema MCP y permite trabajar directamente con archivos y carpetas del proyecto.
+4. Creé el archivo `.cursor/mcp.json` en la raíz del proyecto. Cursor soporta configuración MCP a nivel de proyecto y también a nivel global.
+5. Añadí la configuración del servidor con `npx` y limité el acceso únicamente a la carpeta del proyecto. El servidor filesystem opera solo sobre directorios permitidos.
+6. Abrí Settings → Features → Model Context Protocol en Cursor y activé el servidor.
+7. Probé varias consultas en el chat para verificar que la IA podía leer y analizar información real del proyecto a través del servidor MCP.
+
+---
+
+## Fase 1 — Conectar y comprobar que MCP está configurado correctamente
+
+Creé `.cursor/mcp.json`, configuré la ruta a mi proyecto y conecté el servidor `filesystem` desde los ajustes de Cursor.
+
+Para comprobar que la conexión funcionaba, usé este prompt en el agente:
+
+```
+Usa el servidor filesystem para listar la estructura del proyecto TaskFlow
+y dime qué archivos principales hay.
+```
+
+El resultado fue el siguiente:
+
+```
+Directorios principales: css/, dist/, docs/, images/, js/
+
+Archivos en la raíz: .gitignore, index.html, README.md, package.json,
+package-lock.json, postcss.config.mjs, styles.css, tailwind.css, output.css
+
+css/: category-management.css, responsive.css, core/, layout/, components/, utilities/
+css/components/: bottom-nav.css, box.css, button.css, chip.css, drawer.css,
+  filter.css, form.css, modal.css, nav.css, section.css, stats.css, task.css
+
+docs/ai/: ai-comparison.md, cursor-workflow.md, experiments.md,
+  prompt-engineering.md, reflection.md
+
+js/: app.js, filters-drawer.js, mobile-task-form.js, theme.js
+dist/: styles.css
+images/: task-app-desktop.png, task-app-mobile.png
+```
+
+---
+
+## Fase 2 — Cinco consultas usando el servidor MCP
+
+```
+Usa filesystem para abrir index.html y explicarme qué inputs forman
+el formulario de tareas.
+```
+
+```
+Usa filesystem para leer el archivo JavaScript principal y decirme
+cuáles son las funciones más largas.
+```
+
+```
+Usa filesystem para buscar todas las funciones relacionadas con filtros
+y dime cuáles serían candidatas a refactorización.
+```
+
+```
+Usa filesystem para buscar en el proyecto la función que lee el valor
+del input de nueva tarea y lo guarda de forma persistente. Quiero ver:
+1. dónde se lee el .value del input
+2. qué función crea el objeto tarea
+3. qué función lo guarda en el array tasks
+4. qué función lo persiste en localStorage
+```
+
+```
+Usa filesystem para revisar los archivos CSS y decirme si hay reglas
+repetidas o clases mejorables.
+```
+
+---
+
+## Conclusión
+
+MCP es útil porque permite que el agente consulte archivos, servicios o repositorios de forma más precisa y reutilizable. Esto mejora tareas como análisis de código, documentación, automatización y soporte al desarrollo.

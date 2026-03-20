@@ -613,36 +613,36 @@ function toggleLayoutMode() {
 // completes visible tasks
 function completeVisibleTasks() {
   const visibleTasks = getFilteredTasks();
-
   if (visibleTasks.length === 0) return;
 
-  const pendingVisibleTasks = visibleTasks.filter((task) => !task.done);
-  const doneVisibleTasks = visibleTasks.filter((task) => task.done);
-  const allVisibleCompleted = pendingVisibleTasks.length === 0;
+  const pendingTasks = visibleTasks.filter(task => !task.done);
+  const completedTasks = visibleTasks.filter(task => task.done);
 
-  const affectedTasks = allVisibleCompleted ? doneVisibleTasks : pendingVisibleTasks;
-  const affectedIds = new Set(affectedTasks.map((task) => task.id));
-  const affectedCount = affectedTasks.length;
+  const areAllVisibleCompleted = pendingTasks.length === 0;
+  const tasksToToggle = areAllVisibleCompleted ? completedTasks : pendingTasks;
 
-  if (affectedCount === 0) return;
+  if (tasksToToggle.length === 0) return;
 
-  const message = allVisibleCompleted
-    ? `¿Seguro que quieres desmarcar ${affectedCount} ${affectedCount === 1 ? 'tarea visible completada' : 'tareas visibles completadas'}?`
-    : `¿Seguro que quieres completar ${affectedCount} ${affectedCount === 1 ? 'tarea visible pendiente' : 'tareas visibles pendientes'}?`;
+  const taskCount = tasksToToggle.length;
+  const confirmToggleMessage = getConfirmationMessage(areAllVisibleCompleted, taskCount);
 
-  const userConfirmed = confirm(message);
-  if (!userConfirmed) return;
+  if (!confirm(confirmToggleMessage)) return;
 
-  tasks = tasks.map((task) => {
-    if (!affectedIds.has(task.id)) return task;
-
-    return {
-      ...task,
-      done: !allVisibleCompleted
-    };
-  });
+  const idsToToggle = new Set(tasksToToggle.map(task => task.id));
+  tasks = tasks.map(task =>
+    idsToToggle.has(task.id) ? { ...task, done: !areAllVisibleCompleted } : task
+  );
 
   commit({ saveTasks: true });
+
+  // ----- Helpers -----
+  function getConfirmationMessage(allCompleted, count) {
+    if (allCompleted) {
+      return `¿Seguro que quieres desmarcar ${count} ${count === 1 ? 'tarea visible completada' : 'tareas visibles completadas'}?`;
+    } else {
+      return `¿Seguro que quieres completar ${count} ${count === 1 ? 'tarea visible pendiente' : 'tareas visibles pendientes'}?`;
+    }
+  }
 }
 
 // removes visible tasks

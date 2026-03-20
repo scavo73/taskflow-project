@@ -1,281 +1,284 @@
 function initFiltersDrawer() {
-  const mediaQuery = window.matchMedia('(max-width: 768px)');
+  // Element selectors
+  const MOBILE_BREAKPOINT = '(max-width: 768px)';
+  const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT);
   const sidebar = document.querySelector('.sidebar');
-  const statsActions = document.querySelector('.task-actions');
+  const actionsBar = document.querySelector('.task-actions');
 
-  if (!sidebar || !statsActions) return;
+  if (!sidebar || !actionsBar) return;
 
-  const panel = sidebar.querySelector('.filter-panel');
-  const title = sidebar.querySelector('.panel__title');
+  const filterPanel = sidebar.querySelector('.filter-panel');
+  const panelTitle = sidebar.querySelector('.panel__title');
+  if (!filterPanel || !panelTitle) return;
 
-  if (!panel || !title) return;
   if (!sidebar.id) sidebar.id = 'mobileFiltersPanel';
-  if (document.querySelector('.filters-btn')) return;
+  if (document.querySelector('.filters-btn')) return; // Only one instance
 
-  const btnFilters = document.createElement('button');
-  btnFilters.type = 'button';
-  btnFilters.className = 'filters-btn';
-  btnFilters.setAttribute('aria-controls', sidebar.id);
-  btnFilters.setAttribute('aria-expanded', 'false');
-  btnFilters.setAttribute('aria-label', 'Abrir filtros');
-  btnFilters.innerHTML = '<i data-lucide="list-filter" aria-hidden="true"></i>';
-  statsActions.appendChild(btnFilters);
+  // --- UI Elements Creation ---
+  const btnOpenDrawer = createButton({
+    type: 'button',
+    className: 'filters-btn',
+    html: '<i data-lucide="list-filter" aria-hidden="true"></i>',
+    aria: {
+      controls: sidebar.id,
+      expanded: 'false',
+      label: 'Abrir filtros',
+    },
+  });
+  actionsBar.appendChild(btnOpenDrawer);
 
-  const backdrop = document.createElement('div');
-  backdrop.className = 'filters-backdrop';
-  backdrop.hidden = true;
+  const backdrop = createDiv('filters-backdrop', { hidden: true });
   document.body.appendChild(backdrop);
 
-  const handle = document.createElement('div');
-  handle.className = 'filters-handle';
-  handle.setAttribute('aria-hidden', 'true');
+  const drawerHandle = createDiv('filters-handle', { 'aria-hidden': 'true' });
 
-  const mobileHead = document.createElement('div');
-  mobileHead.className = 'filters-head';
+  // Mobile header
+  const mobileHeader = createDiv('filters-head');
+  const mobileHeaderTitle = document.createElement('h2');
+  mobileHeaderTitle.className = 'sec-head__title';
+  mobileHeaderTitle.textContent = panelTitle.textContent;
 
-  const mobileTitle = document.createElement('h2');
-  mobileTitle.className = 'sec-head__title';
-  mobileTitle.textContent = title.textContent;
+  const btnCloseDrawer = createButton({
+    type: 'button',
+    className: 'filters-close',
+    html: '<i data-lucide="x" aria-hidden="true"></i>',
+    aria: { label: 'Cerrar filtros' },
+  });
 
-  const closeBtn = document.createElement('button');
-  closeBtn.type = 'button';
-  closeBtn.className = 'filters-close';
-  closeBtn.setAttribute('aria-label', 'Cerrar filtros');
-  closeBtn.innerHTML = '<i data-lucide="x" aria-hidden="true"></i>';
+  mobileHeader.append(mobileHeaderTitle, btnCloseDrawer);
 
-  mobileHead.append(mobileTitle, closeBtn);
-  panel.insertBefore(handle, panel.firstChild);
-  panel.insertBefore(mobileHead, handle.nextSibling);
+  // Insert header and handle to panel
+  filterPanel.insertBefore(drawerHandle, filterPanel.firstChild);
+  filterPanel.insertBefore(mobileHeader, drawerHandle.nextSibling);
 
-  const footer = document.createElement('div');
-  footer.className = 'filters-footer';
+  // Footer/Actions
+  const footer = createDiv('filters-footer');
+  const btnCancelDrawer = createButton({
+    type: 'button',
+    className: 'filters-cancel',
+    text: 'Cancelar',
+  });
+  const btnApplyDrawer = createButton({
+    type: 'button',
+    className: 'filters-apply',
+    text: 'Ver resultados',
+  });
+  footer.append(btnCancelDrawer, btnApplyDrawer);
+  filterPanel.appendChild(footer);
 
-  const btnCancel = document.createElement('button');
-  btnCancel.type = 'button';
-  btnCancel.className = 'filters-cancel';
-  btnCancel.textContent = 'Cancelar';
+  // --- State
+  let lastFocusedElement = null;
+  let filtersSnapshot = null;
 
-  const btnApply = document.createElement('button');
-  btnApply.type = 'button';
-  btnApply.className = 'filters-apply';
-  btnApply.textContent = 'Ver resultados';
-
-  footer.append(btnCancel, btnApply);
-  panel.appendChild(footer);
-
-  let lastActive = null;
-  let firstSnapshot = null;
-
-  function isMobile() {
+  // === Helpers ===
+  function isMobileView() {
     return mediaQuery.matches;
   }
 
-  function refreshIcons() {
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+  function refreshLucideIcons() {
+    window.lucide?.createIcons();
   }
 
-  function hideButton() {
-    btnFilters.classList.add('is-hidden');
+  function setFiltersBtnVisibility(hidden) {
+    btnOpenDrawer.classList.toggle('is-hidden', hidden);
   }
 
-  function showButton() {
-    if (!isMobile()) return;
-    btnFilters.classList.remove('is-hidden');
+  function getInputList(selector) {
+    return Array.from(sidebar.querySelectorAll(selector));
   }
+  const getStatusInputs    = () => getInputList('input[name="status"]');
+  const getPriorityInputs  = () => getInputList('input[name="priority"]');
+  const getCategoryInputs  = () => getInputList('input[name="cat"]');
 
-  function getStatusInputs() {
-    return [...sidebar.querySelectorAll('input[name="status"]')];
-  }
-
-  function getPriorityInputs() {
-    return [...sidebar.querySelectorAll('input[name="priority"]')];
-  }
-
-  function getCategoryInputs() {
-    return [...sidebar.querySelectorAll('input[name="cat"]')];
-  }
-
-  function readCurrentState() {
-    const status = sidebar.querySelector('input[name="status"]:checked')?.value || 'all';
+  function readUISelections() {
+    const checkedStatus =
+      sidebar.querySelector('input[name="status"]:checked')?.value || 'all';
 
     const priorities = getPriorityInputs()
-      .filter((input) => input.checked)
-      .map((input) => input.value);
+      .filter(i => i.checked)
+      .map(i => i.value);
 
     const categories = getCategoryInputs()
-      .filter((input) => input.checked)
-      .map((input) => input.value.toLowerCase());
+      .filter(i => i.checked)
+      .map(i => i.value.toLowerCase());
 
-    return { status, priorities, categories };
+    return { status: checkedStatus, priorities, categories };
   }
 
-  function saveSnapshot() {
-    firstSnapshot = readCurrentState();
+  function saveFiltersSnapshot() {
+    filtersSnapshot = readUISelections();
   }
 
-  function syncAppWithInputs() {
-    const selectedStatus = sidebar.querySelector('input[name="status"]:checked');
+  function restoreFiltersSnapshotIfAvailable() {
+    if (!filtersSnapshot) return;
+    getStatusInputs().forEach(
+      input => (input.checked = input.value === filtersSnapshot.status)
+    );
+    getPriorityInputs().forEach(
+      input => (input.checked = filtersSnapshot.priorities.includes(input.value))
+    );
+    getCategoryInputs().forEach(
+      input => (input.checked = filtersSnapshot.categories.includes(input.value.toLowerCase()))
+    );
+    wireUpAppToInputs();
+  }
 
-    if (selectedStatus) {
-      selectedStatus.dispatchEvent(new Event('change', { bubbles: true }));
+  function wireUpAppToInputs() {
+    const selectedStatusInput = sidebar.querySelector('input[name="status"]:checked');
+    if (selectedStatusInput) {
+      selectedStatusInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
-
-    getPriorityInputs().forEach((input) => {
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    getCategoryInputs().forEach((input) => {
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    if (typeof window.TaskFlowApp?.refreshUI === 'function') {
-      window.TaskFlowApp.refreshUI();
-    }
+    getPriorityInputs().forEach(i =>
+      i.dispatchEvent(new Event('change', { bubbles: true }))
+    );
+    getCategoryInputs().forEach(i =>
+      i.dispatchEvent(new Event('change', { bubbles: true }))
+    );
+    window.TaskFlowApp?.refreshUI?.();
   }
 
-  function restoreSnapshot() {
-    if (!firstSnapshot) return;
-
-    getStatusInputs().forEach((input) => {
-      input.checked = input.value === firstSnapshot.status;
-    });
-
-    getPriorityInputs().forEach((input) => {
-      input.checked = firstSnapshot.priorities.includes(input.value);
-    });
-
-    getCategoryInputs().forEach((input) => {
-      input.checked = firstSnapshot.categories.includes(input.value.toLowerCase());
-    });
-
-    syncAppWithInputs();
-  }
-
-  function updateResultsButton() {
-    const currentState = readCurrentState();
-    let total = null;
-
+  function updateResultsButtonText() {
+    const currentSelections = readUISelections();
+    let resultCount = null;
     if (typeof window.TaskFlowApp?.getFilteredCountByState === 'function') {
-      total = window.TaskFlowApp.getFilteredCountByState(currentState);
+      resultCount = window.TaskFlowApp.getFilteredCountByState(currentSelections);
     }
-
-    if (total === null) {
-      total = document.querySelectorAll('#taskList .task-list__item').length;
+    if (resultCount == null) {
+      // fallback: visible task items in DOM
+      resultCount = document.querySelectorAll('#taskList .task-list__item').length;
     }
-
-    btnApply.textContent = total === 1 ? 'Ver 1 resultado' : `Ver ${total} resultados`;
+    btnApplyDrawer.textContent =
+      resultCount === 1 ? 'Ver 1 resultado' : `Ver ${resultCount} resultados`;
   }
 
   function openDrawer() {
-    if (!isMobile()) return;
+    if (!isMobileView()) return;
 
-    lastActive = document.activeElement;
-    saveSnapshot();
-    updateResultsButton();
+    lastFocusedElement = document.activeElement;
+    saveFiltersSnapshot();
+    updateResultsButtonText();
 
     sidebar.classList.add('is-open');
     backdrop.hidden = false;
     backdrop.classList.add('is-visible');
     document.body.classList.add('filters-open');
 
-    btnFilters.setAttribute('aria-expanded', 'true');
-    hideButton();
-    closeBtn.focus();
+    btnOpenDrawer.setAttribute('aria-expanded', 'true');
+    setFiltersBtnVisibility(true);
+    btnCloseDrawer.focus();
   }
 
   function closeDrawer({ restore = false } = {}) {
-    if (restore) {
-      restoreSnapshot();
-    }
+    if (restore) restoreFiltersSnapshotIfAvailable();
 
     sidebar.classList.remove('is-open');
     backdrop.classList.remove('is-visible');
     backdrop.hidden = true;
     document.body.classList.remove('filters-open');
 
-    btnFilters.setAttribute('aria-expanded', 'false');
-    showButton();
+    btnOpenDrawer.setAttribute('aria-expanded', 'false');
+    setFiltersBtnVisibility(!isMobileView());
 
-    if (lastActive && typeof lastActive.focus === 'function') {
-      lastActive.focus();
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+      lastFocusedElement.focus();
     } else {
-      btnFilters.focus();
+      btnOpenDrawer.focus();
     }
   }
 
-  function applyChanges() {
-    syncAppWithInputs();
+  function applyAndCloseDrawer() {
+    wireUpAppToInputs();
     closeDrawer({ restore: false });
   }
 
-  function cancelChanges() {
+  function cancelAndCloseDrawer() {
     closeDrawer({ restore: true });
   }
 
-  function toggleDrawer() {
+  function toggleDrawerOpen() {
     if (sidebar.classList.contains('is-open')) {
-      cancelChanges();
+      cancelAndCloseDrawer();
     } else {
       openDrawer();
     }
   }
 
-  function updateMode() {
-    if (isMobile()) {
-      btnFilters.hidden = false;
+  function updateMobileModeView() {
+    if (isMobileView()) {
+      btnOpenDrawer.hidden = false;
       sidebar.setAttribute('aria-modal', 'true');
       sidebar.setAttribute('role', 'dialog');
-
       if (!sidebar.classList.contains('is-open')) {
-        showButton();
+        setFiltersBtnVisibility(false);
       }
     } else {
+      // Reset/make static
       sidebar.classList.remove('is-open');
       backdrop.classList.remove('is-visible');
       backdrop.hidden = true;
       document.body.classList.remove('filters-open');
 
-      btnFilters.hidden = true;
-      btnFilters.classList.remove('is-hidden');
-      btnFilters.setAttribute('aria-expanded', 'false');
+      btnOpenDrawer.hidden = true;
+      setFiltersBtnVisibility(false);
+      btnOpenDrawer.setAttribute('aria-expanded', 'false');
 
       sidebar.removeAttribute('aria-modal');
       sidebar.removeAttribute('role');
     }
   }
 
-  btnFilters.addEventListener('click', toggleDrawer);
-  closeBtn.addEventListener('click', cancelChanges);
-  btnCancel.addEventListener('click', cancelChanges);
-  btnApply.addEventListener('click', applyChanges);
-  backdrop.addEventListener('click', cancelChanges);
+  // --- Event Listeners ---
+  btnOpenDrawer.addEventListener('click', toggleDrawerOpen);
+  btnCloseDrawer.addEventListener('click', cancelAndCloseDrawer);
+  btnCancelDrawer.addEventListener('click', cancelAndCloseDrawer);
+  btnApplyDrawer.addEventListener('click', applyAndCloseDrawer);
+  backdrop.addEventListener('click', cancelAndCloseDrawer);
 
-  sidebar.addEventListener('change', () => {
-    if (!sidebar.classList.contains('is-open')) return;
-    updateResultsButton();
-  });
+  function handleFilterInputChange() {
+    if (sidebar.classList.contains('is-open')) {
+      updateResultsButtonText();
+    }
+  }
+  sidebar.addEventListener('change', handleFilterInputChange);
+  sidebar.addEventListener('input', handleFilterInputChange);
 
-  sidebar.addEventListener('input', () => {
-    if (!sidebar.classList.contains('is-open')) return;
-    updateResultsButton();
-  });
-
-  document.addEventListener('keydown', (event) => {
+  document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
-      cancelChanges();
+      cancelAndCloseDrawer();
     }
   });
 
   if (typeof mediaQuery.addEventListener === 'function') {
-    mediaQuery.addEventListener('change', updateMode);
+    mediaQuery.addEventListener('change', updateMobileModeView);
   } else {
-    mediaQuery.addListener(updateMode);
+    // legacy browsers
+    mediaQuery.addListener(updateMobileModeView);
   }
 
-  updateMode();
-  refreshIcons();
+  // --- Initial setup ---
+  updateMobileModeView();
+  refreshLucideIcons();
+
+  // --- Small helper creators ---
+  function createButton({ type, className, text, html, aria = {} }) {
+    const btn = document.createElement('button');
+    btn.type = type || 'button';
+    btn.className = className || '';
+    if (text) btn.textContent = text;
+    if (html) btn.innerHTML = html;
+    Object.entries(aria).forEach(([attr, value]) => btn.setAttribute(`aria-${attr}`, value));
+    return btn;
+  }
+
+  function createDiv(className, attrs = {}) {
+    const div = document.createElement('div');
+    div.className = className || '';
+    Object.entries(attrs).forEach(([k, v]) => {
+      if (k === 'hidden') div.hidden = v;
+      else div.setAttribute(k, v);
+    });
+    return div;
+  }
 }
 
 window.initFiltersDrawer = initFiltersDrawer;

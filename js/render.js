@@ -122,7 +122,12 @@ function refreshCategoriesUI() {
   refreshIcons();
 }
 
-// renders a task
+/**
+ * Renderiza una tarea como elemento DOM (`<li>`).
+ * Si la tarea está en edición (`editingTaskId`), muestra un `<input>` para el título.
+ * @param {{id:number,title:string,category:string,priority:string,done:boolean}} task
+ * @returns {HTMLLIElement}
+ */
 function renderTask(task) {
   // Helpers para construir trozos de HTML
   function getTaskHeaderHTML() {
@@ -259,7 +264,10 @@ function renderTask(task) {
   return li;
 }
 
-// renders the empty state
+/**
+ * Estado "sin resultados" cuando hay filtros activos pero no hay coincidencias.
+ * @returns {HTMLLIElement}
+ */
 function renderEmptyState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty';
@@ -272,7 +280,10 @@ function renderEmptyState() {
   return li;
 }
 
-// renders the no tasks state
+/**
+ * Estado inicial cuando no hay ninguna tarea creada.
+ * @returns {HTMLLIElement}
+ */
 function renderNoTasksState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty task-list__empty--first-task';
@@ -309,7 +320,11 @@ function renderNoTasksState() {
   return li;
 }
 
-// creates a filter chip
+/**
+ * Crea un chip visual para los filtros seleccionados.
+ * @param {{label:string,ariaLabel:string,dataName:string,dataValue:string}} param0
+ * @returns {HTMLLIElement}
+ */
 function createFilterChip({ label, ariaLabel, dataName, dataValue }) {
   const li = document.createElement('li');
 
@@ -332,7 +347,10 @@ function createFilterChip({ label, ariaLabel, dataName, dataValue }) {
   return li;
 }
 
-// renders the selected filters
+/**
+ * Renderiza los chips de filtros activos en la barra `selectedFiltersList`.
+ * @returns {void}
+ */
 function renderSelectedFilters() {
   if (!dom.selectedFiltersList) return;
 
@@ -379,13 +397,19 @@ function renderSelectedFilters() {
   }
 }
 
-// renders the clear filters button
+/**
+ * Muestra/oculta el botón "Limpiar filtros" según existan filtros activos.
+ * @returns {void}
+ */
 function renderClearFiltersButton() {
   if (!dom.btnClearFilters) return;
   dom.btnClearFilters.hidden = !hasActiveFilters();
 }
 
-// renders the empty layout visibility
+/**
+ * Oculta/mostra la zona lateral, acciones y stats cuando no hay tareas.
+ * @returns {void}
+ */
 function renderEmptyLayoutVisibility() {
   const hasTasks = tasks.length > 0;
 
@@ -396,7 +420,10 @@ function renderEmptyLayoutVisibility() {
   document.body.classList.toggle('has-no-tasks', !hasTasks);
 }
 
-// renders the action buttons
+/**
+ * Actualiza labels/disabled de los botones de acciones basándose en tareas visibles y filtros.
+ * @returns {void}
+ */
 function renderActionButtons() {
   const visibleTasks = getFilteredTasks();
   const visibleDoneCount = visibleTasks.filter((task) => task.done).length;
@@ -474,7 +501,11 @@ function renderActionButtons() {
   }
 }
 
-// renders the tasks list
+/**
+ * Render principal de la lista: decide entre (1) primera tarea, (2) no-results,
+ * o (3) lista de tareas filtradas.
+ * @returns {void}
+ */
 function renderTasksList() {
   if (!dom.taskList) return;
 
@@ -511,7 +542,10 @@ function renderTasksList() {
   }
 }
 
-// renders the stats
+/**
+ * Renderiza los contadores y la barra de progreso.
+ * @returns {void}
+ */
 function renderStats() {
   const total = tasks.length;
   const done = tasks.filter((task) => task.done).length;

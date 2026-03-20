@@ -3,9 +3,11 @@
 // =====================================================
 // Sobrescribe funciones existentes moviendolas a un módulo real.
 
-// resets the filters state
-// saves the filters state to the storage
-// applies the filters to the DOM
+/**
+ * Resetea el estado de filtros al valor por defecto y (opcionalmente) persiste y aplica a la UI.
+ * @param {{persist?:boolean, preserveStatus?:boolean}} param0
+ * @returns {void}
+ */
 function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
   const nextStatus = preserveStatus ? filtersState.status : 'all';
 
@@ -19,7 +21,10 @@ function resetFiltersState({ persist = true, preserveStatus = false } = {}) {
   applyFiltersToDOM();
 }
 
-// gets the filters from the DOM
+/**
+ * Lee filtros desde el DOM (nav de estado, checkboxes de prioridad/categoría y buscador) y devuelve un modelo normalizado.
+ * @returns {{status:string,priorities:string[],categories:string[],search:string}}
+ */
 function getFiltersFromDOM() {
   return {
     status: getStatusFromDOM(),
@@ -33,7 +38,10 @@ function getFiltersFromDOM() {
   };
 }
 
-// applies the filters to the DOM
+/**
+ * Aplica `filtersState` sobre el DOM: activa nav, marca inputs y sincroniza el buscador.
+ * @returns {void}
+ */
 function applyFiltersToDOM() {
   getStatusLinks().forEach((link) => {
     const isActive = link.dataset.statusValue === filtersState.status;
@@ -59,13 +67,18 @@ function applyFiltersToDOM() {
   }
 }
 
-// syncs the filters state
+/**
+ * Sincroniza el `filtersState` leyendo el DOM y persistiendo el nuevo estado.
+ * @returns {void}
+ */
 function syncFiltersState() {
   filtersState = getFiltersFromDOM();
   saveFiltersState();
 }
 
-// checks if there are active filters
+/**
+ * @returns {boolean} `true` si hay filtros activos (prioridad/categoría/búsqueda).
+ */
 function hasActiveFilters() {
   return (
     filtersState.priorities.length > 0 ||
@@ -74,18 +87,28 @@ function hasActiveFilters() {
   );
 }
 
-// checks if there is an active task view
+/**
+ * @returns {boolean} `true` si la vista actual no es la vista por defecto.
+ */
 function hasActiveTaskView() {
   return filtersState.status !== 'all' || hasActiveFilters();
 }
 
-// clears all filters
+/**
+ * Borra todos los filtros preservando el estado de status (pending/done) y refresca la UI.
+ * @returns {void}
+ */
 function clearAllFilters() {
   resetFiltersState({ preserveStatus: true });
   refreshUI();
 }
 
-// checks if a task matches the filters
+/**
+ * Función pura de match: determina si una tarea cumple un set de filtros.
+ * @param {{title:string,category:string,priority:string,done:boolean}} task
+ * @param {{status:string,priorities:string[],categories:string[],search:string}} filters
+ * @returns {boolean}
+ */
 function taskMatchesFilters(task, filters) {
   const taskCategoryKey = normalizeText(task.category);
   const taskPriorityKey = normalizePriority(task.priority);
@@ -111,7 +134,10 @@ function taskMatchesFilters(task, filters) {
   return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
 }
 
-// gets the filtered tasks
+/**
+ * Obtiene las tareas visibles según `filtersState`.
+ * @returns {object[]}
+ */
 function getFilteredTasks() {
   return tasks.filter((task) => taskMatchesFilters(task, filtersState));
 }

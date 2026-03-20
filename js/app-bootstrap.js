@@ -76,6 +76,12 @@ function getDefaultFormPrefs() {
   };
 }
 
+/**
+ * Lee un valor JSON de `localStorage`.
+ * @param {string} key
+ * @param {any} fallback Valor si no existe la clave o falla la lectura.
+ * @returns {any}
+ */
 function readStorage(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -85,6 +91,12 @@ function readStorage(key, fallback) {
   }
 }
 
+/**
+ * Escribe un valor serializado en `localStorage` (JSON).
+ * @param {string} key
+ * @param {any} value
+ * @returns {void}
+ */
 function writeStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
@@ -197,6 +209,11 @@ function isDefaultTaskView() {
 // =====================================================
 // STORAGE COMMIT
 // =====================================================
+/**
+ * Orquesta una acción atómica del dominio: persiste (tasks/categories/filters/layout) y opcionalmente refresca categorías/UI.
+ * @param {object} param0
+ * @returns {void}
+ */
 function commit({
   saveTasks: shouldSaveTasks = false,
   saveCategories: shouldSaveCategories = false,
@@ -216,6 +233,10 @@ function commit({
 // =====================================================
 // UI ORCHESTRATION
 // =====================================================
+/**
+ * Renderiza toda la UI actual (vacío/no-results/lista + botones + stats) y ajusta drag&drop si aplica.
+ * @returns {void}
+ */
 function refreshUI() {
   renderEmptyLayoutVisibility();
   renderTasksList();
@@ -231,6 +252,10 @@ function refreshUI() {
 // =====================================================
 // INIT
 // =====================================================
+/**
+ * Bootstrap principal: carga estado desde storage, engancha listeners y pinta la UI inicial.
+ * @returns {void}
+ */
 function init() {
   loadTasks();
   loadCategories();

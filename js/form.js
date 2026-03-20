@@ -2,7 +2,10 @@
 // FORM + DOMAIN ACTIONS (TaskFlow)
 // =====================================================
 
-// saves the task form preferences
+/**
+ * Persiste las preferencias del formulario de tarea (categoría y prioridad) en `localStorage`.
+ * Usado principalmente por el formulario de escritorio.
+ */
 function saveTaskFormPrefs() {
   writeStorage(LS_FORM_PREFS_KEY, {
     category: dom.taskCategory?.value || categories[0] || 'Personal',
@@ -10,7 +13,10 @@ function saveTaskFormPrefs() {
   });
 }
 
-// loads the task form preferences, if no preferences are found, uses the default preferences
+/**
+ * Carga las preferencias guardadas del formulario (categoría/prioridad) y aplica valores por defecto si no existen.
+ * @returns {void}
+ */
 function loadTaskFormPrefs() {
   const saved = readStorage(LS_FORM_PREFS_KEY, getDefaultFormPrefs());
   const savedCategory = String(saved.category || '').trim();
@@ -37,7 +43,11 @@ function loadTaskFormPrefs() {
 // TASKS (domain mutations)
 // =====================================================
 
-// creates a task data
+/**
+ * Crea un objeto tarea con formato interno del app.
+ * @param {{title:string, category:string, priority:string}} param0
+ * @returns {{id:number,title:string,category:string,priority:string,done:boolean}}
+ */
 function createTaskData({ title, category, priority }) {
   return {
     id: nextId++,
@@ -48,12 +58,20 @@ function createTaskData({ title, category, priority }) {
   };
 }
 
-// gets a task by its ID
+/**
+ * Obtiene una tarea por id (si existe).
+ * @param {number} taskId
+ * @returns {object|undefined}
+ */
 function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
 
-// adds a task from data
+/**
+ * Añade una tarea validando el título.
+ * @param {{title:string, category:string, priority:string}} param0
+ * @returns {{ok:true,task:object}|{ok:false,error:string}}
+ */
 function addTaskFromData({ title, category, priority }) {
   const cleanTitle = String(title || '').trim();
 
@@ -73,7 +91,11 @@ function addTaskFromData({ title, category, priority }) {
   return { ok: true, task };
 }
 
-// adds a task from the desktop form
+/**
+ * Añade una tarea usando valores del formulario de escritorio.
+ * (Incluye validación del título a través de `addTaskFromData`).
+ * @returns {void}
+ */
 function addTaskFromDesktopForm() {
   if (!dom.taskTitle) return;
 
@@ -92,21 +114,32 @@ function addTaskFromDesktopForm() {
   saveTaskFormPrefs();
 }
 
-// starts a task edit
+/**
+ * Pone una tarea en modo edición y refresca la UI.
+ * @param {number} taskId
+ */
 function startTaskEdit(taskId) {
   if (!getTaskById(taskId)) return;
   editingTaskId = taskId;
   refreshUI();
 }
 
-// cancels a task edit
+/**
+ * Cancela la edición actual y refresca la UI.
+ * @returns {void}
+ */
 function cancelTaskEdit() {
   if (editingTaskId === null) return;
   editingTaskId = null;
   refreshUI();
 }
 
-// updates a task title
+/**
+ * Actualiza el título de una tarea validando que no sea vacío.
+ * @param {number} taskId
+ * @param {string} rawTitle
+ * @returns {{ok:true,task:object}|{ok:false,error:string}}
+ */
 function updateTaskTitle(taskId, rawTitle) {
   const task = getTaskById(taskId);
   if (!task) {
@@ -125,7 +158,10 @@ function updateTaskTitle(taskId, rawTitle) {
   return { ok: true, task };
 }
 
-// removes a task
+/**
+ * Elimina una tarea por id, re-aplica filtros si quedan cero tareas y refresca la UI.
+ * @param {number} taskId
+ */
 function removeTask(taskId) {
   tasks = tasks.filter((task) => task.id !== taskId);
 
@@ -142,7 +178,11 @@ function removeTask(taskId) {
   refreshUI();
 }
 
-// toggles a task
+/**
+ * Marca/desmarca una tarea como completada y persiste el cambio.
+ * @param {number} taskId
+ * @param {boolean} isDone
+ */
 function toggleTask(taskId, isDone) {
   const task = getTaskById(taskId);
   if (!task) return;

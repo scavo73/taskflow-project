@@ -3,13 +3,19 @@
 // =====================================================
 // Sobrescribe funciones existentes moviendolas a un módulo real.
 
-// saves the tasks to the storage
+/**
+ * Persiste el array `tasks` en `localStorage` y actualiza el puente `window.tasks`.
+ * @returns {void}
+ */
 function saveTasks() {
   writeStorage(LS_KEY, tasks);
   syncGlobalTasks();
 }
 
-// loads the tasks from the storage
+/**
+ * Carga `tasks` desde `localStorage` (con soporte de demo inicial) y ajusta `nextId`.
+ * @returns {void}
+ */
 function loadTasks() {
   const rawTasks = localStorage.getItem(LS_KEY);
 
@@ -26,12 +32,19 @@ function loadTasks() {
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
 }
 
-// saves the categories to the storage
+/**
+ * Persiste `categories` en `localStorage`.
+ * @returns {void}
+ */
 function saveCategories() {
   writeStorage(LS_CATEGORIES_KEY, categories);
 }
 
-// loads the categories from the storage
+/**
+ * Carga y normaliza categorías desde `localStorage`, fusionando las categorías por defecto
+ * y las categorías presentes en las tareas.
+ * @returns {void}
+ */
 function loadCategories() {
   const savedCategories = readStorage(LS_CATEGORIES_KEY, []);
   const merged = [
@@ -55,18 +68,34 @@ function loadCategories() {
   saveCategories();
 }
 
+/**
+ * Persiste el modo de layout (`list`/`grid`).
+ * @returns {void}
+ */
 function saveLayoutMode() {
   localStorage.setItem(LS_LAYOUT_KEY, isListLayout ? 'list' : 'grid');
 }
 
+/**
+ * Carga el modo de layout desde `localStorage`.
+ * @returns {void}
+ */
 function loadLayoutMode() {
   isListLayout = localStorage.getItem(LS_LAYOUT_KEY) === 'list';
 }
 
+/**
+ * Persiste el estado de filtros en `localStorage`.
+ * @returns {void}
+ */
 function saveFiltersState() {
   writeStorage(LS_FILTERS_STATE_KEY, filtersState);
 }
 
+/**
+ * Carga filtros desde `localStorage`, valida valores permitidos y aplica los filtros al DOM.
+ * @returns {void}
+ */
 function loadFiltersState() {
   const saved = readStorage(LS_FILTERS_STATE_KEY, {});
   const allowedStatus = ['all', 'pending', 'done'];

@@ -1683,70 +1683,52 @@ function bindFilterEvents() {
 
 // binds the category events
 function bindCategoryEvents() {
-  if (dom.btnNewCategory) {
-    dom.btnNewCategory.addEventListener('click', () => {
-      if (!dom.newCategoryEditor) return;
-
-      if (dom.newCategoryEditor.hidden) {
-        openNewCategoryEditor();
-      } else {
-        closeNewCategoryEditor();
-      }
-    });
-  }
-
-  if (dom.btnCancelNewCategory) {
-    dom.btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
-  }
-
-  if (dom.btnSaveNewCategory) {
-    dom.btnSaveNewCategory.addEventListener('click', () => {
-      const result = addCategory(dom.newCategoryInput?.value);
-
-      if (!result.ok) {
-        showFieldError(getCategoryErrorMessage(result.error), dom.newCategoryInput);
-        return;
-      }
-
-      if (dom.taskCategory) {
-        dom.taskCategory.value = result.category;
-      }
-
-      saveTaskFormPrefs();
+  function toggleNewCategoryEditor() {
+    if (!dom.newCategoryEditor) return;
+    if (dom.newCategoryEditor.hidden) {
+      openNewCategoryEditor();
+    } else {
       closeNewCategoryEditor();
-      refreshUI();
-    });
+    }
   }
 
-  if (dom.newCategoryInput) {
-    dom.newCategoryInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        dom.btnSaveNewCategory?.click();
-      }
+  function handleSaveNewCategory() {
+    const result = addCategory(dom.newCategoryInput?.value);
 
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeNewCategoryEditor();
-      }
-    });
+    if (!result.ok) {
+      showFieldError(getCategoryErrorMessage(result.error), dom.newCategoryInput);
+      return;
+    }
+
+    if (dom.taskCategory) {
+      dom.taskCategory.value = result.category;
+    }
+
+    saveTaskFormPrefs();
+    closeNewCategoryEditor();
+    refreshUI();
   }
 
-  if (!dom.categoryFiltersGroup) return;
+  function handleNewCategoryInputKeydown(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      dom.btnSaveNewCategory?.click();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      closeNewCategoryEditor();
+    }
+  }
 
-  dom.categoryFiltersGroup.addEventListener('click', (event) => {
+  function handleCategoryGroupClick(event) {
     const editBtn = event.target.closest('[data-category-edit]');
     if (editBtn) {
       editingCategoryKey = editBtn.dataset.categoryEdit;
       refreshCategoriesUI();
-
       const input = getCategoryInputEl(dom.categoryFiltersGroup, editingCategoryKey);
-
       if (input) {
         input.focus();
         input.select();
       }
-
       return;
     }
 
@@ -1761,13 +1743,10 @@ function bindCategoryEvents() {
     if (saveBtn) {
       const key = saveBtn.dataset.categorySave;
       const input = getCategoryInputEl(dom.categoryFiltersGroup, key);
-
       const result = renameCategory(key, input?.value || '');
-
       if (!result.ok) {
         showFieldError(getCategoryErrorMessage(result.error), input);
       }
-
       return;
     }
 
@@ -1775,14 +1754,13 @@ function bindCategoryEvents() {
     if (deleteBtn) {
       const key = deleteBtn.dataset.categoryDelete;
       const result = removeCategory(key);
-
       if (!result.ok) {
         alert(getCategoryErrorMessage(result.error));
       }
     }
-  });
+  }
 
-  dom.categoryFiltersGroup.addEventListener('keydown', (event) => {
+  function handleCategoryGroupKeydown(event) {
     const input = event.target.closest('.category-row__input');
     if (!input) return;
 
@@ -1790,19 +1768,37 @@ function bindCategoryEvents() {
 
     if (event.key === 'Enter') {
       event.preventDefault();
-
       const result = renameCategory(key, input.value);
       if (!result.ok) {
         showFieldError(getCategoryErrorMessage(result.error), input);
       }
-    }
-
-    if (event.key === 'Escape') {
+    } else if (event.key === 'Escape') {
       event.preventDefault();
       editingCategoryKey = null;
       refreshCategoriesUI();
     }
-  });
+  }
+
+  if (dom.btnNewCategory) {
+    dom.btnNewCategory.addEventListener('click', toggleNewCategoryEditor);
+  }
+
+  if (dom.btnCancelNewCategory) {
+    dom.btnCancelNewCategory.addEventListener('click', closeNewCategoryEditor);
+  }
+
+  if (dom.btnSaveNewCategory) {
+    dom.btnSaveNewCategory.addEventListener('click', handleSaveNewCategory);
+  }
+
+  if (dom.newCategoryInput) {
+    dom.newCategoryInput.addEventListener('keydown', handleNewCategoryInputKeydown);
+  }
+
+  if (!dom.categoryFiltersGroup) return;
+
+  dom.categoryFiltersGroup.addEventListener('click', handleCategoryGroupClick);
+  dom.categoryFiltersGroup.addEventListener('keydown', handleCategoryGroupKeydown);
 }
 
 // binds the task action events

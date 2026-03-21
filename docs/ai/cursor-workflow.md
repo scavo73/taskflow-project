@@ -385,7 +385,7 @@ Después:
 - Aplica los cambios de forma limpia, escalable y bien justificada.
 - Muestra los archivos modificados y el código final.
 
-###Promt few-shot
+### Promt few-shot
 
 Analiza el proyecto y localiza dónde se gestionan las persistencias actuales. Busca el flujo completo del input del título de nueva tarea: dónde se lee `value`, dónde se guarda en estado y dónde se persiste.
 
@@ -405,3 +405,98 @@ Ejemplos:
 - Si encuentras `saveTasks()` y `loadTasks()`, reutiliza ese patrón.
 - Si existe una clave `LS_*`, añade una nueva clave coherente para el draft del título.
 
+#### Promt con razonamiento por pasos & promt con restricones claras se ha defnidio en promt anteriores. 
+
+### 10 prompts útiles
+
+1. Revisión como desarrollador senior:
+Actúa como un desarrollador frontend senior. Revisa esta función de TaskFlow y detecta problemas de legibilidad, bugs potenciales, nombres poco claros y oportunidades de refactor sin cambiar el comportamiento. Devuélveme análisis breve y luego una propuesta de mejora.
+
+2.Refactor con restricciones estrictas:
+Refactoriza esta función con estas restricciones:
+- no cambies el comportamiento
+- no añadas librerías
+- no uses clases
+- mantén JavaScript vanilla
+- usa nombres más claros
+- máximo 2 helpers nuevos
+Devuelve solo el código final.
+
+3. Explicación paso a paso antes de refactorizar
+Analiza esta función paso a paso:
+1. qué hace
+2. qué entradas recibe
+3. qué salida produce
+4. qué edge cases tiene
+5. cómo la simplificarías sin cambiar el resultado
+Después genera la versión refactorizada.
+
+Few-shot para JSDoc
+
+Quiero documentar funciones con este estilo:
+
+/**
+ * Guarda la lista de tareas en localStorage.
+ * @returns {void}
+ */
+
+Ahora añade JSDoc a estas funciones siguiendo exactamente el mismo formato y nivel de detalle.
+
+5. Mejora de nombres
+
+Revisa este bloque de código y propón mejores nombres para variables, parámetros y funciones.
+Reglas:
+- que expresen intención real
+- evita nombres genéricos
+- no cambies el comportamiento
+- explícame brevemente por qué cada renombrado mejora el código
+
+6. Validaciones del formulario
+
+Revisa el formulario de TaskFlow y propone validaciones adicionales.
+Quiero cubrir:
+- título vacío o solo espacios
+- longitud mínima y máxima
+- categoría inválida
+- prioridad inválida
+- datos corruptos
+Después genera el código necesario con cambios pequeños y seguros.
+
+7. Detección de repetición
+Busca lógica repetida en este archivo.
+Indica:
+1. bloques repetidos
+2. qué helper extraerías
+3. riesgo de cada cambio
+4. propuesta final de refactor mínima
+No reestructures todo el archivo.
+
+8. Generar función nueva con contrato claro
+
+Necesito una función en JavaScript vanilla para TaskFlow.
+Requisitos:
+- recibe un array de tareas
+- devuelve solo las tareas visibles según filtros activos
+- no modifica el array original
+- debe ser fácil de testear
+- añade un ejemplo de uso
+
+9. Documentación técnica breve
+
+Resume este archivo del proyecto en formato técnico breve:
+- responsabilidad principal
+- funciones clave
+- dependencias
+- riesgos o puntos a revisar
+Máximo 150 palabras.
+
+10. Revisión final como code reviewer
+
+Actúa como code reviewer.
+Revisa este diff y dime:
+- posibles roturas
+- edge cases no cubiertos
+- nombres mejorables
+- complejidad innecesaria
+- si el cambio está listo para commit o no
+No propongas una reescritura total.

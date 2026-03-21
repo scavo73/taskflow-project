@@ -59,3 +59,30 @@ numbers → findDuplicates() → duplicates
 Mucho más corta que la versión manual, pero hace exactamente lo mismo.
 
 El código completo lo puedes encontrar en **`ai-experiments.js`**.
+
+# Problema 3: Validar un formulario simple
+
+En este ejemplo creé un objeto `form` con título y contenido, luego escribí una función que valida cada campo y devuelve errores claros:
+
+## 1. `validateForm(form)`
+
+- Comprueba cada campo en orden: **vacío → mínimo → máximo**
+- Acumula todos los errores en un array para devolverlos todos a la vez
+- Si no hay errores, devuelve un mensaje de éxito
+
+## Reglas de validación
+
+| Campo | Mínimo | Máximo |
+|-------|--------|--------|
+| `title` | 3 caracteres | 50 caracteres |
+| `content` | 10 caracteres | 500 caracteres |
+
+## Flujo final
+
+```
+form → validateForm() → errors[] o "Formulario válido ✓"
+```
+
+---
+
+El código completo lo puedes encontrar en **`ai-experiments.js`**.

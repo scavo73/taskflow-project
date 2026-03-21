@@ -110,3 +110,64 @@
 // }
 
 // console.log(findDuplicates(numbers));
+
+
+// Problema 3: validar un formulario simple
+
+// validar titulo/contenido/
+// no vacío
+// longitud mínima y máxima
+// devolver errores claros
+
+// const form = {
+//   title: "Hello World",
+//   description: "This is a description"
+// }
+
+
+// function validateForm(form) {
+//   if (form.title === "") {
+//     return "El titulo no puede estar vacío"
+//   }
+//   if (form.description === "") {
+//     return "El contenido no puede estar vacío"
+//   }
+//   if (form.title.length < 3) {
+//     return "El titulo debe tener al menos 3 caracteres"
+//   }
+//   if (form.description.length < 3) {
+//     return "El contenido debe tener al menos 3 caracteres"
+//   }
+//   return "Formulario validado correctamente"
+// }
+
+// funcion para validar el formulario con AI Claude
+const form = {
+  title: "Hola",
+  content: ""
+};
+
+function validateForm(form) {
+  const errors = [];
+
+  if (!form.title) {
+    errors.push("El título no puede estar vacío");
+  } else if (form.title.length < 3) {
+    errors.push("El título debe tener al menos 3 caracteres");
+  } else if (form.title.length > 50) {
+    errors.push("El título no puede superar los 50 caracteres");
+  }
+
+  if (!form.content) {
+    errors.push("El contenido no puede estar vacío");
+  } else if (form.content.length < 10) {
+    errors.push("El contenido debe tener al menos 10 caracteres");
+  } else if (form.content.length > 500) {
+    errors.push("El contenido no puede superar los 500 caracteres");
+  }
+
+  return errors.length > 0 ? errors : "Formulario válido ✓";
+}
+
+
+console.log(validateForm(form));

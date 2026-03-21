@@ -31,3 +31,31 @@ products → SortProducts() → productsArray → FilterProducts() → filteredP
 Después comparé esta solución con la versión de Claude usando `.filter()` + `.sort()` encadenados — mucho más corta, pero por debajo hace exactamente lo mismo.
 
 El código completo lo puedes encontrar en **`ai-experiments.js`**.
+
+
+# Problema 2: Encontrar duplicados en un array
+
+En este ejemplo creé un array de números con duplicados con Claude, luego manualmente escribí una función y la comparé con la versión de Claude:
+
+## 1. `findDuplicates(numbers)` — versión manual
+
+- Usa **dos bucles anidados**: el exterior fija un número, el interior lo compara con todos los siguientes
+- Si encuentra una coincidencia, lo añade a `duplicates`
+
+## 2. `findDuplicates(numbers)` — versión Claude
+
+- `.filter()` se queda con los números cuya primera aparición no coincide con el índice actual — es decir, están repetidos
+- `new Set()` elimina los duplicados del resultado
+- `[...` `]` convierte el Set de vuelta a array
+
+## Flujo final
+
+```
+numbers → findDuplicates() → duplicates
+```
+
+---
+
+Mucho más corta que la versión manual, pero hace exactamente lo mismo.
+
+El código completo lo puedes encontrar en **`ai-experiments.js`**.

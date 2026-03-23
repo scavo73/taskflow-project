@@ -84,10 +84,17 @@ async function reorderTasksInApi(orderedIds) {
   });
 }
 
+async function seedDemoTasksInApi() {
+  return apiRequest(`${TASKFLOW_API_BASE_URL}/seed-demo`, {
+    method: 'POST'
+  });
+}
+
 window.TaskFlowApi = {
   fetchTasksFromApi,
   createTaskInApi,
   patchTaskInApi,
   deleteTaskInApi,
-  reorderTasksInApi
+  reorderTasksInApi,
+  seedDemoTasksInApi
 };

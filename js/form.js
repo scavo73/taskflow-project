@@ -446,20 +446,36 @@ function openTaskCreator() {
   dom.taskTitle?.focus();
 }
 
-// loads demo tasks
-// function loadDemoTasks() {
-//   tasks = demoTasks.map((task) => ({ ...task }));
-//   editingTaskId = null;
-//   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
+async function loadDemoTasks() {
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.seedDemoTasksInApi !== 'function' || typeof api.fetchTasksFromApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
 
-//   resetFiltersState({ persist: false });
-//   saveTasks();
-//   loadCategories();
-//   refreshCategoriesUI();
-//   loadTaskFormPrefs();
-//   saveFiltersState();
-//   refreshUI();
-// }
+  try {
+    await api.seedDemoTasksInApi();
+    const remoteTasks = await api.fetchTasksFromApi();
+
+    tasks = Array.isArray(remoteTasks) ? remoteTasks : [];
+    syncGlobalTasks();
+    nextId = tasks.length ? Math.max(...tasks.map((task) => Number(task.id) || 0)) + 1 : 1;
+    editingTaskId = null;
+
+    resetFiltersState({ persist: false });
+    loadCategories();
+    refreshCategoriesUI();
+    loadTaskFormPrefs();
+    saveFiltersState();
+    refreshUI();
+
+    return { ok: true, tasks };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudieron cargar las tareas demo'
+    };
+  }
+}
 
 // =====================================================
 // CATEGORIES (domain mutations + editor UI state)

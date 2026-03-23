@@ -188,10 +188,20 @@ function deleteTask(req, res, next) {
   }
 }
 
+function seedDemoTasks(req, res, next) {
+  try {
+    const seededTasks = taskService.cargarDemoTareas();
+    return res.status(200).json(seededTasks);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getAllTasks,
   createTask,
   patchTask,
   reorderTasks,
+  seedDemoTasks,
   deleteTask
 };

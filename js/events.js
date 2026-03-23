@@ -109,9 +109,13 @@ function bindListEvents() {
     openTaskCreator();
   }
 
-  function handleDemoLinkClick(event) {
+  async function handleDemoLinkClick(event) {
     event.preventDefault();
-    loadDemoTasks();
+  
+    const result = await loadDemoTasks();
+    if (!result.ok) {
+      alert(result.error || 'No se pudieron cargar las tareas demo.');
+    }
   }
 
   function handleEditTask(event, editBtn) {
@@ -166,10 +170,10 @@ function bindListEvents() {
     }
 
     const demoLink = event.target.closest('.task-empty__demo-link');
-    if (demoLink) {
-      handleDemoLinkClick(event);
-      return;
-    }
+if (demoLink) {
+  await handleDemoLinkClick(event);
+  return;
+}
 
     const editBtn = event.target.closest('.task-card__edit');
     if (editBtn) {

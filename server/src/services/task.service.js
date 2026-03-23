@@ -1,6 +1,15 @@
 let tasks = [];
 let nextId = 1;
 
+const DEMO_TASKS = [
+  { title: 'Comprar pan', category: 'Personal', priority: 'Media', done: false },
+  { title: 'Estudiar JavaScript', category: 'Estudio', priority: 'Alta', done: false },
+  { title: 'Ir al gimnasio', category: 'Salud', priority: 'Baja', done: true },
+  { title: 'Enviar propuesta al cliente', category: 'Trabajo', priority: 'Alta', done: false },
+  { title: 'Preparar apuntes de CSS', category: 'Estudio', priority: 'Media', done: true },
+  { title: 'Pedir cita médica', category: 'Salud', priority: 'Alta', done: false }
+];
+
 function sortByPosition(list) {
   return [...list].sort((a, b) => a.position - b.position);
 }
@@ -90,10 +99,25 @@ function reordenarTareas(orderedIds) {
   return obtenerTodas();
 }
 
+function cargarDemoTareas() {
+  tasks = DEMO_TASKS.map((task, index) => ({
+    id: index + 1,
+    title: task.title,
+    category: task.category,
+    priority: task.priority,
+    done: task.done,
+    position: index + 1
+  }));
+
+  nextId = tasks.length + 1;
+  return obtenerTodas();
+}
+
 module.exports = {
   obtenerTodas,
   crearTarea,
   actualizarTareaParcial,
   eliminarTarea,
-  reordenarTareas
+  reordenarTareas,
+  cargarDemoTareas
 };

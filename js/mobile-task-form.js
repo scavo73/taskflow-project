@@ -116,27 +116,28 @@
       closeMobileCategoryEditor();
     }
 
-    function submitMobileTask() {
+    async function submitMobileTask() {
       const api = window.TaskFlowApp;
       if (!api) return;
-
+    
       const mobileTitle = document.getElementById('mobileTaskTitle');
       const mobileCategory = document.getElementById('mobileTaskCategory');
       const mobilePriority = document.getElementById('mobileTaskPriority');
-
+    
       if (!mobileTitle || !mobileCategory || !mobilePriority) return;
-
-      const result = api.addTaskFromData({
+    
+      const result = await api.addTaskFromData({
         title: mobileTitle.value,
         category: mobileCategory.value,
         priority: mobilePriority.value
       });
-
+    
       if (!result.ok) {
+        alert(result.error || 'No se pudo crear la tarea.');
         mobileTitle.focus();
         return;
       }
-
+    
       mobileTitle.value = '';
       closeDialog();
     }
@@ -277,11 +278,11 @@
         }
       });
 
-      mobileForm.addEventListener('submit', (event) => {
+      mobileForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        submitMobileTask();
+        await submitMobileTask();
       });
-
+      
       dialog.querySelector('#mobileBtnNewCategory')?.addEventListener('click', openMobileCategoryEditor);
       dialog.querySelector('#mobileBtnCancelNewCategory')?.addEventListener('click', closeMobileCategoryEditor);
       dialog.querySelector('#mobileBtnSaveNewCategory')?.addEventListener('click', saveMobileCategory);

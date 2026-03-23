@@ -257,8 +257,32 @@ function refreshUI() {
  * Bootstrap principal: carga estado desde storage, engancha listeners y pinta la UI inicial.
  * @returns {void}
  */
-function init() {
-  loadTasks();
+
+async function hydrateTasksFromApi() {
+  const api = window.TaskFlowApi;
+
+  if (!api || typeof api.fetchTasksFromApi !== 'function') {
+    throw new Error('API client no disponible');
+  }
+
+  const remoteTasks = await api.fetchTasksFromApi();
+
+  tasks = Array.isArray(remoteTasks) ? remoteTasks : [];
+  syncGlobalTasks();
+  nextId = tasks.length ? Math.max(...tasks.map((task) => Number(task.id) || 0)) + 1 : 1;
+}
+
+async function init() {
+  try {
+    await hydrateTasksFromApi();
+  } catch (error) {
+    console.error('No se pudieron cargar las tareas desde la API:', error);
+    tasks = [];
+    syncGlobalTasks();
+    nextId = 1;
+    alert('No se pudieron cargar las tareas desde el servidor.');
+  }
+
   loadCategories();
   refreshCategoriesUI();
   loadTaskFormPrefs();

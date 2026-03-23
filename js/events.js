@@ -62,9 +62,9 @@ function initTaskSorting() {
 function bindDesktopForm() {
   if (!dom.desktopForm) return;
 
-  dom.desktopForm.addEventListener('submit', (event) => {
+  dom.desktopForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    addTaskFromDesktopForm();
+    await addTaskFromDesktopForm();
   });
 }
 
@@ -82,13 +82,19 @@ function bindListEvents() {
     loadDemoTasks();
   }
 
-  function handleCardClick(event, card) {
+  async function handleCardClick(event, card) {
     const checkbox = card.parentElement.querySelector('.task-item__toggle');
     if (!checkbox) return;
-
+  
     checkbox.checked = !checkbox.checked;
     const taskId = Number(checkbox.id.replace('task-', ''));
-    if (taskId) toggleTask(taskId, checkbox.checked);
+    if (!taskId) return;
+  
+    const result = await toggleTask(taskId, checkbox.checked);
+    if (!result.ok) {
+      checkbox.checked = !checkbox.checked;
+      alert(result.error || 'No se pudo actualizar la tarea.');
+    }
   }
 
   function handleEditTask(event, editBtn) {
@@ -98,14 +104,18 @@ function bindListEvents() {
     if (taskId) startTaskEdit(taskId);
   }
 
-  function handleSaveTask(event, saveBtn) {
+  async function handleSaveTask(event, saveBtn) {
     event.preventDefault();
     event.stopPropagation();
+  
     const taskId = Number(saveBtn.dataset.taskId);
     const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
     if (!taskId || !input) return;
-    const result = updateTaskTitle(taskId, input.value);
-    if (!result.ok) showFieldError('El título no puede estar vacío.', input);
+  
+    const result = await updateTaskTitle(taskId, input.value);
+    if (!result.ok) {
+      showFieldError(result.error || 'El título no es válido.', input);
+    }
   }
 
   function handleCancelTask(event) {
@@ -114,87 +124,99 @@ function bindListEvents() {
     cancelTaskEdit();
   }
 
-  function handleDeleteTask(event, deleteBtn) {
+  async function handleDeleteTask(event, deleteBtn) {
     event.preventDefault();
     event.stopPropagation();
+  
     const taskId = Number(deleteBtn.dataset.taskId);
-    if (taskId) removeTask(taskId);
+    if (!taskId) return;
+  
+    const result = await removeTask(taskId);
+    if (!result.ok) {
+      alert(result.error || 'No se pudo borrar la tarea.');
+    }
   }
 
-  dom.taskList.addEventListener('click', (event) => {
+  dom.taskList.addEventListener('click', async (event) => {
     const emptyStateBtn = event.target.closest('.task-empty__cta');
     if (emptyStateBtn) {
       handleEmptyStateClick(event);
       return;
     }
-
+  
     const demoLink = event.target.closest('.task-empty__demo-link');
     if (demoLink) {
       handleDemoLinkClick(event);
       return;
     }
-
+  
     const clickedButton = event.target.closest('button');
     const clickedInput = event.target.closest('.task-card__input');
     const clickedCard = event.target.closest('.task-card');
-
+  
     if (clickedCard && !clickedButton && !clickedInput) {
-      handleCardClick(event, clickedCard);
+      await handleCardClick(event, clickedCard);
       return;
     }
-
+  
     const editBtn = event.target.closest('.task-card__edit');
     if (editBtn) {
       handleEditTask(event, editBtn);
       return;
     }
-
+  
     const saveBtn = event.target.closest('.task-card__save');
     if (saveBtn) {
-      handleSaveTask(event, saveBtn);
+      await handleSaveTask(event, saveBtn);
       return;
     }
-
+  
     const cancelBtn = event.target.closest('.task-card__cancel');
     if (cancelBtn) {
       handleCancelTask(event);
       return;
     }
-
+  
     const deleteBtn = event.target.closest('.task-card__del');
     if (deleteBtn) {
-      handleDeleteTask(event, deleteBtn);
+      await handleDeleteTask(event, deleteBtn);
     }
   });
 
-  dom.taskList.addEventListener('keydown', (event) => {
+  dom.taskList.addEventListener('keydown', async (event) => {
     const input = event.target.closest('.task-card__input');
     if (!input) return;
-
+  
     const taskId = Number(input.dataset.taskId);
     if (!taskId) return;
-
+  
     if (event.key === 'Enter') {
       event.preventDefault();
-      const result = updateTaskTitle(taskId, input.value);
-      if (!result.ok) showFieldError('El título no puede estar vacío.', input);
+      const result = await updateTaskTitle(taskId, input.value);
+      if (!result.ok) {
+        showFieldError(result.error || 'El título no puede estar vacío.', input);
+      }
       return;
     }
-
+  
     if (event.key === 'Escape') {
       event.preventDefault();
       cancelTaskEdit();
     }
   });
 
-  dom.taskList.addEventListener('change', (event) => {
+  dom.taskList.addEventListener('change', async (event) => {
     const checkbox = event.target.closest('.task-item__toggle');
     if (!checkbox) return;
-
+  
     const taskId = Number(checkbox.id.replace('task-', ''));
     if (!taskId) return;
-
-    toggleTask(taskId, checkbox.checked);
+  
+    const result = await toggleTask(taskId, checkbox.checked);
+    if (!result.ok) {
+      checkbox.checked = !checkbox.checked;
+      alert(result.error || 'No se pudo actualizar la tarea.');
+    }
   });
 }
 

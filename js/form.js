@@ -69,6 +69,28 @@ function createTaskData({ title, category, priority }) {
  * @param {number} taskId
  * @returns {object|undefined}
  */
+
+function replaceTaskInState(updatedTask) {
+  tasks = tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task));
+  syncGlobalTasks();
+}
+
+function prependTaskToState(task) {
+  tasks.unshift(task);
+  syncGlobalTasks();
+}
+
+function removeTaskFromState(taskId) {
+  tasks = tasks.filter((task) => task.id !== taskId);
+  syncGlobalTasks();
+}
+
+function handleEmptyTasksAfterMutation() {
+  if (tasks.length === 0) {
+    resetFiltersState();
+  }
+}
+
 function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
@@ -78,23 +100,36 @@ function getTaskById(taskId) {
  * @param {{title:string, category:string, priority:string}} param0
  * @returns {{ok:true,task:object}|{ok:false,error:string}}
  */
-function addTaskFromData({ title, category, priority }) {
+async function addTaskFromData({ title, category, priority }) {
   const cleanTitle = String(title || '').trim();
 
   if (!cleanTitle) {
     return { ok: false, error: 'Título vacío' };
   }
 
-  const task = createTaskData({
-    title: cleanTitle,
-    category,
-    priority
-  });
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.createTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
 
-  tasks.unshift(task);
-  commit({ saveTasks: true });
+  try {
+    const createdTask = await api.createTaskInApi({
+      title: cleanTitle,
+      category: String(category || categories[0] || 'Personal').trim(),
+      priority: priority || 'Media',
+      done: false
+    });
 
-  return { ok: true, task };
+    prependTaskToState(createdTask);
+    refreshUI();
+
+    return { ok: true, task: createdTask };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudo crear la tarea'
+    };
+  }
 }
 
 /**
@@ -102,17 +137,17 @@ function addTaskFromData({ title, category, priority }) {
  * (Incluye validación del título a través de `addTaskFromData`).
  * @returns {void}
  */
-function addTaskFromDesktopForm() {
+async function addTaskFromDesktopForm() {
   if (!dom.taskTitle) return;
 
-  const result = addTaskFromData({
+  const result = await addTaskFromData({
     title: dom.taskTitle.value,
     category: dom.taskCategory ? dom.taskCategory.value : categories[0] || 'Personal',
     priority: dom.taskPriority ? dom.taskPriority.value : 'Media'
   });
 
   if (!result.ok) {
-    showFieldError('Por favor, ingresa un título para la tarea.', dom.taskTitle);
+    showFieldError(result.error || 'Por favor, ingresa un título válido.', dom.taskTitle);
     return;
   }
 
@@ -146,7 +181,7 @@ function cancelTaskEdit() {
  * @param {string} rawTitle
  * @returns {{ok:true,task:object}|{ok:false,error:string}}
  */
-function updateTaskTitle(taskId, rawTitle) {
+async function updateTaskTitle(taskId, rawTitle) {
   const task = getTaskById(taskId);
   if (!task) {
     return { ok: false, error: 'Tarea no encontrada' };
@@ -157,31 +192,63 @@ function updateTaskTitle(taskId, rawTitle) {
     return { ok: false, error: 'Título vacío' };
   }
 
-  task.title = cleanTitle;
-  editingTaskId = null;
-  commit({ saveTasks: true });
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.patchTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
 
-  return { ok: true, task };
+  try {
+    const updatedTask = await api.patchTaskInApi(taskId, {
+      title: cleanTitle
+    });
+
+    replaceTaskInState(updatedTask);
+    editingTaskId = null;
+    refreshUI();
+
+    return { ok: true, task: updatedTask };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudo actualizar la tarea'
+    };
+  }
 }
 
 /**
  * Elimina una tarea por id, re-aplica filtros si quedan cero tareas y refresca la UI.
  * @param {number} taskId
  */
-function removeTask(taskId) {
-  tasks = tasks.filter((task) => task.id !== taskId);
-
-  if (editingTaskId === taskId) {
-    editingTaskId = null;
+async function removeTask(taskId) {
+  const task = getTaskById(taskId);
+  if (!task) {
+    return { ok: false, error: 'Tarea no encontrada' };
   }
 
-  saveTasks();
-
-  if (tasks.length === 0) {
-    resetFiltersState();
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.deleteTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
   }
 
-  refreshUI();
+  try {
+    await api.deleteTaskInApi(taskId);
+
+    removeTaskFromState(taskId);
+
+    if (editingTaskId === taskId) {
+      editingTaskId = null;
+    }
+
+    handleEmptyTasksAfterMutation();
+    refreshUI();
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudo borrar la tarea'
+    };
+  }
 }
 
 /**
@@ -189,12 +256,32 @@ function removeTask(taskId) {
  * @param {number} taskId
  * @param {boolean} isDone
  */
-function toggleTask(taskId, isDone) {
+async function toggleTask(taskId, isDone) {
   const task = getTaskById(taskId);
-  if (!task) return;
+  if (!task) {
+    return { ok: false, error: 'Tarea no encontrada' };
+  }
 
-  task.done = isDone;
-  commit({ saveTasks: true });
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.patchTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
+
+  try {
+    const updatedTask = await api.patchTaskInApi(taskId, {
+      done: Boolean(isDone)
+    });
+
+    replaceTaskInState(updatedTask);
+    refreshUI();
+
+    return { ok: true, task: updatedTask };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudo actualizar el estado'
+    };
+  }
 }
 
 // toggles the layout mode

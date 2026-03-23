@@ -318,7 +318,7 @@ window.TaskFlowApp = {
   addTaskFromData: (...args) => window.addTaskFromData?.(...args),
   addCategory: (...args) => window.addCategory?.(...args),
   openTaskCreator: (...args) => window.openTaskCreator?.(...args),
-  loadDemoTasks: (...args) => window.loadDemoTasks?.(...args),
+  //loadDemoTasks: (...args) => window.loadDemoTasks?.(...args),
 
   getCategories() {
     return [...categories];

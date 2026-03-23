@@ -95,6 +95,13 @@ function getTaskById(taskId) {
   return tasks.find((task) => task.id === taskId);
 }
 
+function mergeUpdatedTasksInState(updatedTasks) {
+  const updatedMap = new Map(updatedTasks.map((task) => [task.id, task]));
+
+  tasks = tasks.map((task) => updatedMap.get(task.id) || task);
+  syncGlobalTasks();
+}
+
 /**
  * Añade una tarea validando el título.
  * @param {{title:string, category:string, priority:string}} param0
@@ -291,9 +298,11 @@ function toggleLayoutMode() {
 }
 
 // completes visible tasks
-function completeVisibleTasks() {
+async function completeVisibleTasks() {
   const visibleTasks = getFilteredTasks();
-  if (visibleTasks.length === 0) return;
+  if (visibleTasks.length === 0) {
+    return { ok: false, error: 'No hay tareas visibles.' };
+  }
 
   const pendingTasks = visibleTasks.filter((task) => !task.done);
   const completedTasks = visibleTasks.filter((task) => task.done);
@@ -301,29 +310,42 @@ function completeVisibleTasks() {
   const areAllVisibleCompleted = pendingTasks.length === 0;
   const tasksToToggle = areAllVisibleCompleted ? completedTasks : pendingTasks;
 
-  if (tasksToToggle.length === 0) return;
+  if (tasksToToggle.length === 0) {
+    return { ok: false, error: 'No hay tareas para actualizar.' };
+  }
 
   const taskCount = tasksToToggle.length;
-  const confirmToggleMessage = getConfirmationMessage(areAllVisibleCompleted, taskCount);
-  if (!confirm(confirmToggleMessage)) return;
+  const message = areAllVisibleCompleted
+    ? `¿Seguro que quieres desmarcar ${taskCount} ${taskCount === 1 ? 'tarea visible completada' : 'tareas visibles completadas'}?`
+    : `¿Seguro que quieres completar ${taskCount} ${taskCount === 1 ? 'tarea visible pendiente' : 'tareas visibles pendientes'}?`;
 
-  const idsToToggle = new Set(tasksToToggle.map((task) => task.id));
-  tasks = tasks.map((task) =>
-    idsToToggle.has(task.id) ? { ...task, done: !areAllVisibleCompleted } : task
-  );
+  if (!confirm(message)) {
+    return { ok: false, error: 'Acción cancelada.' };
+  }
 
-  commit({ saveTasks: true });
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.patchTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
 
-  // ----- Helpers -----
-  function getConfirmationMessage(allCompleted, count) {
-    if (allCompleted) {
-      return `¿Seguro que quieres desmarcar ${count} ${
-        count === 1 ? 'tarea visible completada' : 'tareas visibles completadas'
-      }?`;
-    }
-    return `¿Seguro que quieres completar ${count} ${
-      count === 1 ? 'tarea visible pendiente' : 'tareas visibles pendientes'
-    }?`;
+  try {
+    const nextDoneValue = !areAllVisibleCompleted;
+
+    const updatedTasks = await Promise.all(
+      tasksToToggle.map((task) =>
+        api.patchTaskInApi(task.id, { done: nextDoneValue })
+      )
+    );
+
+    mergeUpdatedTasksInState(updatedTasks);
+    refreshUI();
+
+    return { ok: true, tasks: updatedTasks };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudieron actualizar las tareas visibles'
+    };
   }
 }
 
@@ -357,6 +379,53 @@ function removeVisibleTasks() {
   }
 
   refreshUI();
+}async function removeVisibleTasks() {
+  const visibleTasks = getFilteredTasks();
+  if (visibleTasks.length === 0) {
+    return { ok: false, error: 'No hay tareas visibles.' };
+  }
+
+  const visibleIds = new Set(visibleTasks.map((task) => task.id));
+  const visibleCount = visibleTasks.length;
+
+  const message = isDefaultTaskView()
+    ? `¿Seguro que quieres borrar ${visibleCount} ${visibleCount === 1 ? 'tarea' : 'tareas'}? Esta acción no se puede deshacer.`
+    : `¿Seguro que quieres borrar ${visibleCount} ${visibleCount === 1 ? 'tarea visible' : 'tareas visibles'}? Esta acción no se puede deshacer.`;
+
+  if (!confirm(message)) {
+    return { ok: false, error: 'Acción cancelada.' };
+  }
+
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.deleteTaskInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
+
+  try {
+    await Promise.all(
+      visibleTasks.map((task) => api.deleteTaskInApi(task.id))
+    );
+
+    tasks = tasks.filter((task) => !visibleIds.has(task.id));
+    syncGlobalTasks();
+
+    if (editingTaskId !== null && visibleIds.has(editingTaskId)) {
+      editingTaskId = null;
+    }
+
+    if (tasks.length === 0) {
+      resetFiltersState();
+    }
+
+    refreshUI();
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudieron borrar las tareas visibles'
+    };
+  }
 }
 
 // opens the task creator
@@ -378,19 +447,19 @@ function openTaskCreator() {
 }
 
 // loads demo tasks
-function loadDemoTasks() {
-  tasks = demoTasks.map((task) => ({ ...task }));
-  editingTaskId = null;
-  nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
+// function loadDemoTasks() {
+//   tasks = demoTasks.map((task) => ({ ...task }));
+//   editingTaskId = null;
+//   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
 
-  resetFiltersState({ persist: false });
-  saveTasks();
-  loadCategories();
-  refreshCategoriesUI();
-  loadTaskFormPrefs();
-  saveFiltersState();
-  refreshUI();
-}
+//   resetFiltersState({ persist: false });
+//   saveTasks();
+//   loadCategories();
+//   refreshCategoriesUI();
+//   loadTaskFormPrefs();
+//   saveFiltersState();
+//   refreshUI();
+// }
 
 // =====================================================
 // CATEGORIES (domain mutations + editor UI state)

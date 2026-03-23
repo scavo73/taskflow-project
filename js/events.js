@@ -29,34 +29,43 @@ function reorderTasksFromVisibleIds(visibleIds) {
 }
 
 // initializes task sorting
-function initTaskSorting() {
-  if (!dom.taskList || typeof window.Sortable === 'undefined') return;
 
+function initTaskSorting() {
   if (sortableTasks) {
     sortableTasks.destroy();
+    sortableTasks = null;
   }
-
-  sortableTasks = window.Sortable.create(dom.taskList, {
-    animation: 180,
-    handle: '.task-card__drag-handle',
-    draggable: '.task-list__item',
-    ghostClass: 'task-list__item--ghost',
-    chosenClass: 'task-list__item--chosen',
-    dragClass: 'task-list__item--dragging',
-    delay: 120,
-    delayOnTouchOnly: true,
-    forceFallback: false,
-    onEnd(evt) {
-      if (evt.oldIndex === evt.newIndex) return;
-
-      const visibleIds = [...dom.taskList.querySelectorAll('.task-list__item')]
-        .map((item) => Number(item.dataset.taskId))
-        .filter(Boolean);
-
-      reorderTasksFromVisibleIds(visibleIds);
-    }
-  });
 }
+
+
+// function initTaskSorting() {
+//   if (!dom.taskList || typeof window.Sortable === 'undefined') return;
+
+//   if (sortableTasks) {
+//     sortableTasks.destroy();
+//   }
+
+//   sortableTasks = window.Sortable.create(dom.taskList, {
+//     animation: 180,
+//     handle: '.task-card__drag-handle',
+//     draggable: '.task-list__item',
+//     ghostClass: 'task-list__item--ghost',
+//     chosenClass: 'task-list__item--chosen',
+//     dragClass: 'task-list__item--dragging',
+//     delay: 120,
+//     delayOnTouchOnly: true,
+//     forceFallback: false,
+//     onEnd(evt) {
+//       if (evt.oldIndex === evt.newIndex) return;
+
+//       const visibleIds = [...dom.taskList.querySelectorAll('.task-list__item')]
+//         .map((item) => Number(item.dataset.taskId))
+//         .filter(Boolean);
+
+//       reorderTasksFromVisibleIds(visibleIds);
+//     }
+//   });
+// }
 
 // binds the desktop form events
 function bindDesktopForm() {
@@ -82,24 +91,10 @@ function bindListEvents() {
     loadDemoTasks();
   }
 
-  async function handleCardClick(event, card) {
-    const checkbox = card.parentElement.querySelector('.task-item__toggle');
-    if (!checkbox) return;
-  
-    checkbox.checked = !checkbox.checked;
-    const taskId = Number(checkbox.id.replace('task-', ''));
-    if (!taskId) return;
-  
-    const result = await toggleTask(taskId, checkbox.checked);
-    if (!result.ok) {
-      checkbox.checked = !checkbox.checked;
-      alert(result.error || 'No se pudo actualizar la tarea.');
-    }
-  }
-
   function handleEditTask(event, editBtn) {
     event.preventDefault();
     event.stopPropagation();
+
     const taskId = Number(editBtn.dataset.taskId);
     if (taskId) startTaskEdit(taskId);
   }
@@ -107,14 +102,15 @@ function bindListEvents() {
   async function handleSaveTask(event, saveBtn) {
     event.preventDefault();
     event.stopPropagation();
-  
+
     const taskId = Number(saveBtn.dataset.taskId);
     const input = dom.taskList.querySelector(`.task-card__input[data-task-id="${taskId}"]`);
+
     if (!taskId || !input) return;
-  
+
     const result = await updateTaskTitle(taskId, input.value);
     if (!result.ok) {
-      showFieldError(result.error || 'El título no es válido.', input);
+      showFieldError(result.error || 'El título no puede estar vacío.', input);
     }
   }
 
@@ -127,10 +123,10 @@ function bindListEvents() {
   async function handleDeleteTask(event, deleteBtn) {
     event.preventDefault();
     event.stopPropagation();
-  
+
     const taskId = Number(deleteBtn.dataset.taskId);
     if (!taskId) return;
-  
+
     const result = await removeTask(taskId);
     if (!result.ok) {
       alert(result.error || 'No se pudo borrar la tarea.');
@@ -143,40 +139,31 @@ function bindListEvents() {
       handleEmptyStateClick(event);
       return;
     }
-  
+
     const demoLink = event.target.closest('.task-empty__demo-link');
     if (demoLink) {
       handleDemoLinkClick(event);
       return;
     }
-  
-    const clickedButton = event.target.closest('button');
-    const clickedInput = event.target.closest('.task-card__input');
-    const clickedCard = event.target.closest('.task-card');
-  
-    if (clickedCard && !clickedButton && !clickedInput) {
-      await handleCardClick(event, clickedCard);
-      return;
-    }
-  
+
     const editBtn = event.target.closest('.task-card__edit');
     if (editBtn) {
       handleEditTask(event, editBtn);
       return;
     }
-  
+
     const saveBtn = event.target.closest('.task-card__save');
     if (saveBtn) {
       await handleSaveTask(event, saveBtn);
       return;
     }
-  
+
     const cancelBtn = event.target.closest('.task-card__cancel');
     if (cancelBtn) {
       handleCancelTask(event);
       return;
     }
-  
+
     const deleteBtn = event.target.closest('.task-card__del');
     if (deleteBtn) {
       await handleDeleteTask(event, deleteBtn);
@@ -186,19 +173,20 @@ function bindListEvents() {
   dom.taskList.addEventListener('keydown', async (event) => {
     const input = event.target.closest('.task-card__input');
     if (!input) return;
-  
+
     const taskId = Number(input.dataset.taskId);
     if (!taskId) return;
-  
+
     if (event.key === 'Enter') {
       event.preventDefault();
+
       const result = await updateTaskTitle(taskId, input.value);
       if (!result.ok) {
         showFieldError(result.error || 'El título no puede estar vacío.', input);
       }
       return;
     }
-  
+
     if (event.key === 'Escape') {
       event.preventDefault();
       cancelTaskEdit();
@@ -208,10 +196,10 @@ function bindListEvents() {
   dom.taskList.addEventListener('change', async (event) => {
     const checkbox = event.target.closest('.task-item__toggle');
     if (!checkbox) return;
-  
+
     const taskId = Number(checkbox.id.replace('task-', ''));
     if (!taskId) return;
-  
+
     const result = await toggleTask(taskId, checkbox.checked);
     if (!result.ok) {
       checkbox.checked = !checkbox.checked;
@@ -422,8 +410,20 @@ function bindCategoryEvents() {
 // binds the task action events
 function bindTaskActionEvents() {
   dom.btnToggleLayout?.addEventListener('click', toggleLayoutMode);
-  dom.btnCompleteAllTasks?.addEventListener('click', completeVisibleTasks);
-  dom.btnDeleteAllTasks?.addEventListener('click', removeVisibleTasks);
+
+  dom.btnCompleteAllTasks?.addEventListener('click', async () => {
+    const result = await completeVisibleTasks();
+    if (result?.ok === false && result.error !== 'Acción cancelada.') {
+      alert(result.error || 'No se pudieron actualizar las tareas visibles.');
+    }
+  });
+
+  dom.btnDeleteAllTasks?.addEventListener('click', async () => {
+    const result = await removeVisibleTasks();
+    if (result?.ok === false && result.error !== 'Acción cancelada.') {
+      alert(result.error || 'No se pudieron borrar las tareas visibles.');
+    }
+  });
 }
 
 // binds the task form preference events

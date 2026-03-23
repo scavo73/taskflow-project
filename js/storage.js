@@ -8,7 +8,6 @@
  * @returns {void}
  */
 function saveTasks() {
-  writeStorage(LS_KEY, tasks);
   syncGlobalTasks();
 }
 
@@ -17,19 +16,12 @@ function saveTasks() {
  * @returns {void}
  */
 function loadTasks() {
-  const rawTasks = localStorage.getItem(LS_KEY);
-
-  if (rawTasks === null) {
-    tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
-  } else {
-    tasks = readStorage(LS_KEY, USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : []);
-    if (!Array.isArray(tasks)) {
-      tasks = USE_DEMO_TASKS_ON_FIRST_LOAD ? [...demoTasks] : [];
-    }
-  }
-
-  saveTasks();
+  syncGlobalTasks();
   nextId = tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1;
+}
+
+function clearLegacyTaskStorage() {
+  localStorage.removeItem(LS_KEY);
 }
 
 /**

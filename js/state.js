@@ -21,4 +21,6 @@ let categories = [];
 let editingCategoryKey = null;
 let sortableTasks = null;
 let filtersState = getDefaultFiltersState();
+let networkCriticalError = null;
+let isTasksLoading = false;
 

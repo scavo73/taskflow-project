@@ -115,6 +115,13 @@
     </aside>
 
     <section class="tasks" aria-label="Tareas">
+      <!-- <div id="taskflow-error-banner" hidden role="alert" aria-live="polite"></div> -->
+      <div id="taskflow-loading" hidden aria-busy="true" aria-live="polite">
+        <div class="taskflow-loading__inner">
+          <span class="taskflow-loading__spinner" aria-hidden="true"></span>
+          <p class="taskflow-loading__text">Cargando tareas...</p>
+        </div>
+      </div>
 
       <div class="task-actions" aria-label="Acciones de tareas">
         <div class="section-search">

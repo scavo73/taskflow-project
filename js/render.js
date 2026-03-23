@@ -288,6 +288,43 @@ function renderNoTasksState() {
   const li = document.createElement('li');
   li.className = 'task-list__empty task-list__empty--first-task';
 
+  if (networkCriticalError) {
+    const safeCode = escapeHtml(
+      networkCriticalError?.code ||
+        networkCriticalError?.name ||
+        'API_DOWN'
+    );
+    const safeMessage = escapeHtml(
+      networkCriticalError?.message || 'No se pudo conectar al servidor.'
+    );
+
+    li.innerHTML = `
+      <div class="task-empty task-empty--first-task task-empty--error" aria-live="polite">
+        <p class="task-empty__eyebrow">Error de red</p>
+        <h3 class="task-empty__title">No se pudo contactar con el servidor</h3>
+        <p class="task-empty__text">${safeMessage}</p>
+        <p class="task-empty__text">
+          Código: <code>${safeCode}</code>
+        </p>
+      </div>
+    `;
+
+    return li;
+  }
+
+  if (isTasksLoading) {
+    li.innerHTML = `
+      <div class="task-empty task-empty--first-task" aria-live="polite">
+        <div class="taskflow-loading__inner">
+          <span class="taskflow-loading__spinner" aria-hidden="true"></span>
+          <p class="taskflow-loading__text">Cargando tareas...</p>
+        </div>
+      </div>
+    `;
+
+    return li;
+  }
+
   li.innerHTML = `
     <div class="task-empty task-empty--first-task" aria-live="polite">
       <p class="task-empty__eyebrow">Crear nueva tarea</p>

@@ -272,15 +272,55 @@ async function hydrateTasksFromApi() {
   nextId = tasks.length ? Math.max(...tasks.map((task) => Number(task.id) || 0)) + 1 : 1;
 }
 
+function setTaskflowLoadingVisible(isVisible) {
+  // We render the spinner inside the task grid (see render.js).
+  isTasksLoading = Boolean(isVisible);
+
+  const el = document.getElementById('taskflow-loading');
+  if (el) el.hidden = true;
+
+  // Ensure the UI reflects the new loading state while we hydrate.
+  if (typeof refreshUI === 'function') refreshUI();
+}
+
+function setTaskflowErrorBanner(message) {
+  const banner = document.getElementById('taskflow-error-banner');
+  if (!banner) return;
+
+  if (!message) {
+    banner.hidden = true;
+    banner.classList.remove('is-visible');
+    banner.textContent = '';
+    return;
+  }
+
+  banner.textContent = message;
+  banner.hidden = false;
+  banner.classList.add('is-visible');
+}
+
 async function init() {
+  networkCriticalError = null;
+  setTaskflowErrorBanner('');
+  setTaskflowLoadingVisible(true);
+  refreshUI();
+
   try {
     await hydrateTasksFromApi();
   } catch (error) {
     console.error('No se pudieron cargar las tareas desde la API:', error);
+    networkCriticalError = {
+      code: error?.name || 'API_DOWN',
+      message: error?.message || 'No se pudo conectar al servidor.'
+    };
     tasks = [];
     syncGlobalTasks();
     nextId = 1;
-    alert('No se pudieron cargar las tareas desde el servidor.');
+    setTaskflowErrorBanner(
+      `No se pudo conectar al servidor. (${networkCriticalError.code})`
+    );
+  } finally {
+    setTaskflowLoadingVisible(false);
   }
 
   loadCategories();

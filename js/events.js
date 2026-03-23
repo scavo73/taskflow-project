@@ -81,7 +81,9 @@ function initTaskSorting() {
       const result = await reorderTasksFromVisibleIds(visibleIds);
 
       if (!result.ok) {
-        alert(result.error || 'No se pudo guardar el nuevo orden.');
+        if (typeof setTaskflowErrorBanner === 'function') {
+          setTaskflowErrorBanner(result.error || 'No se pudo guardar el nuevo orden.');
+        }
         refreshUI();
       }
     }
@@ -150,7 +152,9 @@ function bindListEvents() {
 
     const result = await removeTask(taskId);
     if (!result.ok) {
-      alert(result.error || 'No se pudo borrar la tarea.');
+      if (typeof setTaskflowErrorBanner === 'function') {
+        setTaskflowErrorBanner(result.error || 'No se pudo borrar la tarea.');
+      }
     }
   }
 
@@ -224,7 +228,9 @@ function bindListEvents() {
     const result = await toggleTask(taskId, checkbox.checked);
     if (!result.ok) {
       checkbox.checked = !checkbox.checked;
-      alert(result.error || 'No se pudo actualizar la tarea.');
+      if (typeof setTaskflowErrorBanner === 'function') {
+        setTaskflowErrorBanner(result.error || 'No se pudo actualizar la tarea.');
+      }
     }
   });
 }
@@ -435,14 +441,18 @@ function bindTaskActionEvents() {
   dom.btnCompleteAllTasks?.addEventListener('click', async () => {
     const result = await completeVisibleTasks();
     if (result?.ok === false && result.error !== 'Acción cancelada.') {
-      alert(result.error || 'No se pudieron actualizar las tareas visibles.');
+      if (typeof setTaskflowErrorBanner === 'function') {
+        setTaskflowErrorBanner(result.error || 'No se pudieron actualizar las tareas visibles.');
+      }
     }
   });
 
   dom.btnDeleteAllTasks?.addEventListener('click', async () => {
     const result = await removeVisibleTasks();
     if (result?.ok === false && result.error !== 'Acción cancelada.') {
-      alert(result.error || 'No se pudieron borrar las tareas visibles.');
+      if (typeof setTaskflowErrorBanner === 'function') {
+        setTaskflowErrorBanner(result.error || 'No se pudieron borrar las tareas visibles.');
+      }
     }
   });
 }

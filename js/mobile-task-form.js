@@ -133,7 +133,9 @@
       });
     
       if (!result.ok) {
-        alert(result.error || 'No se pudo crear la tarea.');
+        if (typeof setTaskflowErrorBanner === 'function') {
+          setTaskflowErrorBanner(result.error || 'No se pudo crear la tarea.');
+        }
         mobileTitle.focus();
         return;
       }

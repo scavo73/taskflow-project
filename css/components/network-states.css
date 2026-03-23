@@ -1,0 +1,90 @@
+/* =====================================================
+   ESTADOS DE RED — TaskFlow
+   Loading overlay, error banner y critical error state.
+   Añade este bloque al final de tu styles.css o en un
+   archivo separado css/components/network-states.css
+   ===================================================== */
+
+/* ─── Loading overlay ─── */
+#taskflow-loading {
+  /* Spinner se renderiza dentro del grid (render.js). */
+  display: none !important;
+}
+
+#taskflow-loading[hidden] {
+  display: none;
+}
+
+.taskflow-loading__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.taskflow-loading__spinner {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid var(--surface-2);
+  border-top-color: var(--accent);
+  animation: taskflow-spin 0.75s linear infinite;
+}
+
+.taskflow-loading__text {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+@keyframes taskflow-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Error banner (errores de red no críticos) ─── */
+#taskflow-error-banner {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  color: var(--danger);
+  box-shadow: var(--shadow-sm);
+
+  /* Entrada animada */
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#taskflow-error-banner[hidden] {
+  display: none;
+}
+
+#taskflow-error-banner.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Critical error state (servidor caído al arranque) ─── */
+.task-empty--error {
+  gap: 1rem;
+}
+
+.task-empty--error .task-empty__title {
+  color: var(--danger);
+}
+
+.task-empty--error code {
+  display: inline-block;
+  padding: 0.1em 0.45em;
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+  font-size: 0.85em;
+  background: var(--surface-2);
+  box-shadow: var(--shadow-inset-soft);
+}

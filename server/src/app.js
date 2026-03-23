@@ -33,6 +33,11 @@ app.get('/health', (req, res) => {
 // Rutas
 app.use('/api/v1/tasks', taskRoutes);
 
+// 404 explícito para que nunca quede una request sin responder
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
+});
+
 // Middleware global de errores (SIEMPRE al final)
 app.use((err, req, res, next) => {
   if (err?.message === 'NOT_FOUND') {

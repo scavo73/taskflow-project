@@ -7,7 +7,7 @@ module.exports = (req, res) => {
   // use la URL original para que matchee `app.use('/api/v1/tasks', ...)`.
   if (req?.originalUrl) req.url = req.originalUrl;
 
-  // Express app es callable: (req,res,next).
-  return app(req, res);
+  // Usamos handle() para asegurar el flujo interno de Express.
+  return app.handle(req, res);
 };
 

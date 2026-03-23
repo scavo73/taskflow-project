@@ -50,8 +50,13 @@ En esta fase del proyecto, la aplicación dejó de depender de `localStorage` co
 
 ```text
 TaskFlow/
+├── vercel.json
 ├── index.html
+├── api/
+│   └── index.js
 ├── tailwind.css
+├── dist/                         (generado)
+│   └── styles.css
 ├── styles.css
 ├── package.json
 ├── js/
@@ -72,6 +77,7 @@ TaskFlow/
     ├── package.json
     ├── .env
     └── src/
+        ├── app.js                (Express app reusable para serverless)
         ├── config/
         │   └── env.js
         ├── controllers/
@@ -81,6 +87,8 @@ TaskFlow/
         ├── services/
         │   └── task.service.js
         └── index.js
+
+         (index.js sirve para ejecución local con `npm run dev`)
 ```
 
 ## Backend por capas
@@ -110,12 +118,13 @@ Centraliza la carga y validación de variables de entorno.
 
 ## Variables de entorno
 
-Archivo `server/.env`:
+Archivo `server/.env` (solo local):
 
 ```env
 PORT=3000
 CLIENT_ORIGIN=http://127.0.0.1:5500
 ```
+En producción (Vercel) no es necesario definir `PORT` para que la API funcione.
 
 ## Cómo ejecutar el proyecto
 
@@ -142,6 +151,23 @@ Ejemplo habitual con Live Server:
 ```text
 http://127.0.0.1:5500
 ```
+
+## Despliegue en Vercel
+
+Este repo está configurado para desplegar en Vercel usando:
+
+* `vercel.json` para hacer `rewrites` de `/api/v1/tasks*` hacia la función serverless en `api/index.js`
+* `api/index.js` como entry point del backend (Express) ejecutado en modo serverless
+* `js/api-client.js` usando una URL relativa (`/api/v1/tasks`) para que funcione en prod
+
+Después de conectar el repo a Vercel, el frontend quedará disponible en la raíz y la API en:
+
+* `/api/v1/tasks`
+* `/api/v1/tasks/:id`
+* `/api/v1/tasks/reorder`
+* `/api/v1/tasks/seed-demo`
+
+Nota: la persistencia del backend es en memoria (sin base de datos), así que las tareas pueden reiniciarse ante cold starts o re-creación de instancias.
 
 ## Flujo actual de datos
 
@@ -362,7 +388,7 @@ También se verificó en el frontend:
 * las categorías todavía no están sincronizadas con backend
 * falta sustituir el almacenamiento en memoria por una base de datos real
 * falta documentación interactiva con Swagger / OpenAPI
-* falta despliegue final en producción
+* el despliegue depende de conectar el repo en Vercel (config ya incluida)
 
 ## Próximos pasos
 

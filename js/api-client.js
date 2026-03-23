@@ -2,7 +2,8 @@
 // API CLIENT (TaskFlow)
 // =====================================================
 
-const TASKFLOW_API_BASE_URL = 'http://localhost:3000/api/v1/tasks';
+// En Vercel/producción usamos rutas relativas para que funcione sin `localhost`.
+const TASKFLOW_API_BASE_URL = '/api/v1/tasks';
 
 async function apiRequest(url, options = {}) {
   // UI network states (definidas en app-bootstrap.js)

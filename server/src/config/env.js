@@ -1,10 +1,7 @@
 require('dotenv').config();
 
-if (!process.env.PORT) {
-  throw new Error('El puerto no está definido.');
-}
-
 module.exports = {
-  PORT: process.env.PORT,
+  // Vercel serverless no siempre define `PORT`, así que usamos un fallback.
+  PORT: process.env.PORT || 3000,
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || '*'
 };

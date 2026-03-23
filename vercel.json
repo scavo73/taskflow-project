@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/v1/tasks",
+      "destination": "/api"
+    },
+    {
+      "source": "/api/v1/tasks/(.*)",
+      "destination": "/api"
+    }
+  ]
+}
+

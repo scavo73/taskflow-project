@@ -3,19 +3,23 @@
 // =====================================================
 
 // reorders tasks from visible IDs
-function reorderTasksFromVisibleIds(visibleIds) {
-  if (!Array.isArray(visibleIds) || visibleIds.length === 0) return;
+async function reorderTasksFromVisibleIds(visibleIds) {
+  if (!Array.isArray(visibleIds) || visibleIds.length === 0) {
+    return { ok: false, error: 'No hay ids visibles para reordenar.' };
+  }
 
   const visibleIdSet = new Set(visibleIds);
   const reorderedVisibleTasks = visibleIds
     .map((taskId) => getTaskById(taskId))
     .filter(Boolean);
 
-  if (reorderedVisibleTasks.length !== visibleIds.length) return;
+  if (reorderedVisibleTasks.length !== visibleIds.length) {
+    return { ok: false, error: 'No se pudo reconstruir el orden visible.' };
+  }
 
   let visibleIndex = 0;
 
-  tasks = tasks.map((task) => {
+  const fullOrderedTasks = tasks.map((task) => {
     if (!visibleIdSet.has(task.id)) {
       return task;
     }
@@ -25,47 +29,64 @@ function reorderTasksFromVisibleIds(visibleIds) {
     return nextTask;
   });
 
-  commit({ saveTasks: true });
+  const orderedIds = fullOrderedTasks.map((task) => task.id);
+
+  const api = window.TaskFlowApi;
+  if (!api || typeof api.reorderTasksInApi !== 'function') {
+    return { ok: false, error: 'API no disponible' };
+  }
+
+  try {
+    const reorderedTasks = await api.reorderTasksInApi(orderedIds);
+
+    tasks = Array.isArray(reorderedTasks) ? reorderedTasks : [];
+    syncGlobalTasks();
+    refreshUI();
+
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'No se pudo guardar el nuevo orden'
+    };
+  }
 }
 
 // initializes task sorting
 
 function initTaskSorting() {
+  if (!dom.taskList || typeof window.Sortable === 'undefined') return;
+
   if (sortableTasks) {
     sortableTasks.destroy();
-    sortableTasks = null;
   }
+
+  sortableTasks = window.Sortable.create(dom.taskList, {
+    animation: 180,
+    handle: '.task-card__drag-handle',
+    draggable: '.task-list__item',
+    ghostClass: 'task-list__item--ghost',
+    chosenClass: 'task-list__item--chosen',
+    dragClass: 'task-list__item--dragging',
+    delay: 120,
+    delayOnTouchOnly: true,
+    forceFallback: false,
+    async onEnd(evt) {
+      if (evt.oldIndex === evt.newIndex) return;
+
+      const visibleIds = [...dom.taskList.querySelectorAll('.task-list__item')]
+        .map((item) => Number(item.dataset.taskId))
+        .filter(Boolean);
+
+      const result = await reorderTasksFromVisibleIds(visibleIds);
+
+      if (!result.ok) {
+        alert(result.error || 'No se pudo guardar el nuevo orden.');
+        refreshUI();
+      }
+    }
+  });
 }
-
-
-// function initTaskSorting() {
-//   if (!dom.taskList || typeof window.Sortable === 'undefined') return;
-
-//   if (sortableTasks) {
-//     sortableTasks.destroy();
-//   }
-
-//   sortableTasks = window.Sortable.create(dom.taskList, {
-//     animation: 180,
-//     handle: '.task-card__drag-handle',
-//     draggable: '.task-list__item',
-//     ghostClass: 'task-list__item--ghost',
-//     chosenClass: 'task-list__item--chosen',
-//     dragClass: 'task-list__item--dragging',
-//     delay: 120,
-//     delayOnTouchOnly: true,
-//     forceFallback: false,
-//     onEnd(evt) {
-//       if (evt.oldIndex === evt.newIndex) return;
-
-//       const visibleIds = [...dom.taskList.querySelectorAll('.task-list__item')]
-//         .map((item) => Number(item.dataset.taskId))
-//         .filter(Boolean);
-
-//       reorderTasksFromVisibleIds(visibleIds);
-//     }
-//   });
-// }
 
 // binds the desktop form events
 function bindDesktopForm() {

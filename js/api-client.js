@@ -54,9 +54,17 @@ async function deleteTaskInApi(taskId) {
   });
 }
 
+async function reorderTasksInApi(orderedIds) {
+  return apiRequest(`${TASKFLOW_API_BASE_URL}/reorder`, {
+    method: 'PATCH',
+    body: JSON.stringify({ orderedIds })
+  });
+}
+
 window.TaskFlowApi = {
   fetchTasksFromApi,
   createTaskInApi,
   patchTaskInApi,
-  deleteTaskInApi
+  deleteTaskInApi,
+  reorderTasksInApi
 };

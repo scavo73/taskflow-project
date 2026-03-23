@@ -34,25 +34,25 @@ function createTask(req, res, next) {
 
     if (title.length < 3) {
       return res.status(400).json({
-        error: 'El título es obligatorio y debe tener al menos 3 caracteres.',
+        error: 'El título es obligatorio y debe tener al menos 3 caracteres.'
       });
     }
 
     if (!category) {
       return res.status(400).json({
-        error: 'La categoría es obligatoria.',
+        error: 'La categoría es obligatoria.'
       });
     }
 
     if (!priority) {
       return res.status(400).json({
-        error: 'La prioridad debe ser Alta, Media o Baja.',
+        error: 'La prioridad debe ser Alta, Media o Baja.'
       });
     }
 
     if (done !== undefined && typeof done !== 'boolean') {
       return res.status(400).json({
-        error: 'El campo done debe ser boolean.',
+        error: 'El campo done debe ser boolean.'
       });
     }
 
@@ -60,7 +60,7 @@ function createTask(req, res, next) {
       title,
       category,
       priority,
-      done: done ?? false,
+      done: done ?? false
     });
 
     return res.status(201).json(nuevaTarea);
@@ -75,7 +75,7 @@ function patchTask(req, res, next) {
 
     if (!isValidId(id)) {
       return res.status(400).json({
-        error: 'El id debe ser un entero positivo.',
+        error: 'El id debe ser un entero positivo.'
       });
     }
 
@@ -84,7 +84,7 @@ function patchTask(req, res, next) {
 
     if (Object.keys(body).length === 0) {
       return res.status(400).json({
-        error: 'Debes enviar al menos un campo para actualizar.',
+        error: 'Debes enviar al menos un campo para actualizar.'
       });
     }
 
@@ -93,7 +93,7 @@ function patchTask(req, res, next) {
 
       if (title.length < 3) {
         return res.status(400).json({
-          error: 'El título debe tener al menos 3 caracteres.',
+          error: 'El título debe tener al menos 3 caracteres.'
         });
       }
 
@@ -105,7 +105,7 @@ function patchTask(req, res, next) {
 
       if (!category) {
         return res.status(400).json({
-          error: 'La categoría no puede estar vacía.',
+          error: 'La categoría no puede estar vacía.'
         });
       }
 
@@ -117,7 +117,7 @@ function patchTask(req, res, next) {
 
       if (!priority) {
         return res.status(400).json({
-          error: 'La prioridad debe ser Alta, Media o Baja.',
+          error: 'La prioridad debe ser Alta, Media o Baja.'
         });
       }
 
@@ -127,7 +127,7 @@ function patchTask(req, res, next) {
     if (body.done !== undefined) {
       if (typeof body.done !== 'boolean') {
         return res.status(400).json({
-          error: 'El campo done debe ser boolean.',
+          error: 'El campo done debe ser boolean.'
         });
       }
 
@@ -136,12 +136,36 @@ function patchTask(req, res, next) {
 
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({
-        error: 'No hay campos válidos para actualizar.',
+        error: 'No hay campos válidos para actualizar.'
       });
     }
 
     const updatedTask = taskService.actualizarTareaParcial(id, updates);
     return res.status(200).json(updatedTask);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+function reorderTasks(req, res, next) {
+  try {
+    const { orderedIds } = req.body ?? {};
+
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return res.status(400).json({
+        error: 'orderedIds debe ser un array no vacío.'
+      });
+    }
+
+    const allIdsAreValid = orderedIds.every((id) => isValidId(id));
+    if (!allIdsAreValid) {
+      return res.status(400).json({
+        error: 'Todos los ids del reorder deben ser enteros positivos.'
+      });
+    }
+
+    const reorderedTasks = taskService.reordenarTareas(orderedIds.map(Number));
+    return res.status(200).json(reorderedTasks);
   } catch (error) {
     return next(error);
   }
@@ -153,7 +177,7 @@ function deleteTask(req, res, next) {
 
     if (!isValidId(id)) {
       return res.status(400).json({
-        error: 'El id debe ser un entero positivo.',
+        error: 'El id debe ser un entero positivo.'
       });
     }
 
@@ -168,5 +192,6 @@ module.exports = {
   getAllTasks,
   createTask,
   patchTask,
-  deleteTask,
+  reorderTasks,
+  deleteTask
 };

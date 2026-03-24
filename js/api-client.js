@@ -6,19 +6,22 @@
 const TASKFLOW_API_BASE_URL = '/api/v1/tasks';
 
 async function apiRequest(url, options = {}) {
-  // UI network states (definidas en app-bootstrap.js)
   const canSetLoading = typeof setTaskflowLoadingVisible === 'function';
   const canSetErrorBanner = typeof setTaskflowErrorBanner === 'function';
 
   if (canSetLoading) setTaskflowLoadingVisible(true);
 
   try {
+    const headers = new Headers(options.headers || {});
+    const isFormData = options.body instanceof FormData;
+
+    if (!isFormData && !headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+
     const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-      },
-      ...options
+      ...options,
+      headers
     });
 
     if (response.status === 204) {
@@ -33,7 +36,6 @@ async function apiRequest(url, options = {}) {
       throw new Error(message);
     }
 
-    // success: we can clear previous error banner
     if (canSetErrorBanner) setTaskflowErrorBanner('');
     return data;
   } catch (err) {
